@@ -38,6 +38,12 @@ public class Location {
     @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = false)
+    private String latitude;
+
+    @Column(nullable = false)
+    private String longitude;
+
     @Column(name = "opening_hours", nullable = false)
     private LocalTime openingHours;
 

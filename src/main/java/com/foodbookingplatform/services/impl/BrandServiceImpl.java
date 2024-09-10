@@ -1,10 +1,11 @@
-package com.foodbookingplatform.services;
+package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.Brand;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.brand.BrandRequest;
 import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.repositories.BrandRepository;
+import com.foodbookingplatform.services.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;

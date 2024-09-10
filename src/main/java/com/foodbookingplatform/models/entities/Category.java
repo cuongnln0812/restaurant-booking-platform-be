@@ -31,11 +31,11 @@ public class Category {
     private String image;
 
     @Column(nullable = false)
-    private String status;
+    private String categoryName;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EntityStatus categoryName;
+    private EntityStatus status;
 
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)

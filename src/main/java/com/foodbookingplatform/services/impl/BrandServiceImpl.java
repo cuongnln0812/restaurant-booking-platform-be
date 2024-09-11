@@ -1,10 +1,11 @@
-package com.foodbookingplatform.services;
+package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.Brand;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.brand.BrandRequest;
 import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.repositories.BrandRepository;
+import com.foodbookingplatform.services.BrandService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -49,7 +50,7 @@ public class BrandServiceImpl implements BrandService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Brand> brandPage = brandRepository.searchBrandByBrandNameContainingIgnoreCase(searchText, pageable);
+        Page<Brand> brandPage = brandRepository.searchBrandByNameContainingIgnoreCase(searchText, pageable);
         List<Brand> brands = brandPage.getContent();
         return brands.stream().map(brand -> mapper.map(brand, BrandResponse.class)).toList();
     }

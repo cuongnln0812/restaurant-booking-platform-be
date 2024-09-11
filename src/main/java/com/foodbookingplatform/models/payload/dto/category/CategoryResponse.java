@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 public class CategoryResponse {
     private Long id;
     private String image;
-    private String status;
-    private EntityStatus name;
-    private String createdBy;
-    private LocalDateTime createdDate;
-    private String modifiedBy;
+    private String name;
+    private EntityStatus status;
+//    private String createdBy;
+//    private LocalDateTime createdDate;
+//    private String modifiedBy;
 //    private Set<Location> locations;
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BrandResponse {
     private Long Id;
-    private String brandName;
+    private String name;
     private EntityStatus status;
     private String image;
 //    private Set<Location> locations;

@@ -50,7 +50,7 @@ public class BrandServiceImpl implements BrandService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Brand> brandPage = brandRepository.searchBrandByBrandNameContainingIgnoreCase(searchText, pageable);
+        Page<Brand> brandPage = brandRepository.searchBrandByNameContainingIgnoreCase(searchText, pageable);
         List<Brand> brands = brandPage.getContent();
         return brands.stream().map(brand -> mapper.map(brand, BrandResponse.class)).toList();
     }

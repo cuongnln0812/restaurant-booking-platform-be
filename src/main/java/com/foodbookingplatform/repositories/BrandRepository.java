@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BrandRepository extends JpaRepository<Brand, Long> {
-    Page<Brand> searchBrandByBrandNameContainingIgnoreCase(String searchText, Pageable pageable);
+    Page<Brand> searchBrandByNameContainingIgnoreCase(String searchText, Pageable pageable);
 }
 

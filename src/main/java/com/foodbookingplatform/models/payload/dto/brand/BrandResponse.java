@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,5 +17,9 @@ public class BrandResponse {
     private String name;
     private EntityStatus status;
     private String image;
-//    private Set<Location> locations;
+//     private String createdBy;
+    // private Set<Location> locations;
+    // private String modifiedBy;
+    // private LocalDateTime createdDate;
+    // private LocalDateTime modifiedDate;
 }

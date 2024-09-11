@@ -19,10 +19,9 @@ public class CategoryRequest {
     @NotEmpty(message = "Category's image cannot be blank")
     @Size(min = 2, message = "Category's image must have at least 2 characters")
     private String image;
-    private String status;
+    private String name;
     @NotEmpty(message = "Category's name cannot be blank")
     @Size(min = 2, message = "Category's name must have at least 2 characters")
-    private EntityStatus name;
+    private EntityStatus status;
     private String createdBy;
-    private LocalDateTime createdDate;
 }

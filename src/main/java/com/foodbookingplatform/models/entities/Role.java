@@ -3,9 +3,7 @@ package com.foodbookingplatform.models.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -25,15 +23,15 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false)
-    private String roleName;
+    private String name;
 
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
-    @CreatedDate
+
     @Column(name = "created_date",nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
@@ -41,7 +39,6 @@ public class Role {
     @Column(name = "modified_by", insertable = false)
     private String modifiedBy;
 
-    @LastModifiedDate
     @Column(name = "modified_date", insertable = false)
     private LocalDateTime modifiedDate;
 

@@ -16,18 +16,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BrandRequest {
     private Long Id;
-
     @NotEmpty(message = "Brand's name cannot be blank")
     @Size(min = 2, message = "Brand's name must have at least 2 characters")
     private String name;
-
     private EntityStatus status;
-
     @NotEmpty(message = "Brand's image cannot be blank")
     @Size(min = 2, message = "Brand's image must have at least 2 characters")
     private String image;
-
     private String createdBy;
-    private String modifiedBy;
-    private LocalDateTime createdDate;
+//    private String modifiedBy;
+//    private LocalDateTime createdDate;
+//    private LocalDateTime modifiedDate;
 }

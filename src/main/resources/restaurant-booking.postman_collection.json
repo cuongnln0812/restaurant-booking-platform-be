@@ -1,0 +1,227 @@
+{
+	"info": {
+		"_postman_id": "80c543d5-5e2f-4b50-afb5-ba3ce30e4717",
+		"name": "restaurant-booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20104645",
+		"_collection_link": "https://dark-zodiac-76463.postman.co/workspace/TestApisAllProjects~641169b4-1a03-47c3-8f03-2bfb8d5f86b0/collection/20104645-80c543d5-5e2f-4b50-afb5-ba3ce30e4717?action=share&source=collection_link&creator=20104645"
+	},
+	"item": [
+		{
+			"name": "brand",
+			"item": [
+				{
+					"name": "get-brand-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageNo",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/search?keyword=i",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "i"
+								},
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-brand",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"brandName\": \"Dooki\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"uuu\",\r\n    \"createdBy\": \"Long\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/add",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "get-category-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageNo",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/search?keyword=e",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "e"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"brandName\": \"Kiko\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"uuu\",\r\n    \"createdBy\": \"Long\",\r\n    \"createdDate\": \"2015-09-01 00:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/add",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -22,7 +22,7 @@ public class CategoryRequest {
     private String status;
     @NotEmpty(message = "Category's name cannot be blank")
     @Size(min = 2, message = "Category's name must have at least 2 characters")
-    private EntityStatus categoryName;
+    private EntityStatus name;
     private String createdBy;
     private LocalDateTime createdDate;
 }

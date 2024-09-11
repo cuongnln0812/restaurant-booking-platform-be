@@ -32,7 +32,7 @@ public class Role {
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
 
-    @Column(name = "created_date",nullable = false, updatable = false)
+    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdDate;
 
     @LastModifiedBy

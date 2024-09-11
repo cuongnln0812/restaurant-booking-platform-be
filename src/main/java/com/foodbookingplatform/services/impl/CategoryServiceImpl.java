@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Category> categoryPage = brandRepository.searchCategoryByCategoryNameContainingIgnoreCase(searchText, pageable);
+        Page<Category> categoryPage = brandRepository.searchCategoryByNameContainingIgnoreCase(searchText, pageable);
         List<Category> categories = categoryPage.getContent();
         return categories.stream().map(category -> mapper.map(category, CategoryResponse.class)).toList();
     }

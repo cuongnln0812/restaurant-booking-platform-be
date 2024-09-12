@@ -3,6 +3,7 @@ package com.foodbookingplatform.models.entities;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,11 +26,14 @@ public class SystemBlog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "content", nullable = false)
-    private Long content;
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
+    private String summary;
+
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
+    private String content;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

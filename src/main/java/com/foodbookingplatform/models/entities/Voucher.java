@@ -4,9 +4,7 @@ import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -26,30 +24,30 @@ public class Voucher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    private String voucherCode;
+    private String code;
 
     @Column(nullable = false)
-    private String voucherName;
+    private String name;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "quantity_use")
     private int quantityUse;
 
     @Column(nullable = false)
     private float discount;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "min_order_amount")
     private float minOrderAmount;
 
     @Column(nullable = false)
@@ -59,15 +57,14 @@ public class Voucher {
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
-    @CreatedDate
-    @Column(name = "created_date",nullable = false, updatable = false)
+
+    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdDate;
 
     @LastModifiedBy
     @Column(name = "modified_by", insertable = false)
     private String modifiedBy;
 
-    @LastModifiedDate
     @Column(name = "modified_date", insertable = false)
     private LocalDateTime modifiedDate;
 

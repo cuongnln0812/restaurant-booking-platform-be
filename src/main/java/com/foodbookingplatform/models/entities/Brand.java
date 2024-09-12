@@ -4,9 +4,7 @@ import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -23,13 +21,12 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "brand")
 public class Brand {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @Column(nullable = false)
-    private String brandName;
+    private String name;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -41,15 +38,14 @@ public class Brand {
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)
     private String createdBy;
-    @CreatedDate
-    @Column(name = "created_date",nullable = false, updatable = false)
+
+    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdDate;
 
     @LastModifiedBy
     @Column(name = "modified_by", insertable = false)
     private String modifiedBy;
 
-    @LastModifiedDate
     @Column(name = "modified_date", insertable = false)
     private LocalDateTime modifiedDate;
 

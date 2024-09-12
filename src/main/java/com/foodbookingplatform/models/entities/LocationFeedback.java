@@ -2,6 +2,7 @@ package com.foodbookingplatform.models.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,7 +34,7 @@ public class LocationFeedback {
     @Column(name = "number_of_guest", nullable = false, length = 65535)
     private int numberOfGuest;
 
-    @Column(nullable = false, length = 65535)
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
     @CreatedBy

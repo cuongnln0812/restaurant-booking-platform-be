@@ -39,8 +39,11 @@ public class SystemBlog {
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
-    @Column(nullable = false, length = 65535)
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
+
+    @Column(name = "publish_date",nullable = false)
+    private LocalDateTime publishDate;
 
     @CreatedBy
     @Column(name = "created_by", nullable = false, updatable = false)

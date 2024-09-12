@@ -3,6 +3,7 @@ package com.foodbookingplatform.models.entities;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -54,7 +55,7 @@ public class User {
     @Column(nullable = false)
     private boolean isFirstLogin;
 
-    @Column(nullable = false, length = 65535)
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
     @CreatedBy

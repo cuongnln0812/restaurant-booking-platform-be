@@ -3,6 +3,7 @@ package com.foodbookingplatform.models.entities;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.Length;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -39,7 +40,7 @@ public class Package {
     @Enumerated(EnumType.STRING)
     private OfferStatus status;
 
-    @Column(nullable = false, length = 65535)
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
     @Column(name = "duration", nullable = false)

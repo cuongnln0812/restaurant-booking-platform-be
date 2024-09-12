@@ -12,7 +12,6 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="food-booking" target="17" />
-      <module name="FoodBookingPlatform" target="17" />
       <module name="MotherLove" target="17" />
     </bytecodeTargetLevel>
   </component>

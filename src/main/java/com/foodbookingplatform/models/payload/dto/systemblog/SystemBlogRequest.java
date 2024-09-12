@@ -28,4 +28,8 @@ public class SystemBlogRequest {
 
     @NotEmpty(message = "Image cannot be blank")
     private String image;
+
+    private String createdBy;
+
+    private Long authorId;
 }

@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.systemblog;
 
+import com.foodbookingplatform.models.enums.BlogStatus;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,5 +24,5 @@ public class SystemBlogResponse {
 
     private String publishDate;
 
-    private EntityStatus status;
+    private BlogStatus status;
 }

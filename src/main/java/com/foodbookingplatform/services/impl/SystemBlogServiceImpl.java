@@ -1,14 +1,13 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Category;
 import com.foodbookingplatform.models.entities.SystemBlog;
-import com.foodbookingplatform.models.enums.EntityStatus;
+import com.foodbookingplatform.models.enums.BlogStatus;
 import com.foodbookingplatform.models.exception.MotherLoveApiException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogRequest;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
 import com.foodbookingplatform.repositories.SystemBlogRepository;
+import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.SystemBlogService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +26,7 @@ import java.util.List;
 public class SystemBlogServiceImpl implements SystemBlogService {
 
     private final SystemBlogRepository systemBlogRepository;
+    private final UserRepository userRepository;
     private final ModelMapper mapper;
 
     @Override
@@ -48,20 +49,35 @@ public class SystemBlogServiceImpl implements SystemBlogService {
     }
 
     @Override
+    @Transactional
     public SystemBlogResponse createSystemBlog(SystemBlogRequest blog) {
         SystemBlog newBlog = mapper.map(blog, SystemBlog.class);
+        newBlog.setStatus(BlogStatus.PENDING);
+        //Khi nào có Security thì đổi lại
+        newBlog.setUser(userRepository.findById(blog.getAuthorId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Id", blog.getAuthorId())));
         SystemBlog savedBlog = systemBlogRepository.save(newBlog);
         return mapper.map(savedBlog, SystemBlogResponse.class);
     }
 
     @Override
+    @Transactional
     public SystemBlogResponse updateSystemBlog(SystemBlogRequest blog) {
         SystemBlog existedBlog = systemBlogRepository.findById(blog.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", blog.getId()));
-        if (existedBlog != null) {
-            SystemBlog updatedCategory = mapper.map(blog, SystemBlog.class);
-            return mapper.map(systemBlogRepository.save(updatedCategory), SystemBlogResponse.class);
-        }else throw new MotherLoveApiException(HttpStatus.NOT_FOUND, "Blog is null");
+        if(!existedBlog.getStatus().equals(BlogStatus.DISABLED)) {
+            mapper.map(blog, existedBlog);
+            return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
+        }else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog is not able to update!");
+    }
+
+    @Override
+    public SystemBlogResponse approveSystemBlog(Long id) {
+        SystemBlog existedBlog = systemBlogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", id));
+        if(existedBlog.getStatus().equals(BlogStatus.PENDING)) existedBlog.setStatus(BlogStatus.ACTIVE);
+        else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog is not able for approval!");
+        return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
     }
 
     @Override
@@ -72,14 +88,26 @@ public class SystemBlogServiceImpl implements SystemBlogService {
     }
 
     @Override
+    @Transactional
     public SystemBlogResponse changeStatus(Long id) {
         SystemBlog existedBlog = systemBlogRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", id));
-        if (existedBlog.getStatus().equals(EntityStatus.ACTIVE)) {
-            existedBlog.setStatus(EntityStatus.INACTIVE);
-        } else {
-            existedBlog.setStatus(EntityStatus.ACTIVE);
-        }
+        if (existedBlog.getStatus().equals(BlogStatus.ACTIVE)) {
+            existedBlog.setStatus(BlogStatus.INACTIVE);
+        } else if(existedBlog.getStatus().equals(BlogStatus.INACTIVE)) {
+            existedBlog.setStatus(BlogStatus.ACTIVE);
+        } else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Only blogs with ACTIVE or INACTIVE status can perform this action!");
+        return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
+    }
+
+    @Override
+    @Transactional
+    public SystemBlogResponse deleteSystemBlog(Long id) {
+        SystemBlog existedBlog = systemBlogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", id));
+        if(!existedBlog.getStatus().equals(BlogStatus.DISABLED)){
+            existedBlog.setStatus(BlogStatus.DISABLED);
+        }else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog has been deleted or not existed!");
         return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
     }
 }

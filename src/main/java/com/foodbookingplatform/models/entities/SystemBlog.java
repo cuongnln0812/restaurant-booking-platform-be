@@ -43,7 +43,7 @@ public class SystemBlog {
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
-    @Column(name = "publish_date",nullable = false)
+    @Column(name = "publish_date")
     private LocalDateTime publishDate;
 
     @CreatedBy

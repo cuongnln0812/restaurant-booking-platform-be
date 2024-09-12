@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.entities;
 
+import com.foodbookingplatform.models.enums.BlogStatus;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,7 +38,7 @@ public class SystemBlog {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EntityStatus status;
+    private BlogStatus status;
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;

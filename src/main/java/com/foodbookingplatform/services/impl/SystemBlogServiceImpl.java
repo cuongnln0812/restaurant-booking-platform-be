@@ -1,16 +1,17 @@
-package com.foodbookingplatform.service.impl;
+package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogCreateRequest;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogUpdateRequest;
 import com.foodbookingplatform.repositories.SystemBlogRepository;
-import com.foodbookingplatform.service.SystemBlogService;
+import com.foodbookingplatform.services.SystemBlogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class SystemBlogServiceImpl implements SystemBlogService {
-    private SystemBlogRepository systemBlogRepository;
+
+    private final SystemBlogRepository systemBlogRepository;
 
 
     @Override
@@ -20,6 +21,16 @@ public class SystemBlogServiceImpl implements SystemBlogService {
 
     @Override
     public void updateSystemBlog(SystemBlogUpdateRequest blog) {
+
+    }
+
+    @Override
+    public void findById(Long id) {
+
+    }
+
+    @Override
+    public void changeStatus(Long id) {
 
     }
 }

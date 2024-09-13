@@ -1,12 +1,9 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Brand;
 import com.foodbookingplatform.models.entities.Category;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.models.payload.dto.category.CategoryRequest;
 import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
-import com.foodbookingplatform.repositories.BrandRepository;
 import com.foodbookingplatform.repositories.CategoryRepository;
 import com.foodbookingplatform.services.CategoryService;
 import lombok.RequiredArgsConstructor;

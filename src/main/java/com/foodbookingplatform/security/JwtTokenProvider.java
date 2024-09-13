@@ -1,5 +1,6 @@
 package com.foodbookingplatform.security;
 
+import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.exception.MotherLoveApiException;
 import com.foodbookingplatform.repositories.TokenRepository;
 import io.jsonwebtoken.*;
@@ -8,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +41,7 @@ public class JwtTokenProvider {
 
     public String generateToken(User user, long expireTime) {
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(user.getUserName())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime ))
                 .signWith(key())

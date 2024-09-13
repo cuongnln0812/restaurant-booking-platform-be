@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "80c543d5-5e2f-4b50-afb5-ba3ce30e4717",
+		"_postman_id": "b9d06573-a082-4fae-bf0c-6ff0065b7613",
 		"name": "restaurant-booking",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20104645",
-		"_collection_link": "https://dark-zodiac-76463.postman.co/workspace/TestApisAllProjects~641169b4-1a03-47c3-8f03-2bfb8d5f86b0/collection/20104645-80c543d5-5e2f-4b50-afb5-ba3ce30e4717?action=share&source=collection_link&creator=20104645"
+		"_exporter_id": "29956265",
+		"_collection_link": "https://martian-capsule-948520.postman.co/workspace/My-Workspace~cedbe8b2-557f-40cb-892b-a176a21815c7/collection/29956265-b9d06573-a082-4fae-bf0c-6ff0065b7613?action=share&source=collection_link&creator=29956265"
 	},
 	"item": [
 		{
@@ -216,6 +216,649 @@
 							"path": [
 								"categories",
 								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authen",
+			"item": [
+				{
+					"name": "log-out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzA5MDIsImV4cCI6MTcyNjIxNzMwMn0.nDEjVpuQ5mmm1uPZQKFCnMeL6QXzURtcnVsEpMw1J8oeVyUoaRJIo-Og4I_dKTOb",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logout"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "get-info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzA5MDIsImV4cCI6MTcyNjIxNzMwMn0.nDEjVpuQ5mmm1uPZQKFCnMeL6QXzURtcnVsEpMw1J8oeVyUoaRJIo-Og4I_dKTOb",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/info",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"info"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userNameOrEmailOrPhone\": \"admin@admin\",\r\n  \"password\": \"admin@admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/auth/login",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "sign-up-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"nguyenducson321\",\r\n  \"email\": \"nguyenducson29@gmail.com\",\r\n  \"password\": \"Nguyenducson@321\",\r\n  \"fullName\": \"string\",\r\n  \"phone\": \"8455083580\",\r\n  \"gender\": \"Female\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register",
+								"user"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "sign-up-location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjEyNjAwNSwiZXhwIjoxNzI2MjEyNDA1fQ.XcU-QcO8S9jDqzFw1tWxUGr4k_t3jhRuCQepndzbjfvp8VIK-Xbce1-ZymstcaZz",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"nducson11111\",\r\n  \"email\": \"nguyenducson2915@gmail.com\",\r\n  \"password\": \"Nguyenducson321@\",\r\n  \"fullName\": \"string\",\r\n  \"phone\": \"0800433475\",\r\n  \"gender\": \"Female\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register/location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register",
+								"location"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "refresh-token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzAzODUsImV4cCI6MTcyNjczNTE4NX0.bgpYmQHBdZtI4HQYktdfuqJ-N3GxkvK3V67OVTWH_XPkv7gBHGSf75AiKJe8-m24",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/refresh_token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh_token"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "change-password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjYxMjYwMTUsImV4cCI6MTcyNjIxMjQxNX0.iTEKRrcePREGOHvxj9vxnW8_BeevaRFhnu_VRc3XxWiBSFBuHDlyOjoJEvD0HV_b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"oldPassword\": \"8X76gwG%mL\",\r\n  \"newPassword\": \"Nguyenducson321@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/change-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notification",
+			"item": [
+				{
+					"name": "get-all-notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification?pageNo=0&pageSize=1&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "1"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-notifications-of-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification?pageNo=0&pageSize=1&sortBy=id&sortDir=asc%id=1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "1"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc%id=1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification/search?keyword=ii",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "ii"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-notification-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"recipientType\": \"USER\",\r\n  \"notificationType\": \"ORDER\",\r\n  \"title\": \"string\",\r\n  \"summary\": \"string\",\r\n  \"content\": \"string\",\r\n  \"image\": \"string\",\r\n  \"status\": \"DISABLED\",\r\n  \"user_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/notification",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"recipientType\": \"USER\",\r\n    \"notificationType\": \"ORDER\",\r\n    \"title\": \"nguyenducson\",\r\n    \"summary\": \"string\",\r\n    \"content\": \"string\",\r\n    \"image\": \"string\",\r\n    \"status\": \"INACTIVE\",\r\n    \"user_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/notification",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification",
+								"2"
 							]
 						}
 					},

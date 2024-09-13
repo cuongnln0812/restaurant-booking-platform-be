@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -19,9 +18,12 @@ public class CategoryRequest {
     @NotEmpty(message = "Category's image cannot be blank")
     @Size(min = 2, message = "Category's image must have at least 2 characters")
     private String image;
-    private String name;
+
     @NotEmpty(message = "Category's name cannot be blank")
     @Size(min = 2, message = "Category's name must have at least 2 characters")
+    private String name;
+
     private EntityStatus status;
+
     private String createdBy;
 }

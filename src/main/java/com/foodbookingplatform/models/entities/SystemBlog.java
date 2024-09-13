@@ -1,7 +1,6 @@
 package com.foodbookingplatform.models.entities;
 
 import com.foodbookingplatform.models.enums.BlogStatus;
-import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
@@ -36,12 +35,12 @@ public class SystemBlog {
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String content;
 
+    @Column(nullable = false, length = Length.LOB_DEFAULT)
+    private String image;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BlogStatus status;
-
-    @Column(nullable = false, length = Length.LOB_DEFAULT)
-    private String image;
 
     @Column(name = "publish_date",nullable = false)
     private LocalDateTime publishDate;

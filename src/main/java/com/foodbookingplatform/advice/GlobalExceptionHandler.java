@@ -72,4 +72,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorDetail errorDetails = new ErrorDetail(new Date(), "Invalid UserName and Password", request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
+
+//    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+//    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+//        Map<String, Object> body = new HashMap<>();
+//        body.put("status", HttpStatus.BAD_REQUEST.value());
+//        body.put("error", "Invalid Enum Value");
+//
+//        String fieldName = ex.getName();
+//        String invalidValue = ex.getValue().toString();
+//
+//        // Xác định thông báo lỗi dựa trên trường enum bị lỗi
+//        String allowedValues;
+//        if (fieldName.equals("notificationType")) {
+//            allowedValues = "[USER, LOCATION, BOOKING, PROMOTION]";
+//        } else if (fieldName.equals("status")) {
+//            allowedValues = "[ACTIVE, INACTIVE, EXPIRE]";
+//        } else {
+//            allowedValues = "[Unknown Enum]";
+//        }
+//
+//        body.put("message", String.format("The value '%s' is not valid for field '%s'. Allowed values are: %s",
+//                invalidValue, fieldName, allowedValues));
+//
+//        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+//    }
 }

@@ -1,10 +1,8 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Brand;
 import com.foodbookingplatform.models.entities.Food;
 import com.foodbookingplatform.models.entities.FoodCategory;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.models.payload.dto.food.FoodRequest;
 import com.foodbookingplatform.models.payload.dto.food.FoodResponse;
 import com.foodbookingplatform.repositories.FoodCategoryRepository;
@@ -30,7 +28,7 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public FoodResponse addFood(FoodRequest foodRequest) {
         Food food = mapper.map(foodRequest, Food.class);
-        FoodCategory category = foodCategoryRepository.findById(foodRequest.getFoodCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "id", foodRequest.getFoodCategoryId()));
+        FoodCategory category = foodCategoryRepository.findById(foodRequest.getFoodCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodRequest.getFoodCategoryId()));
         food.setFoodCategory(category);
         Food savedFood = foodRepository.save(food);
         return mapper.map(savedFood, FoodResponse.class);
@@ -57,19 +55,19 @@ public class FoodServiceImpl implements FoodService {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
-        Page<Food> foodPage = foodRepository.findAll(pageable);
+        Page<Food> foodPage = foodRepository.searchFoodByNameContainingIgnoreCase(searchText, pageable);
         List<Food> foods = foodPage.getContent();
         return foods.stream().map(food -> mapper.map(food, FoodResponse.class)).toList();
     }
 
     @Override
     public FoodResponse updateFood(FoodRequest foodRequest) {
-        Food brand = foodRepository.findById(foodRequest.getId()).orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodRequest.getId()));
-        if (brand != null) {
-            Food updatedFood = mapper.map(foodRequest, Food.class);
-            FoodCategory category = foodCategoryRepository.findById(foodRequest.getFoodCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Category", "id", foodRequest.getFoodCategoryId()));
-            updatedFood.setFoodCategory(category);
-            return mapper.map(foodRepository.save(updatedFood), FoodResponse.class);
+        Food food = foodRepository.findById(foodRequest.getId()).orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodRequest.getId()));
+        if (food != null) {
+            Food updateFood = mapper.map(foodRequest, Food.class);
+            FoodCategory category = foodCategoryRepository.findById(foodRequest.getFoodCategoryId()).orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodRequest.getFoodCategoryId()));
+            updateFood.setFoodCategory(category);
+            return mapper.map(foodRepository.save(updateFood), FoodResponse.class);
         }
         return null;
     }

@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FoodRepository extends JpaRepository<Food, Long> {
-    Page<Brand> searchFoodByNameContainingIgnoreCase(String searchText, Pageable pageable);
+    Page<Food> searchFoodByNameContainingIgnoreCase(String searchText, Pageable pageable);
 }

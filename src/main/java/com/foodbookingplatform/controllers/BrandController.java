@@ -4,10 +4,13 @@ import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.payload.dto.brand.BrandRequest;
 import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.services.BrandService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,8 @@ import java.util.List;
 public class BrandController {
     private final BrandService brandService;
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping
     public ResponseEntity<List<BrandResponse>> getAllBrands(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -28,6 +33,8 @@ public class BrandController {
         return ResponseEntity.ok(brandService.getAllBrands(pageNo, pageSize, sortBy, sortDir));
     }
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/search")
     public ResponseEntity<List<BrandResponse>> searchBrands(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -39,23 +46,33 @@ public class BrandController {
         return ResponseEntity.ok(brandService.searchBrands(pageNo, pageSize, sortBy, sortDir, keyword));
     }
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("{id}")
     public ResponseEntity<BrandResponse> getBrand(@PathVariable Long id) {
         return ResponseEntity.ok(brandService.getBrand(id));
     }
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<BrandResponse> addBrand(@RequestBody @Valid BrandRequest request) {
         BrandResponse response = brandService.addBrand(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//        return new ResponseEntity<>(brandService.addBrand(request), HttpStatus.CREATED);
     }
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PutMapping
     public ResponseEntity<BrandResponse> updateBrand(@RequestBody @Valid BrandRequest request) {
         return ResponseEntity.ok(brandService.updateBrand(request));
     }
 
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteBrand(@PathVariable Long id) {
         brandService.deleteBrand(id);

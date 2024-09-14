@@ -19,7 +19,7 @@ import java.util.Set;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "category")
+@Table(name = "food_category")
 public class FoodCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

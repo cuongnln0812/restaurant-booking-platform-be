@@ -15,8 +15,5 @@ public class CategoryResponse {
     private String image;
     private String name;
     private EntityStatus status;
-//    private String createdBy;
-//    private LocalDateTime createdDate;
-//    private String modifiedBy;
-//    private Set<Location> locations;
+    private String createdBy;
 }

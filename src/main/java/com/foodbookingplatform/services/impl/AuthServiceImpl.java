@@ -180,7 +180,7 @@ public class AuthServiceImpl implements AuthService {
         }
         if(!newPassword.matches(AppConstants.PASSWORD_REGEX))
             throw new MotherLoveApiException(HttpStatus.BAD_REQUEST,
-                    "Password must be at least 8 characters with at least one uppercase letter, one number, and one special character (!@#$%^&*).");
+                    "Password must have at least 8 characters with at least one uppercase letter, one number, and one special character (!@#$%^&*).");
         user.setPassword(passwordEncoder.encode(newPassword));
         if(user.isFirstLogin()) user.setFirstLogin(false);
         userRepository.save(user);

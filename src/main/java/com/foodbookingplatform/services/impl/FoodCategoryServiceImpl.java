@@ -23,7 +23,7 @@ public class FoodCategoryServiceImpl extends BaseServiceImpl<FoodCategory, FoodC
     private final ModelMapper mapper;
 
     public FoodCategoryServiceImpl(FoodCategoryRepository foodCategoryRepository, ModelMapper modelMapper) {
-        super(foodCategoryRepository, modelMapper);
+        super(foodCategoryRepository, modelMapper, FoodCategory.class, FoodCategoryRequest.class, FoodCategoryResponse.class);
         this.foodCategoryRepository = foodCategoryRepository;
         this.mapper = modelMapper;
     }

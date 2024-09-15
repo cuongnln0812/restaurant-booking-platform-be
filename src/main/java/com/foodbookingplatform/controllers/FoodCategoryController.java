@@ -45,8 +45,8 @@ public class FoodCategoryController {
         return ResponseEntity.ok(foodCategoryService.search(pageNo, pageSize, sortBy, sortDir, keyword));
     }
 
-//    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-//    @SecurityRequirement(name = "Bear Authentication")
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("{id}")
     public ResponseEntity<FoodCategoryResponse> getCategory(@PathVariable Long id) {
         FoodCategoryResponse foodCategoryResponse = foodCategoryService.get(id);

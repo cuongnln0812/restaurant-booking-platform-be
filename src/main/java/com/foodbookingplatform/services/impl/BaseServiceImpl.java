@@ -16,10 +16,17 @@ import java.util.List;
 public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
     private final JpaRepository<E, Long> repository;
     private final ModelMapper modelMapper;
+    private final Class<E> entityClass;
+    private final Class<R> requestClass;
+    private final Class<T> responseClass;
 
-    public BaseServiceImpl(JpaRepository<E, Long> repository, ModelMapper modelMapper) {
+    public BaseServiceImpl(JpaRepository<E, Long> repository, ModelMapper modelMapper, Class<E> entityClass, Class<R> requestClass, Class<T> responseClass) {
         this.repository = repository;
         this.modelMapper = modelMapper;
+        this.entityClass = entityClass;
+        this.requestClass = requestClass;
+        this.responseClass = responseClass;
+        this.modelMapper.createTypeMap(entityClass, responseClass);
     }
 
     @Override
@@ -32,10 +39,7 @@ public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
     @Override
     public T get(Long id) {
         E entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entity", "id", id));
-        T response = modelMapper.map(entity, (Class<T>) this.getClass());
-//        T newResponse = null;
-//        T response = modelMapper.map(entity, (Class<T>) newResponse.getClass());
-        return response;
+        return modelMapper.map(entity, responseClass);
     }
 
     @Override

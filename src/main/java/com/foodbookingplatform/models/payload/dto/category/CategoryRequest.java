@@ -24,6 +24,4 @@ public class CategoryRequest {
     private String name;
 
     private EntityStatus status;
-
-    private String createdBy;
 }

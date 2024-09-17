@@ -1,18 +1,26 @@
-package com.foodbookingplatform.models.payload.dto.brand;
+package com.foodbookingplatform.models.payload.dto.food;
 
 import com.foodbookingplatform.models.enums.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BrandResponse {
-    private Long Id;
+public class FoodResponse{
+
+    private Long id;
+
     private String name;
+
+    private float price;
+
+    private String description;
+
     private EntityStatus status;
+
     private String image;
-    private String createdBy;
 }

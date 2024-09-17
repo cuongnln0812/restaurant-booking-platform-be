@@ -23,8 +23,4 @@ public class BrandRequest {
     @NotEmpty(message = "Brand's image cannot be blank")
     @Size(min = 2, message = "Brand's image must have at least 2 characters")
     private String image;
-    private String createdBy;
-//    private String modifiedBy;
-//    private LocalDateTime createdDate;
-//    private LocalDateTime modifiedDate;
 }

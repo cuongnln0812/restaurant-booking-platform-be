@@ -9,6 +9,7 @@ import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryRespo
 import com.foodbookingplatform.repositories.FoodCategoryRepository;
 import com.foodbookingplatform.services.FoodCategoryService;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,15 +36,16 @@ public class FoodCategoryServiceImpl extends BaseServiceImpl<FoodCategory, FoodC
 
         Page<FoodCategory> foodCategoriesPage = foodCategoryRepository.findFoodCategoriesByNameContainingIgnoreCase(searchText, pageable);
         List<FoodCategory> foodCategories = foodCategoriesPage.getContent();
-        return foodCategories.stream().map(food -> mapper.map(foodCategories, FoodCategoryResponse.class)).toList();
+        return foodCategories.stream().map(food -> mapper.map(food, FoodCategoryResponse.class)).toList();
     }
 
     @Override
     public FoodCategoryResponse update(FoodCategoryRequest foodCategoryRequest) {
         FoodCategory foodCategory = foodCategoryRepository.findById(foodCategoryRequest.getId()).orElseThrow(() -> new ResourceNotFoundException("FoodCategory", "id", foodCategoryRequest.getId()));
         if (foodCategory != null) {
-            FoodCategory updatedFoodCategory = mapper.map(foodCategoryRequest, FoodCategory.class);
-            return mapper.map(foodCategoryRepository.save(updatedFoodCategory), FoodCategoryResponse.class);
+            foodCategory.setName(foodCategoryRequest.getName());
+            foodCategory.setImage(foodCategoryRequest.getImage());
+            return mapper.map(foodCategoryRepository.save(foodCategory), FoodCategoryResponse.class);
         }
         return null;
     }

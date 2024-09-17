@@ -2,9 +2,7 @@ package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.services.BaseService;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,20 +24,20 @@ public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
         this.entityClass = entityClass;
         this.requestClass = requestClass;
         this.responseClass = responseClass;
-        this.modelMapper.createTypeMap(entityClass, responseClass);
     }
 
     @Override
     public T add(R request) {
-        E entity = modelMapper.map(request, (Class<E>) request.getClass());
+        E entity = modelMapper.map(request, entityClass);
         E savedEntity = repository.save(entity);
-        return modelMapper.map(savedEntity, (Class<T>) request.getClass());
+        return modelMapper.map(savedEntity, responseClass);
     }
 
     @Override
     public T get(Long id) {
         E entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entity", "id", id));
-        return modelMapper.map(entity, responseClass);
+        T response = modelMapper.map(entity, responseClass);
+        return response;
     }
 
     @Override
@@ -47,7 +45,7 @@ public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<E> pageResult = repository.findAll(pageable);
-        return pageResult.getContent().stream().map(entity -> modelMapper.map(entity, (Class<T>) entity.getClass())).toList();
+        return pageResult.getContent().stream().map(entity -> modelMapper.map(entity, responseClass)).toList();
     }
 
     @Override

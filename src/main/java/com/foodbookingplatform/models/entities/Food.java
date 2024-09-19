@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "food")
-public class Food {
+public class Food extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,36 +42,13 @@ public class Food {
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
-    private String createdBy;
-
-    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
-
-    @LastModifiedBy
-    @Column(name = "modified_by", insertable = false)
-    private String modifiedBy;
-
-    @Column(name = "modified_date", insertable = false)
-    private LocalDateTime modifiedDate;
-
-    @PrePersist
-    protected void onCreate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.createdDate = nowInVietnam.toLocalDateTime();
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
     @ManyToOne
     @JoinColumn(name = "food_category_id", referencedColumnName = "Id", nullable = false)
     private FoodCategory foodCategory;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
 
     @OneToMany(mappedBy = "food")
     private Set<FoodBooking> foodBookings;

@@ -2,6 +2,7 @@ package com.foodbookingplatform.models.constants;
 
 public class AppConstants {
     public static final String DEFAULT_PAGE_NUMBER = "0";
+
     public static final String DEFAULT_PAGE_SIZE = "10";
     public static final String DEFAULT_SORT_DIRECTION = "asc";
     public static final String DEFAULT_SORT_BY= "id";
@@ -12,4 +13,8 @@ public class AppConstants {
     public static final String GENDER_REGEX = "^(Male|Female|Other)$";
     public static final String RECIPIENT_TYPE_REGEX = "^(USER|LOCATION)$";
     public static final String NOTIFICATION_TYPE_REGEX = "^(ORDER|PROMOTION|OTHER)$";
+
+    public static final String ROLE_LOCATION = "LOCATION_ADMIN";
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_SYSTEM = "SYSTEM_ADMIN";
 }

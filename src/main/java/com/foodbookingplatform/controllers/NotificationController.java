@@ -1,6 +1,7 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationRequest;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationResponse;
 import com.foodbookingplatform.services.NotificationService;
@@ -9,15 +10,19 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/notification")
+@RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationService notificationService;
@@ -58,9 +63,29 @@ public class NotificationController {
             @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
             @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
-            @RequestParam(name = "keyword") String keyword
-    ) {
-        return ResponseEntity.ok(notificationService.searchNotifications(pageNo, pageSize, sortBy, sortDir, keyword));
+            @RequestParam(value = "sendDateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sendDateFrom,
+            @RequestParam(value = "sendDateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime sendDateTo,
+            @RequestParam(value = "status", required = false) List<EntityStatus> status,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "summary", required = false) String summary,
+            @RequestParam(value = "content", required = false) Long content,
+            @RequestParam(value = "recipientType", required = false) String recipientType,
+            @RequestParam(value = "notificationType", required = false) String notificationType,
+            @RequestParam(value = "fullName", required = false) String fullName) {
+
+        Map<String, Object> searchParams = new HashMap<>();
+
+        if (status != null && !status.isEmpty()) searchParams.put("status", status);
+        if (sendDateFrom != null) searchParams.put("sendDateFrom", sendDateFrom);
+        if (sendDateTo != null) searchParams.put("sendDateTo", sendDateTo);
+        if (summary != null) searchParams.put("summary", summary);
+        if (content != null) searchParams.put("content", content);
+        if (title != null) searchParams.put("title", title);
+        if (recipientType != null) searchParams.put("recipientType", recipientType);
+        if (notificationType != null) searchParams.put("notificationType", notificationType);
+        if (fullName != null) searchParams.put("fullName", fullName);
+
+        return ResponseEntity.ok(notificationService.searchNotifications(pageNo, pageSize, sortBy, sortDir, searchParams));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")

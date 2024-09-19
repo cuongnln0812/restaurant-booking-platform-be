@@ -1,7 +1,7 @@
 package com.foodbookingplatform.advice;
 
 import com.foodbookingplatform.models.payload.error.ErrorDetail;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,9 +22,9 @@ import java.util.*;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(MotherLoveApiException.class)
+    @ExceptionHandler(RestaurantBookingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorDetail> handleFAMSApiException(MotherLoveApiException ex, WebRequest request) {
+    public ResponseEntity<ErrorDetail> handleFAMSApiException(RestaurantBookingException ex, WebRequest request) {
         ErrorDetail errorDetails = new ErrorDetail(new Date(), ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }

@@ -4,6 +4,7 @@ import com.foodbookingplatform.models.payload.dto.auth.JWTAuthResponse;
 import com.foodbookingplatform.models.payload.dto.auth.LoginDto;
 import com.foodbookingplatform.models.payload.dto.auth.PasswordChangeRequest;
 import com.foodbookingplatform.models.payload.dto.auth.SignupDto;
+import com.foodbookingplatform.models.payload.dto.user.UserResponse;
 import com.foodbookingplatform.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -29,7 +30,7 @@ public class AuthController {
             description = "Login user by UserName, Email, Phone"
     )
     @PostMapping("/login")
-    public ResponseEntity<Object> authenticationUser(@Valid @RequestBody LoginDto loginDto){
+    public ResponseEntity<JWTAuthResponse> authenticationUser(@Valid @RequestBody LoginDto loginDto){
         JWTAuthResponse jwtAuthResponse = authService.authenticateUser(loginDto);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + jwtAuthResponse.getAccessToken());
@@ -40,7 +41,7 @@ public class AuthController {
             summary = "Sign Up Account User"
     )
     @PostMapping(value = "/register/user")
-    public ResponseEntity<Object> signupUser(@Valid @RequestBody SignupDto signupDto){
+    public ResponseEntity<JWTAuthResponse> signupUser(@Valid @RequestBody SignupDto signupDto){
         JWTAuthResponse response = authService.signupUser(signupDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -50,13 +51,13 @@ public class AuthController {
     )
     @PostMapping(value = "/register/location")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
-    public ResponseEntity<Object> signupLocation(@Valid @RequestBody SignupDto signupDto){
+    public ResponseEntity<JWTAuthResponse> signupLocation(@Valid @RequestBody SignupDto signupDto){
         JWTAuthResponse response = authService.signupLocation(signupDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<Object> changePassword(@RequestBody PasswordChangeRequest request) {
+    public ResponseEntity<String> changePassword(@RequestBody PasswordChangeRequest request) {
         authService.changePassword(request.getOldPassword(), request.getNewPassword());
         return new ResponseEntity<>("Password changed successfully", HttpStatus.OK);
     }
@@ -77,7 +78,7 @@ public class AuthController {
     )
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/info")
-    public ResponseEntity<Object> getInfo() {
-        return ResponseEntity.ok(authService.getCustomerInfo());
+    public ResponseEntity<UserResponse> getInfo() {
+        return ResponseEntity.ok(authService.getUserInfo());
     }
 }

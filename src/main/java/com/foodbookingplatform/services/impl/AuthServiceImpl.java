@@ -5,12 +5,12 @@ import com.foodbookingplatform.models.entities.Role;
 import com.foodbookingplatform.models.entities.Token;
 import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.enums.EntityStatus;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.auth.JWTAuthResponse;
 import com.foodbookingplatform.models.payload.dto.auth.LoginDto;
 import com.foodbookingplatform.models.payload.dto.auth.SignupDto;
-import com.foodbookingplatform.models.payload.dto.auth.UserDto;
+import com.foodbookingplatform.models.payload.dto.user.UserResponse;
 import com.foodbookingplatform.repositories.RoleRepository;
 import com.foodbookingplatform.repositories.TokenRepository;
 import com.foodbookingplatform.repositories.UserRepository;
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
         User user = setUpUser(signupDto);
 
         Role userRole = roleRepository.findByName("USER")
-                .orElseThrow(() -> new MotherLoveApiException(HttpStatus.BAD_REQUEST, "User Role not set."));
+                .orElseThrow(() -> new RestaurantBookingException(HttpStatus.BAD_REQUEST, "User Role not set."));
         user.setRole(userRole);
         user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
         user = userRepository.save(user);
@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
         String randomPassword = AutomaticGeneratedPassword.generateRandomPassword();
 
         Role userRole = roleRepository.findByName("LOCATION_ADMIN")
-                .orElseThrow(() -> new MotherLoveApiException(HttpStatus.BAD_REQUEST, "User Role not set."));
+                .orElseThrow(() -> new RestaurantBookingException(HttpStatus.BAD_REQUEST, "User Role not set."));
         user.setRole(userRole);
         user.setPassword(passwordEncoder.encode(randomPassword));
         user.setFirstLogin(true);
@@ -128,12 +128,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDto getCustomerInfo() {
+    public UserResponse getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
         Optional<User> user = Optional.ofNullable(userRepository.findByUserNameOrEmailOrPhone(userName, userName, userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User")));
-        return mapToCustomerDto(user);
+        return mapToResponse(user);
     }
 
     @Override
@@ -173,13 +173,13 @@ public class AuthServiceImpl implements AuthService {
     public void changePassword(String oldPassword, String newPassword) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUserNameOrEmailOrPhone(username, username, username)
-                .orElseThrow(() -> new MotherLoveApiException(HttpStatus.NOT_FOUND, "User cannot found!"));
+                .orElseThrow(() -> new RestaurantBookingException(HttpStatus.NOT_FOUND, "User cannot found!"));
 
         if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Old password does not match!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Old password does not match!");
         }
         if(!newPassword.matches(AppConstants.PASSWORD_REGEX))
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST,
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST,
                     "Password must have at least 8 characters with at least one uppercase letter, one number, and one special character (!@#$%^&*).");
         user.setPassword(passwordEncoder.encode(newPassword));
         if(user.isFirstLogin()) user.setFirstLogin(false);
@@ -189,12 +189,12 @@ public class AuthServiceImpl implements AuthService {
     private User setUpUser(SignupDto signupDto) {
         // add check if username already exists
         if (userRepository.existsByUserName(signupDto.getUsername())) {
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Username is already exist!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Username is already exist!");
         }
 
         // add check if email already exists
         if (userRepository.existsByEmail(signupDto.getEmail())) {
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Email is already exist!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Email is already exist!");
         }
 
         User user = new User();
@@ -231,7 +231,7 @@ public class AuthServiceImpl implements AuthService {
         tokenRepository.saveAll(validTokens);
     }
 
-    private UserDto mapToCustomerDto(Optional<User> customer){
-        return mapper.map(customer, UserDto.class);
+    private UserResponse mapToResponse(Optional<User> user){
+        return mapper.map(user, UserResponse.class);
     }
 }

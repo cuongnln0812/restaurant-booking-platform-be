@@ -31,6 +31,8 @@ public class NotificationResponse {
 
     private LocalDateTime sendDate;
 
+    private String fullName;
+
     private String createdBy;
 
     private String modifiedBy;

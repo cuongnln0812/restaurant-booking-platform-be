@@ -105,8 +105,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<LocationFeedback> locationFeedbacks;
 
-    @OneToOne(mappedBy = "user")
-    private Location location;
+    @OneToMany(mappedBy = "user")
+    private Set<Location> locations;
 
     @ManyToOne
     @JoinColumn(name = "role_Id", nullable = false)

@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,9 +54,9 @@ public class SystemBlogServiceImpl implements SystemBlogService {
     public SystemBlogResponse createSystemBlog(SystemBlogRequest blog) {
         SystemBlog newBlog = mapper.map(blog, SystemBlog.class);
         newBlog.setStatus(BlogStatus.PENDING);
-        //Khi nào có Security thì đổi lại
-        newBlog.setUser(userRepository.findById(blog.getAuthorId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "Id", blog.getAuthorId())));
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        newBlog.setUser(userRepository.findByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username)));
         SystemBlog savedBlog = systemBlogRepository.save(newBlog);
         return mapper.map(savedBlog, SystemBlogResponse.class);
     }

@@ -2,7 +2,7 @@ package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.SystemBlog;
 import com.foodbookingplatform.models.enums.BlogStatus;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogRequest;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
@@ -67,7 +67,7 @@ public class SystemBlogServiceImpl implements SystemBlogService {
         if(!existedBlog.getStatus().equals(BlogStatus.DISABLED)) {
             mapper.map(blog, existedBlog);
             return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
-        }else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog is not able to update!");
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This blog is not able to update!");
     }
 
     @Override
@@ -75,7 +75,7 @@ public class SystemBlogServiceImpl implements SystemBlogService {
         SystemBlog existedBlog = systemBlogRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", id));
         if(existedBlog.getStatus().equals(BlogStatus.PENDING)) existedBlog.setStatus(BlogStatus.ACTIVE);
-        else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog is not able for approval!");
+        else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This blog is not able for approval!");
         return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
     }
 
@@ -95,7 +95,7 @@ public class SystemBlogServiceImpl implements SystemBlogService {
             existedBlog.setStatus(BlogStatus.INACTIVE);
         } else if(existedBlog.getStatus().equals(BlogStatus.INACTIVE)) {
             existedBlog.setStatus(BlogStatus.ACTIVE);
-        } else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Only blogs with ACTIVE or INACTIVE status can perform this action!");
+        } else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only blogs with ACTIVE or INACTIVE status can perform this action!");
         return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
     }
 
@@ -106,7 +106,7 @@ public class SystemBlogServiceImpl implements SystemBlogService {
                 .orElseThrow(() -> new ResourceNotFoundException("System Blog", "Id", id));
         if(!existedBlog.getStatus().equals(BlogStatus.DISABLED)){
             existedBlog.setStatus(BlogStatus.DISABLED);
-        }else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This blog has been deleted or not existed!");
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This blog has been deleted or not existed!");
         return mapper.map(systemBlogRepository.save(existedBlog), SystemBlogResponse.class);
     }
 }

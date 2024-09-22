@@ -18,11 +18,14 @@ import java.time.ZonedDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "user_voucher")
-public class UserVoucher {
+public class UserVoucher extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private boolean status;
 
     @Column(nullable = false, name = "quantity_available")
     private int quantityAvailable;
@@ -30,34 +33,22 @@ public class UserVoucher {
     @Column(nullable = false, name = "assigned_date")
     private LocalDateTime assignedDate;
 
-    @Column(name = "used_date")
+    @Column(nullable = false, name = "used_date")
     private LocalDateTime usedDate;
 
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
-    private String createdBy;
-
-    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
-
-    @LastModifiedBy
-    @Column(name = "modified_by", insertable = false)
-    private String modifiedBy;
-
-    @Column(name = "modified_date", insertable = false)
-    private LocalDateTime modifiedDate;
-
-    @PrePersist
+    @Override
     protected void onCreate() {
+        super.onCreate();
         ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.createdDate = nowInVietnam.toLocalDateTime();
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
+        this.assignedDate = nowInVietnam.toLocalDateTime();
+        this.usedDate = nowInVietnam.toLocalDateTime();
     }
 
-    @PreUpdate
+    @Override
     protected void onUpdate() {
+        super.onUpdate();
         ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
+        this.usedDate = nowInVietnam.toLocalDateTime();
     }
 
     @ManyToOne

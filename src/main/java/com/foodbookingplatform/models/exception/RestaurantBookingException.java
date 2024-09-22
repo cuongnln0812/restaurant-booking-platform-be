@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
 @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-public class MotherLoveApiException extends RuntimeException{
+public class RestaurantBookingException extends RuntimeException{
     private final HttpStatus status;
     private final String message;
-    public MotherLoveApiException(HttpStatus status, String message) {
+    public RestaurantBookingException(HttpStatus status, String message) {
         this.status = status;
         this.message = message;
     }

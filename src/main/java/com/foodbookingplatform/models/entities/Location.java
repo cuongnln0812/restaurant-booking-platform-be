@@ -4,14 +4,9 @@ import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -22,7 +17,7 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "location")
-public class Location {
+public class Location extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +31,12 @@ public class Location {
 
     @Column(nullable = false)
     private String phone;
+
+    @Column(nullable = false)
+    private boolean suggest;
+
+    @Column(nullable = false)
+    private boolean sale;
 
     @Column(nullable = false)
     private String latitude;
@@ -54,49 +55,18 @@ public class Location {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EntityStatus status;
+    private EntityStatus status = EntityStatus.ACTIVE;
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
-    private String createdBy;
-
-    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
-
-    @LastModifiedBy
-    @Column(name = "modified_by", insertable = false)
-    private String modifiedBy;
-
-    @Column(name = "modified_date", insertable = false)
-    private LocalDateTime modifiedDate;
-
-    @PrePersist
-    protected void onCreate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.createdDate = nowInVietnam.toLocalDateTime();
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_Id", nullable = false)
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "brand_Id", nullable = false)
     private Brand brand;
-
-    @ManyToOne
-    @JoinColumn(name = "category_Id", nullable = false)
-    private Category category;
 
     @OneToMany(mappedBy = "location")
     private Set<PackageRegistration> packageRegistrations;
@@ -109,6 +79,15 @@ public class Location {
 
     @OneToMany(mappedBy = "location")
     private Set<LocationBooking> locationBookings;
+
+    @OneToMany(mappedBy = "location")
+    private Set<LocationTag> locationTags;
+
+    @OneToMany(mappedBy = "location")
+    private Set<Food> foods;
+
+    @OneToMany(mappedBy = "location")
+    private Set<LocationCategory> locationCategories;
 }
 
 

@@ -26,7 +26,6 @@ public class GenericSpecification{
         return (root, query, builder) -> builder.lessThan(root.get(fieldName), value);
     }
 
-    // New method for handling joins
     public static <T> Specification<T> joinFieldContains(String joinField, String fieldName, String keyword) {
         return (root, query, builder) -> builder.like(builder.lower(root.join(joinField).get(fieldName)), "%" + keyword.toLowerCase() + "%");
     }
@@ -35,8 +34,20 @@ public class GenericSpecification{
         return (root, query, builder) -> root.join(joinField).get(fieldName).in(values);
     }
 
-    // Method for handling search statuses
     public static <T> Specification<T> fieldIn(String fieldName, Collection<?> values) {
         return (root, query, builder) -> root.get(fieldName).in(values);
+    }
+
+    public static <T> Specification<T> fieldIsBoolean(String fieldName, boolean value) {
+        return (root, query, builder) -> value ? builder.isTrue(root.get(fieldName)) : builder.isFalse(root.get(fieldName));
+    }
+
+    public static <T> Specification<T> joinFieldInThroughMultipleJoins(
+            String firstJoinField, String secondJoinField, String fieldName, Collection<?> values) {
+        return (root, query, builder) -> root.join(firstJoinField).join(secondJoinField).get(fieldName).in(values);
+    }
+
+    public static <T> Specification<T> joinFieldContainsInThroughMultipleJoins(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
+        return (root, query, builder) -> builder.like(builder.lower(root.join(firstJoinField).join(secondJoinField).get(fieldName)), "%" + keyword.toLowerCase() + "%");
     }
 }

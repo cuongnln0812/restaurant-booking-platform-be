@@ -24,16 +24,13 @@ public class UserVoucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private boolean status;
-
     @Column(nullable = false, name = "quantity_available")
     private int quantityAvailable;
 
     @Column(nullable = false, name = "assigned_date")
     private LocalDateTime assignedDate;
 
-    @Column(nullable = false, name = "used_date")
+    @Column(name = "used_date")
     private LocalDateTime usedDate;
 
     @CreatedBy
@@ -55,15 +52,12 @@ public class UserVoucher {
         ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         this.createdDate = nowInVietnam.toLocalDateTime();
         this.modifiedDate = nowInVietnam.toLocalDateTime();
-        this.assignedDate = nowInVietnam.toLocalDateTime();
-        this.usedDate = nowInVietnam.toLocalDateTime();
     }
 
     @PreUpdate
     protected void onUpdate() {
         ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
         this.modifiedDate = nowInVietnam.toLocalDateTime();
-        this.usedDate = nowInVietnam.toLocalDateTime();
     }
 
     @ManyToOne

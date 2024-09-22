@@ -29,22 +29,20 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper mapper;
 
     @Override
-    public List<UserResponse> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<UserResponse> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<User> userPage = userRepository.findAll(pageable);
-        List<User> users = userPage.getContent();
-        return users.stream().map(user -> mapper.map(user, UserResponse.class)).toList();
+        return userPage.map(user -> mapper.map(user, UserResponse.class));
     }
 
     //Implement sau
     @Override
-    public List<UserResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
+    public Page<UserResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<User> userPage = userRepository.findAll(pageable);
-        List<User> users = userPage.getContent();
-        return users.stream().map(user -> mapper.map(user, UserResponse.class)).toList();
+        return userPage.map(user -> mapper.map(user, UserResponse.class));
     }
 
     @Override

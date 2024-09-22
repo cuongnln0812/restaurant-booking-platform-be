@@ -31,22 +31,20 @@ public class SystemBlogServiceImpl implements SystemBlogService {
     private final ModelMapper mapper;
 
     @Override
-    public List<SystemBlogResponse> getAllSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<SystemBlogResponse> getAllSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<SystemBlog> systemBlogPage = systemBlogRepository.findAll(pageable);
-        List<SystemBlog> systemBlogs = systemBlogPage.getContent();
-        return systemBlogs.stream().map(systemBlog -> mapper.map(systemBlog, SystemBlogResponse.class)).toList();
+        return systemBlogPage.map(systemBlog -> mapper.map(systemBlog, SystemBlogResponse.class));
     }
 
     @Override
-    public List<SystemBlogResponse> searchSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
+    public Page<SystemBlogResponse> searchSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<SystemBlog> systemBlogPage = systemBlogRepository.searchSystemBlogByTitleContainingIgnoreCase(keyword, pageable);
-        List<SystemBlog> systemBlogs = systemBlogPage.getContent();
-        return systemBlogs.stream().map(systemBlog -> mapper.map(systemBlog, SystemBlogResponse.class)).toList();
+        return systemBlogPage.map(systemBlog -> mapper.map(systemBlog, SystemBlogResponse.class));
     }
 
     @Override

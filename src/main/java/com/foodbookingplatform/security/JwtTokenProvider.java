@@ -1,7 +1,7 @@
 package com.foodbookingplatform.security;
 
 import com.foodbookingplatform.models.entities.User;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.repositories.TokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -114,7 +114,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         if (token == null || token.isEmpty()) {
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "JWT token is empty or null");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "JWT token is empty or null");
         }else{
             try {
                 Jwts.parserBuilder()
@@ -123,13 +123,13 @@ public class JwtTokenProvider {
                         .parse(token);
                 return true;
             } catch (MalformedJwtException e) {
-                throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
             } catch (ExpiredJwtException e) {
-                throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Expired JWT token");
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Expired JWT token");
             } catch (UnsupportedJwtException e) {
-                throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
             } catch (IllegalArgumentException e) {
-                throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
             }
         }
     }

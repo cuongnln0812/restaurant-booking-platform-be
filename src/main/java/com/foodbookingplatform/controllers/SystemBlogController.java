@@ -6,6 +6,7 @@ import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
 import com.foodbookingplatform.services.SystemBlogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class SystemBlogController {
     private final SystemBlogService systemBlogService;
 
     @GetMapping
-    public ResponseEntity<List<SystemBlogResponse>> getAllSystemBlogs(
+    public ResponseEntity<Page<SystemBlogResponse>> getAllSystemBlogs(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
@@ -30,7 +31,7 @@ public class SystemBlogController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<SystemBlogResponse>> searchSystemBlogs(
+    public ResponseEntity<Page<SystemBlogResponse>> searchSystemBlogs(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,

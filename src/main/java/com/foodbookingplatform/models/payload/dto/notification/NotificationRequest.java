@@ -1,7 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.notification;
 
 import com.foodbookingplatform.models.constants.AppConstants;
-import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -44,8 +43,6 @@ public class NotificationRequest {
     @Size(min = 2, message = "Notification's title must have at least 2 characters")
     private String image;
 
-    private EntityStatus status;
-
     @NotNull(message = "User_id cannot be null")
-    private Long user_id;
+    private Long userId;
 }

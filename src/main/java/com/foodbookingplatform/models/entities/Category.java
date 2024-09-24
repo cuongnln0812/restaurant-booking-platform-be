@@ -20,7 +20,7 @@ import java.util.Set;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "category")
-public class Category {
+public class Category extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,33 +35,6 @@ public class Category {
     @Enumerated(EnumType.STRING)
     private EntityStatus status;
 
-    @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
-    private String createdBy;
-
-    @Column(name = "created_date",nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdDate;
-
-    @LastModifiedBy
-    @Column(name = "modified_by", insertable = false)
-    private String modifiedBy;
-
-    @Column(name = "modified_date", insertable = false)
-    private LocalDateTime modifiedDate;
-
-    @PrePersist
-    protected void onCreate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.createdDate = nowInVietnam.toLocalDateTime();
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        ZonedDateTime nowInVietnam = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
-        this.modifiedDate = nowInVietnam.toLocalDateTime();
-    }
-
     @OneToMany(mappedBy = "category")
-    private Set<Location> locations;
+    private Set<LocationCategory> locationCategories;
 }

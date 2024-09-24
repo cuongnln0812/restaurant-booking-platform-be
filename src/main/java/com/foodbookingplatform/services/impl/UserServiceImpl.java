@@ -1,11 +1,9 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.SystemBlog;
 import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.enums.EntityStatus;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
 import com.foodbookingplatform.models.payload.dto.user.UserRequest;
 import com.foodbookingplatform.models.payload.dto.user.UserResponse;
 import com.foodbookingplatform.repositories.UserRepository;
@@ -29,22 +27,20 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper mapper;
 
     @Override
-    public List<UserResponse> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<UserResponse> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<User> userPage = userRepository.findAll(pageable);
-        List<User> users = userPage.getContent();
-        return users.stream().map(user -> mapper.map(user, UserResponse.class)).toList();
+        return userPage.map(user -> mapper.map(user, UserResponse.class));
     }
 
     //Implement sau
     @Override
-    public List<UserResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
+    public Page<UserResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String keyword) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<User> userPage = userRepository.findAll(pageable);
-        List<User> users = userPage.getContent();
-        return users.stream().map(user -> mapper.map(user, UserResponse.class)).toList();
+        return userPage.map(user -> mapper.map(user, UserResponse.class));
     }
 
     @Override
@@ -61,7 +57,7 @@ public class UserServiceImpl implements UserService {
         if(!existed.getStatus().equals(EntityStatus.DISABLED)) {
             mapper.map(request, existed);
             return mapper.map(userRepository.save(existed), UserResponse.class);
-        } else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Unable to update information due to its unavailability!");
+        } else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Unable to update information due to its unavailability!");
     }
 
     @Override

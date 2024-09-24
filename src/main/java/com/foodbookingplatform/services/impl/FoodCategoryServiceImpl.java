@@ -1,15 +1,12 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Food;
 import com.foodbookingplatform.models.entities.FoodCategory;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.food.FoodResponse;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryRequest;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryResponse;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryRequest;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryResponse;
 import com.foodbookingplatform.repositories.FoodCategoryRepository;
 import com.foodbookingplatform.services.FoodCategoryService;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

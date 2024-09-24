@@ -24,9 +24,6 @@ public class PaymentHistory extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_date", nullable = false, length = 65535)
-    private LocalDateTime paymentDate;
-
     @Column(name = "total_amount", nullable = false)
     private float totalAmount;
 

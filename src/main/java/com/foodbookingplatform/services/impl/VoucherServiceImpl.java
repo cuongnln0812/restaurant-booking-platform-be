@@ -4,9 +4,8 @@ import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.entities.UserVoucher;
 import com.foodbookingplatform.models.entities.Voucher;
 import com.foodbookingplatform.models.enums.OfferStatus;
-import com.foodbookingplatform.models.exception.MotherLoveApiException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherDTO;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
@@ -41,7 +40,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public VoucherResponse createVoucher(VoucherRequest request) {
         if(voucherRepository.existsByCode(request.getCode()))
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Voucher code existed!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Voucher code existed!");
         Voucher newVoucher = mapper.map(request, Voucher.class);
         newVoucher.setStatus(OfferStatus.INACTIVE);
         return mapper.map(voucherRepository.save(newVoucher), VoucherResponse.class);
@@ -52,9 +51,9 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher existed = voucherRepository.findById(request.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher", "Id", request.getId()));
         if(!request.getCode().equals(existed.getCode()))
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Voucher code is unable to update!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Voucher code is unable to update!");
         if(!existed.getStatus().equals(OfferStatus.INACTIVE))
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "Only INACTIVE vouchers are able to update");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only INACTIVE vouchers are able to update");
         mapper.map(request, existed);
         return mapper.map(voucherRepository.save(existed), VoucherResponse.class);
     }
@@ -79,7 +78,7 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher existed = voucherRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher", "Id", id));
         if(!existed.getStatus().equals(OfferStatus.DISABLED))
-            throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "This voucher is already deleted!");
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This voucher is already deleted!");
 
         existed.setStatus(OfferStatus.DISABLED);
         return mapper.map(voucherRepository.save(existed), VoucherResponse.class);
@@ -123,7 +122,7 @@ public class VoucherServiceImpl implements VoucherService {
                 existedUserVoucher.setQuantityAvailable(updatedQuantity);
                 existedUserVoucher.setAssignedDate(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
                 savedUserVoucher = userVoucherRepository.save(existedUserVoucher);
-            }else throw new MotherLoveApiException(HttpStatus.BAD_REQUEST, "You can only add max " + existedVoucher.getQuantityUse() + "vouchers");
+            }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You can only add max " + existedVoucher.getQuantityUse() + "vouchers");
         }
         return mapUserVoucherResponse(savedUserVoucher);
     }

@@ -4,13 +4,8 @@ import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -48,4 +43,7 @@ public class Package extends BaseEntity{
 
     @OneToMany(mappedBy = "aPackage")
     private Set<PackageRegistration> packageRegistrations;
+
+    @OneToMany(mappedBy = "aPackage")
+    private Set<PackageAds> packageAds;
 }

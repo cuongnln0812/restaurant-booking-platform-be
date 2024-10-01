@@ -1,9 +1,7 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Food;
 import com.foodbookingplatform.models.entities.FoodCategory;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.food.FoodResponse;
 import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryRequest;
 import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryResponse;
 import com.foodbookingplatform.repositories.FoodCategoryRepository;
@@ -14,8 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class FoodCategoryServiceImpl extends BaseServiceImpl<FoodCategory, FoodCategoryRequest, FoodCategoryResponse> implements FoodCategoryService {
@@ -29,13 +25,12 @@ public class FoodCategoryServiceImpl extends BaseServiceImpl<FoodCategory, FoodC
     }
 
     @Override
-    public List<FoodCategoryResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
+    public Page<FoodCategoryResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<FoodCategory> foodCategoriesPage = foodCategoryRepository.findFoodCategoriesByNameContainingIgnoreCase(searchText, pageable);
-        List<FoodCategory> foodCategories = foodCategoriesPage.getContent();
-        return foodCategories.stream().map(food -> mapper.map(foodCategories, FoodCategoryResponse.class)).toList();
+        return foodCategoriesPage.map(food -> mapper.map(food, FoodCategoryResponse.class));
     }
 
     @Override

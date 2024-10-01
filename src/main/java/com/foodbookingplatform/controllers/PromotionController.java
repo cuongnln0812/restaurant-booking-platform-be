@@ -52,7 +52,6 @@ public class PromotionController {
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endDate,
             @RequestParam(value = "status", required = false) List<OfferStatus> status,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "condition", required = false) String condition,
             @RequestParam(value = "title", required = false) Long title
     ) {
 
@@ -62,7 +61,6 @@ public class PromotionController {
         if (startDate != null) searchParams.put("startDate", startDate);
         if (endDate != null) searchParams.put("endDate", endDate);
         if (description != null) searchParams.put("description", description);
-        if (condition != null) searchParams.put("condition", condition);
         if (title != null) searchParams.put("title", title);
 
         return ResponseEntity.ok(promotionService.searchAllPromotions(pageNo, pageSize, sortBy, sortDir, searchParams));

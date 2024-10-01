@@ -13,7 +13,8 @@ public class AppConstants {
     public static final String GENDER_REGEX = "^(Male|Female|Other)$";
     public static final String RECIPIENT_TYPE_REGEX = "^(USER|LOCATION)$";
     public static final String NOTIFICATION_TYPE_REGEX = "^(ORDER|PROMOTION|OTHER)$";
-
+    public static final String ADS_TYPE_REGEX = "^(AREA|FLASH_SALE|BANNER)$";
+    public static final String PROMOTION_TYPE_REGEX = "^(BILL|PEOPLE|TIME)$";
     public static final String ROLE_LOCATION = "LOCATION_ADMIN";
     public static final String ROLE_USER = "USER";
     public static final String ROLE_SYSTEM = "SYSTEM_ADMIN";

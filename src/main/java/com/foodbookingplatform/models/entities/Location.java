@@ -33,7 +33,7 @@ public class Location extends BaseEntity{
     private String phone;
 
     @Column(nullable = false)
-    private boolean suggest;
+    private int suggest;
 
     @Column(nullable = false)
     private boolean sale;

@@ -1,16 +1,11 @@
 package com.foodbookingplatform.models.entities;
 
-import com.foodbookingplatform.models.enums.OfferStatus;
+import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -36,8 +31,11 @@ public class Ads extends BaseEntity{
     private String description;
 
     @Column(nullable = false)
+    private String type;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private OfferStatus status;
+    private EntityStatus status = EntityStatus.ACTIVE;
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
@@ -47,4 +45,7 @@ public class Ads extends BaseEntity{
 
     @OneToMany(mappedBy = "ads")
     private Set<AdsRegistration> adsRegistrations;
+
+    @OneToMany(mappedBy = "ads")
+    private Set<PackageAds> packageAds;
 }

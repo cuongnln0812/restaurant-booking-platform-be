@@ -6,6 +6,7 @@ import com.foodbookingplatform.models.payload.dto.user.UserResponse;
 import com.foodbookingplatform.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class UserControllers {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAll(
+    public ResponseEntity<Page<UserResponse>> getAll(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,

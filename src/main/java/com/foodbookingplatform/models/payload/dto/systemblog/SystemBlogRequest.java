@@ -30,6 +30,4 @@ public class SystemBlogRequest {
     private String image;
 
     private String createdBy;
-
-    private Long authorId;
 }

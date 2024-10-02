@@ -3,13 +3,10 @@ package com.foodbookingplatform.models.entities;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.hibernate.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -32,6 +29,9 @@ public class Voucher extends BaseEntity{
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, length = Length.LONG)
+    private String description;
+
     @Column(nullable = false)
     private int quantity;
 
@@ -40,6 +40,9 @@ public class Voucher extends BaseEntity{
 
     @Column(nullable = false)
     private float discount;
+
+    @Column(nullable = false, name = "max_discount_amount")
+    private int maxDiscountAmount;
 
     @Column(nullable = false, name = "start_date")
     private LocalDateTime startDate;

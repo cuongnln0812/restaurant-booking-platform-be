@@ -9,8 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
 public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
     private final JpaRepository<E, Long> repository;
     private final ModelMapper modelMapper;
@@ -41,16 +39,16 @@ public abstract  class BaseServiceImpl<E, R, T> implements BaseService<R, T> {
     }
 
     @Override
-    public List<T> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<T> getAll(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<E> pageResult = repository.findAll(pageable);
-        return pageResult.getContent().stream().map(entity -> modelMapper.map(entity, responseClass)).toList();
+        return pageResult.map(entity -> modelMapper.map(entity, responseClass));
     }
 
     @Override
-    public List<T> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
-        return List.of();
+    public Page<T> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
+        return Page.empty();
     }
 
     @Override

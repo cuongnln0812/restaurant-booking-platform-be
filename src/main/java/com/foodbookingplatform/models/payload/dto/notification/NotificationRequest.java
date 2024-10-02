@@ -18,12 +18,12 @@ public class NotificationRequest {
     private Long id;
 
     @NotEmpty(message = "Notification's recipient type cannot be blank")
-    @Pattern(regexp = AppConstants.RECIPIENT_TYPE_REGEX, message = "Gender include: USER, LOCATION")
+    @Pattern(regexp = AppConstants.RECIPIENT_TYPE_REGEX, message = "RecipientType include: USER, LOCATION")
     @Size(min = 2, message = "RecipientType's recipient type must have at least 2 characters")
     private String recipientType;
 
     @NotEmpty(message = "Notification's notification type cannot be blank")
-    @Pattern(regexp = AppConstants.NOTIFICATION_TYPE_REGEX, message = "Gender include: ORDER, PROMOTION, OTHER")
+    @Pattern(regexp = AppConstants.NOTIFICATION_TYPE_REGEX, message = "NotificationType include: ORDER, PROMOTION, OTHER")
     @Size(min = 2, message = "NotificationType's notification type must have at least 2 characters")
     private String notificationType;
 

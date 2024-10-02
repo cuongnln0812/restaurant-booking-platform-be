@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,16 +11,17 @@ import java.util.Set;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "tag")
-public class Tag{
-
+@Table(name = "package_ads")
+public class PackageAds {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "ads_Id", nullable = false)
+    private Ads ads;
 
-    @OneToMany(mappedBy = "tag")
-    private Set<LocationTag> locationTags;
+    @ManyToOne
+    @JoinColumn(name = "package_Id", nullable = false)
+    private Package aPackage;
 }

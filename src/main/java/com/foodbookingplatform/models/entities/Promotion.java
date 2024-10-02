@@ -4,13 +4,9 @@ import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Set;
 
 @Getter
@@ -29,18 +25,15 @@ public class Promotion extends BaseEntity{
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private float discountAmount;
-
-    @Column(name = "`condition`", nullable = false)
-    private String condition;
-
     @Column(nullable = false, length = 65535)
     private String description;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OfferStatus status = OfferStatus.INACTIVE;
+
+    @Column(nullable = false)
+    private String type;
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
@@ -51,7 +44,32 @@ public class Promotion extends BaseEntity{
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @ManyToOne
+    // Shared fields for all types
+    @Column(name = "discount_value")
+    private Double discountValue;
+
+    @Column(name = "max_discount")
+    private Double maxDiscount;
+
+    @Column(name = "free_item")
+    private String freeItem;
+
+    // Fields specific to BILL promotion
+    @Column(name = "min_bill")
+    private Double minBill;
+
+    // Fields specific to PEOPLE promotion
+    @Column(name = "min_people")
+    private Integer minPeople;
+
+    // Fields specific to TIME promotion
+    @Column(name = "start_hour_time")
+    private LocalDateTime startHourTime;
+
+    @Column(name = "end_hour_time")
+    private LocalDateTime endHourTime;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_Id", nullable = false)
     private Location location;
 

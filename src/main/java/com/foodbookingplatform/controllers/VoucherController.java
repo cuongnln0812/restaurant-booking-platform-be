@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController("api/v1/vouchers")
+@RestController
+@RequestMapping("api/v1/vouchers")
 @RequiredArgsConstructor
 public class VoucherController {
     private final VoucherService voucherService;

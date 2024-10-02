@@ -5,10 +5,11 @@ import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 public interface SystemBlogService {
     Page<SystemBlogResponse> getAllSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir);
-    Page<SystemBlogResponse> searchSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir, String keyword);
+    Page<SystemBlogResponse> searchSystemBlog(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword);
     SystemBlogResponse createSystemBlog(SystemBlogRequest blog);
     SystemBlogResponse updateSystemBlog(SystemBlogRequest blog);
     SystemBlogResponse approveSystemBlog(Long id);

@@ -1,17 +1,22 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogRequest;
 import com.foodbookingplatform.models.payload.dto.systemblog.SystemBlogResponse;
 import com.foodbookingplatform.services.SystemBlogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/system-blogs")
@@ -36,8 +41,22 @@ public class SystemBlogController {
             @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
             @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
-            @RequestParam(name = "keyword") String keyword
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalDateTime endDate,
+            @RequestParam(value = "status", required = false) List<OfferStatus> status,
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "summary", required = false) String summary,
+            @RequestParam(value = "title", required = false) Long title
     ) {
+        Map<String, Object> keyword = new HashMap<>();
+
+        if (status != null && !status.isEmpty()) keyword.put("status", status);
+        if (startDate != null) keyword.put("startDate", startDate);
+        if (endDate != null) keyword.put("endDate", endDate);
+        if (content != null) keyword.put("content", content);
+        if (summary != null) keyword.put("summary", summary);
+        if (title != null) keyword.put("title", title);
+
         return ResponseEntity.ok(systemBlogService.searchSystemBlog(pageNo, pageSize, sortBy, sortDir, keyword));
     }
 

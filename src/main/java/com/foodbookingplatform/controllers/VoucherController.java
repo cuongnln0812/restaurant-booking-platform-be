@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("api/v1/vouchers")
+@RestController
+@RequestMapping("api/v1/vouchers")
 @RequiredArgsConstructor
 public class VoucherController {
     private final VoucherService voucherService;

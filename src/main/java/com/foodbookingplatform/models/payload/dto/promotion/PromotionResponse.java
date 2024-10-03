@@ -18,19 +18,31 @@ public class PromotionResponse {
 
     private String title;
 
-    private float discountAmount;
-
-    private String condition;
-
     private String description;
 
     private OfferStatus status;
+
+    private String promotionType;
 
     private String image;
 
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
+
+    private Double discountValue;
+
+    private Double maxDiscount;
+
+    private String freeItem;
+
+    private Double minBill;
+
+    private Integer minPeople;
+
+    private LocalDateTime startHourTime;
+
+    private LocalDateTime endHourTime;
 
     private LocationResponse location;
 }

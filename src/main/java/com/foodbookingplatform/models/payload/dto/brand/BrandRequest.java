@@ -8,14 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BrandRequest {
-    private Long Id;
+    private Long id;
     @NotEmpty(message = "Brand's name cannot be blank")
     @Size(min = 2, message = "Brand's name must have at least 2 characters")
     private String name;

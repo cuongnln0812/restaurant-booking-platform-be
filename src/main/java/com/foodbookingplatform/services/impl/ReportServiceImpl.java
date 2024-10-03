@@ -43,13 +43,12 @@ public class ReportServiceImpl extends BaseServiceImpl<Report, ReportRequest, Re
     }
 
     @Override
-    public List<ReportResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
+    public Page<ReportResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Report> page = reportRepository.findReportsByContentContainingIgnoreCase(searchText, pageable);
-        List<Report> listResponse = page.getContent();
-        return listResponse.stream().map(res -> mapper.map(res, ReportResponse.class)).toList();
+        return page.map(res -> mapper.map(res, ReportResponse.class));
     }
 
     @Override

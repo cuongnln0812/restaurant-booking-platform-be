@@ -58,7 +58,7 @@ public class AdsController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<AdsResponse> addAds(@RequestBody @Valid AdsRequest request) {
         return ResponseEntity.ok(adsService.add(request));
@@ -66,7 +66,7 @@ public class AdsController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @PutMapping
     public ResponseEntity<AdsResponse> updateAds(@RequestBody @Valid AdsRequest request) {
         return ResponseEntity.ok(adsService.update(request));
@@ -74,7 +74,7 @@ public class AdsController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteAds(@PathVariable Long id) {
         adsService.delete(id);

@@ -23,7 +23,7 @@ public class FoodBooking extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_date", nullable = false, length = 65535)
+    @Column(name = "payment_date", length = 65535)
     private LocalDateTime paymentDate;
 
     @Column(nullable = false)

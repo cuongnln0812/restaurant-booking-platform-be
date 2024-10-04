@@ -888,7 +888,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODA1NTcyMSwiZXhwIjoxNzI4MTQyMTIxfQ.nnJ4Nq-u7pu1_Oi3z7CfzlIxgIGgXmFuIMZ7mbp_7wzQ9jFdK2w-oNx4nxQF2t3o",
 									"type": "string"
 								}
 							]
@@ -941,12 +941,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/promotions/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&status=ACTIVE",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"promotions",
+								"locations",
 								"search"
 							],
 							"query": [
@@ -965,6 +965,10 @@
 								{
 									"key": "sortDir",
 									"value": "asc"
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE"
 								}
 							]
 						}
@@ -987,13 +991,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/locations/1",
+							"raw": "{{API_LOCAL}}/locations/2",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
 								"locations",
-								"1"
+								"2"
 							]
 						}
 					},

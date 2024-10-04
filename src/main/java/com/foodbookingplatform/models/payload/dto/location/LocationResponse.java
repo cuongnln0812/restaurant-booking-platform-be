@@ -25,7 +25,7 @@ public class LocationResponse {
 
     private String phone;
 
-    private boolean suggest;
+    private int suggest;
 
     private boolean sale;
 

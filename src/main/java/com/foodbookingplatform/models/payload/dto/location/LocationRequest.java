@@ -31,7 +31,7 @@ public class LocationRequest {
     private String phone;
 
     @NotNull(message = "Location's suggest cannot be null")
-    private boolean suggest;
+    private int suggest;
 
     @NotNull(message = "Location's sale cannot be null")
     private boolean sale;

@@ -45,7 +45,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse addLocation(LocationRequest locationRequest) {
-        Location savedLocation = validate(locationRequest, locationRequest.getId());
+        Location savedLocation = validate(locationRequest);
         return mapToResponse(savedLocation);
     }
 
@@ -77,7 +77,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse updateLocation(LocationRequest locationRequest) {
-        Location updatedLocation = validate(locationRequest, locationRequest.getId());
+        Location updatedLocation = validate(locationRequest);
         return mapToResponse(updatedLocation);
     }
 
@@ -135,12 +135,12 @@ public class LocationServiceImpl implements LocationService {
         return specs.stream().reduce(Specification.where(null), Specification::and);
     }
 
-    public Location validate(LocationRequest locationRequest, Long locationId) {
+    public Location validate(LocationRequest locationRequest) {
         Location location;
 
-        if (locationId != 0) {
-            location = locationRepository.findById(locationId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationId));
+        if (locationRequest.getId() != 0) {
+            location = locationRepository.findById(locationRequest.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationRequest.getId()));
             BeanUtils.copyProperties(locationRequest, location, "user", "brand");
 
         } else {

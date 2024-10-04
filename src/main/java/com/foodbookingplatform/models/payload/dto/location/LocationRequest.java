@@ -1,6 +1,5 @@
 package com.foodbookingplatform.models.payload.dto.location;
 
-
 import com.foodbookingplatform.models.constants.AppConstants;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

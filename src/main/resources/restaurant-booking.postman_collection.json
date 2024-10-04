@@ -307,7 +307,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzA5MDIsImV4cCI6MTcyNjIxNzMwMn0.nDEjVpuQ5mmm1uPZQKFCnMeL6QXzURtcnVsEpMw1J8oeVyUoaRJIo-Og4I_dKTOb",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzQzMDYyMiwiZXhwIjoxNzI3NTE3MDIyfQ.iyEX85N6TL7hIGNdsu-3-IsahJhaKdSk2znORBIS0E9x8l-OzPhjSXu1DsWRV5l0",
 									"type": "string"
 								}
 							]
@@ -615,7 +615,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU5NDI1NCwiZXhwIjoxNzI2NjgwNjU0fQ.dAsm_25VM7I8Swv84eZuldniwgP4kfOLERBKB2RXQIx_VyWr2wmLuLqv2dhbrGwc",
 									"type": "string"
 								}
 							]
@@ -623,12 +623,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/notification?pageNo=0&pageSize=1&sortBy=id&sortDir=asc",
+							"raw": "{{API_LOCAL}}/notifications?pageNo=0&pageSize=19&sortBy=id&sortDir=asc",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification"
+								"notifications"
 							],
 							"query": [
 								{
@@ -637,7 +637,7 @@
 								},
 								{
 									"key": "pageSize",
-									"value": "1"
+									"value": "19"
 								},
 								{
 									"key": "sortBy",
@@ -668,12 +668,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/notification?pageNo=0&pageSize=1&sortBy=id&sortDir=asc%id=1",
+							"raw": "{{API_LOCAL}}/notifications?pageNo=0&pageSize=1&sortBy=id&sortDir=asc%id=1",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification"
+								"notifications"
 							],
 							"query": [
 								{
@@ -705,7 +705,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjY1MDgyMiwiZXhwIjoxNzI2NzM3MjIyfQ.e9nMUcV1GoaZS8HgFoieMByEYSKzwuAofcUCEfwaSB_KcaQ3tT5k8svhX_OVkycv",
 									"type": "string"
 								}
 							]
@@ -713,23 +713,34 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/notification/search?keyword=ii",
+							"raw": "{{API_LOCAL}}/notifications/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&fullName=Sơn",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification",
+								"notifications",
 								"search"
 							],
 							"query": [
 								{
-									"key": "pageSize",
-									"value": "1",
-									"disabled": true
+									"key": "pageNo",
+									"value": "0"
 								},
 								{
-									"key": "keyword",
-									"value": "ii"
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "fullName",
+									"value": "Sơn"
 								}
 							]
 						}
@@ -744,7 +755,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU5NDI1NCwiZXhwIjoxNzI2NjgwNjU0fQ.dAsm_25VM7I8Swv84eZuldniwgP4kfOLERBKB2RXQIx_VyWr2wmLuLqv2dhbrGwc",
 									"type": "string"
 								}
 							]
@@ -752,13 +763,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/notification/2",
+							"raw": "{{API_LOCAL}}/notifications/3",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification",
-								"2"
+								"notifications",
+								"3"
 							]
 						}
 					},
@@ -772,7 +783,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjY1MDgyMiwiZXhwIjoxNzI2NzM3MjIyfQ.e9nMUcV1GoaZS8HgFoieMByEYSKzwuAofcUCEfwaSB_KcaQ3tT5k8svhX_OVkycv",
 									"type": "string"
 								}
 							]
@@ -781,7 +792,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"recipientType\": \"USER\",\r\n  \"notificationType\": \"ORDER\",\r\n  \"title\": \"string\",\r\n  \"summary\": \"string\",\r\n  \"content\": \"string\",\r\n  \"image\": \"string\",\r\n  \"status\": \"DISABLED\",\r\n  \"user_id\": 0\r\n}",
+							"raw": "{\r\n  \"recipientType\": \"LOCATION\",\r\n  \"notificationType\": \"ORDER\",\r\n  \"title\": \"string\",\r\n  \"summary\": \"string\",\r\n  \"content\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -789,12 +800,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{API_LOCAL}}/notification",
+							"raw": "{{API_LOCAL}}/notifications",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification"
+								"notifications"
 							]
 						}
 					},
@@ -808,7 +819,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU3OTY4NywiZXhwIjoxNzI2NjY2MDg3fQ.EM_dcYJUH6BEzmBTn6TJqOw1uA0GQ8jaSWswcfihSU1B8iN6f9QwkFT_4l3YrW4p",
 									"type": "string"
 								}
 							]
@@ -817,7 +828,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 2,\r\n    \"recipientType\": \"USER\",\r\n    \"notificationType\": \"ORDER\",\r\n    \"title\": \"nguyenducson\",\r\n    \"summary\": \"string\",\r\n    \"content\": \"string\",\r\n    \"image\": \"string\",\r\n    \"status\": \"INACTIVE\",\r\n    \"user_id\": 0\r\n}",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"recipientType\": \"USER\",\r\n    \"notificationType\": \"ORDER\",\r\n    \"title\": \"nguyenducsonnnnnnnn\",\r\n    \"summary\": \"string\",\r\n    \"content\": \"string\",\r\n    \"image\": \"string\",\r\n    \"status\": \"INACTIVE\",\r\n    \"user_id\": 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -825,12 +836,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{API_LOCAL}}/notification",
+							"raw": "{{API_LOCAL}}/notifications",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"notification"
+								"notifications"
 							]
 						}
 					},
@@ -859,6 +870,682 @@
 							"path": [
 								"notification",
 								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "get-all-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-location-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"address\": \"string\",\r\n  \"phone\": \"0514419520\",\r\n  \"suggest\": true,\r\n  \"sale\": true,\r\n  \"latitude\": \"string\",\r\n  \"longitude\": \"string\",\r\n  \"openingHours\": \"09:00:00\",\r\n  \"closingHours\": \"15:00:00\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 2,\r\n  \"brandId\": 1,\r\n  \"categoryId\": [\r\n    1,2\r\n  ],\r\n  \"tagId\": [\r\n    2\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/locations",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"title\": \"string\",\r\n    \"discountAmount\": 10.0,\r\n    \"condition\": \"string\",\r\n    \"description\": \"string\",\r\n    \"image\": \"string\",\r\n    \"startDate\": \"2024-09-20T16:03:16.019\",\r\n    \"endDate\": \"2024-09-21T08:45:16.019\",\r\n    \"locationId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/locations",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/location/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"location",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "promotion",
+			"item": [
+				{
+					"name": "get-all-promotions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-promotions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-promotion-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"title\": \"string\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"startDate\": \"2024-10-20T15:30:08.182Z\",\r\n  \"endDate\": \"2024-10-29T15:30:08.182Z\",\r\n  \"promotionType\": \"PEOPLE\",\r\n  \"discountValue\": 10000,\r\n  \"freeItem\": \"string\",\r\n  \"minPeople\": 1,\r\n  \"startHourTime\": \"2024-10-01T15:30:08.182Z\",\r\n  \"endHourTime\": \"2024-10-01T15:30:08.182Z\",\r\n  \"locationId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"title\": \"string\",\r\n    \"discountAmount\": 10.0,\r\n    \"condition\": \"string\",\r\n    \"description\": \"string\",\r\n    \"image\": \"string\",\r\n    \"startDate\": \"2024-09-20T16:03:16.019\",\r\n    \"endDate\": \"2024-09-21T08:45:16.019\",\r\n    \"locationId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNzQ2OSwiZXhwIjoxNzI2ODIzODY5fQ.Vh9nvo2JH4MufeoHAW-BilKkVoe0cHfuKlV9bBPjBQg5XfaHQFXDf9d0V9z87fXZ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ads",
+			"item": [
+				{
+					"name": "get-all-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&keyword=stringgggg",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "keyword",
+									"value": "stringgggg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"price\": 10000,\r\n  \"description\": \"string\",\r\n  \"type\": \"FLASH_SALE\",\r\n  \"image\": \"string\",\r\n  \"duration\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"string\",\r\n    \"price\": 10000.500,\r\n    \"description\": \"string\",\r\n    \"type\": \"FLASH_SALE\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"string\",\r\n    \"duration\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"1"
 							]
 						}
 					},

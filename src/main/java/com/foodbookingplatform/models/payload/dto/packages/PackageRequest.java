@@ -21,7 +21,7 @@ public class PackageRequest {
     private String name;
 
     @NotNull(message = "Package's price cannot be null")
-    @Min(value = 0, message = "Package's price must be at least 0")
+    @Min(value = 10000, message = "Package's price must be at least 10.000VND")
     private float price;
 
     @NotBlank(message = "Package's name cannot be blank")
@@ -33,6 +33,6 @@ public class PackageRequest {
     private String image;
 
     @NotNull(message = "Package's duration cannot be null")
-    @Min(value = 0, message = "Package's duration must be at least 0")
+    @Min(value = 1, message = "Package's duration must be at least 1 hour")
     private int duration;
 }

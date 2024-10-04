@@ -7,6 +7,10 @@ import com.foodbookingplatform.models.payload.dto.ads.AdsResponse;
 import com.foodbookingplatform.repositories.AdsRepository;
 import com.foodbookingplatform.services.AdsService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +35,14 @@ public class AdsServiceImpl extends BaseServiceImpl<Ads, AdsRequest, AdsResponse
             return mapper.map(adsRepository.save(updatedAds), AdsResponse.class);
         }
         return null;
+    }
+
+    @Override
+    public Page<AdsResponse> search(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Ads> adsPage = adsRepository.findAdsByNameContainingIgnoreCase(searchText, pageable);
+        return adsPage.map(ad -> mapper.map(ad, AdsResponse.class));
     }
 }

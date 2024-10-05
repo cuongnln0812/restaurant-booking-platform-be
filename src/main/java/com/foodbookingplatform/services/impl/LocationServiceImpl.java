@@ -9,6 +9,7 @@ import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
 import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
+import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.LocationService;
 import com.foodbookingplatform.utils.GenericSpecification;
@@ -41,6 +42,7 @@ public class LocationServiceImpl implements LocationService {
     private final TagRepository tagRepository;
     private final LocationCategoryRepository locationCategoryRepository;
     private final LocationTagRepository locationTagRepository;
+    private final WorkingHourRepository workingHourRepository;
     private final ModelMapper mapper;
 
     @Override
@@ -227,9 +229,11 @@ public class LocationServiceImpl implements LocationService {
     private LocationResponse mapToResponse(Location location){
         List<Category> categories = locationCategoryRepository.findCategoriesByLocationId(location.getId());
         List<Tag> tags = locationTagRepository.findTagsByLocationId(location.getId());
+        List<WorkingHour> workingHours = workingHourRepository.findByLocation_Id(location.getId());
         LocationResponse locationResponse = mapper.map(location, LocationResponse.class);
         locationResponse.setCategory(categories.stream().map(category -> mapper.map(category, CategoryResponse.class)).toList());
         locationResponse.setTag(tags.stream().map(tag -> mapper.map(tag, TagResponse.class)).toList());
+        locationResponse.setWorkingHour(workingHours.stream().map(workingHour -> mapper.map(workingHour, WorkingHourResponse.class)).toList());
         return locationResponse;
     }
 }

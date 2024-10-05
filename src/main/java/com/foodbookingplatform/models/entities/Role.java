@@ -2,7 +2,6 @@ package com.foodbookingplatform.models.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Set;
 
@@ -12,7 +11,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "role")
 public class Role {
 

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -43,12 +42,6 @@ public class LocationRequest {
     @NotBlank(message = "Location's longitude cannot be blank")
     @Size(min = 2, message = "Location's longitude must have at least 2 characters")
     private String longitude;
-
-    @NotNull(message = "Location's openingHours cannot be null")
-    private LocalTime openingHours;
-
-    @NotNull(message = "Location's closingHours cannot be null")
-    private LocalTime closingHours;
 
     @NotBlank(message = "Location's description cannot be blank")
     @Size(min = 2, message = "Location's description must have at least 2 characters")

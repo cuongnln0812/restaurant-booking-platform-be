@@ -64,6 +64,7 @@ public class AdsController {
         return ResponseEntity.ok(adsService.add(request));
     }
 
+
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")

@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.location;
 
+import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
 import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
@@ -25,7 +26,7 @@ public class LocationResponse {
 
     private String phone;
 
-    private boolean suggest;
+    private int suggest;
 
     private boolean sale;
 
@@ -38,6 +39,8 @@ public class LocationResponse {
     private LocalTime closingHours;
 
     private String description;
+
+    private EntityStatus status;
 
     private String image;
 

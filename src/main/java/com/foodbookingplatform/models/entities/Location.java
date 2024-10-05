@@ -6,7 +6,6 @@ import lombok.*;
 import org.hibernate.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalTime;
 import java.util.Set;
 
 @Getter
@@ -44,11 +43,11 @@ public class Location extends BaseEntity{
     @Column(nullable = false)
     private String longitude;
 
-    @Column(name = "opening_hours", nullable = false)
-    private LocalTime openingHours;
-
-    @Column(name = "closing_hours", nullable = false)
-    private LocalTime closingHours;
+//    @Column(name = "opening_hours", nullable = false)
+//    private LocalTime openingHours;
+//
+//    @Column(name = "closing_hours", nullable = false)
+//    private LocalTime closingHours;
 
     @Column(nullable = false, length = 65535)
     private String description;
@@ -88,6 +87,9 @@ public class Location extends BaseEntity{
 
     @OneToMany(mappedBy = "location")
     private Set<LocationCategory> locationCategories;
+
+    @OneToMany(mappedBy = "location")
+    private Set<WorkingHour> workingHours;
 }
 
 

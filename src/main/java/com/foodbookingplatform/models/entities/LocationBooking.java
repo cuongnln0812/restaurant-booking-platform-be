@@ -63,11 +63,11 @@ public class LocationBooking extends BaseEntity{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "voucher_Id", nullable = false)
+    @JoinColumn(name = "voucher_Id")
     private Voucher voucher;
 
     @ManyToOne
-    @JoinColumn(name = "promotion_Id", nullable = false)
+    @JoinColumn(name = "promotion_Id")
     private Promotion promotion;
 
     @OneToMany(mappedBy = "locationBooking")

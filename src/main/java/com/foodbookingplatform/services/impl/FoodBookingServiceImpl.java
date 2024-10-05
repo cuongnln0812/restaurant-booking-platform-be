@@ -33,6 +33,8 @@ public class FoodBookingServiceImpl implements FoodBookingService {
         for (FoodBookingRequest request : requests) {
             Food bookedFood = foodRepository.findById(request.getFoodId())
                     .orElseThrow(() -> new ResourceNotFoundException("Food", "id", request.getFoodId()));
+            if(!bookedFood.getLocation().equals(locationBooking.getLocation()))
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, bookedFood.getName() + " is not available for this restaurant!");
 
             if (bookedFood.getStatus().equals(EntityStatus.ACTIVE)) {
                 FoodBooking foodBooking = new FoodBooking();
@@ -41,7 +43,6 @@ public class FoodBookingServiceImpl implements FoodBookingService {
                 foodBooking.setAmount(request.getQuantity() * bookedFood.getPrice());
                 foodBooking.setPaymentDate(LocalDateTime.now());
                 foodBooking.setLocationBooking(locationBooking);
-
                 foodBookings.add(foodBooking); // Add to the list
             } else {
                 throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, bookedFood.getName() + " is not available to pre-order!");

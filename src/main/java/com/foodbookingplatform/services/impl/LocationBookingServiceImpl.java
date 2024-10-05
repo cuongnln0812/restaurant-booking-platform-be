@@ -82,6 +82,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<LocationBooking> bookings;
 
+
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
@@ -103,26 +104,33 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-
-        mapper.map(request, newBooking);
         Location bookedLocation = locationRepository.findById(request.getLocationId())
                 .orElseThrow(() -> new RestaurantBookingException(HttpStatus.BAD_REQUEST, "No restaurant available!"));
-
         if(!bookedLocation.getStatus().equals(EntityStatus.ACTIVE))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Restaurant is not available for booking!");
-        newBooking.setNumberOfGuest(request.getNumberOfAdult() + request.getNumberOfChildren());
-        newBooking.setLocation(bookedLocation);
-        newBooking.setUser(user);
-        newBooking.setStatus(LocationBookingStatus.PENDING);
-        newBooking = locationBookingRepository.save(newBooking);
+        if(request.getBookingDate().isAfter(LocalDate.now())){
+            if(request.getBookingTime().isAfter(LocalTime.now())){
+                newBooking.setName(request.getName());
+                newBooking.setAddress(request.getAddress());
+                newBooking.setPhone(request.getPhone());
+                newBooking.setBookingDate(request.getBookingDate());
+                newBooking.setBookingTime(request.getBookingTime());
+                newBooking.setNumberOfAdult(request.getNumberOfAdult());
+                newBooking.setNumberOfChildren(request.getNumberOfChildren());
+                newBooking.setNumberOfGuest(request.getNumberOfAdult() + request.getNumberOfChildren());
+                newBooking.setLocation(bookedLocation);
+                newBooking.setUser(user);
+                newBooking.setStatus(LocationBookingStatus.PENDING);
+                newBooking = locationBookingRepository.save(newBooking);
 
-        if(!request.getFoodBookings().isEmpty()){
-            List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(request.getFoodBookings(), newBooking);
-            newBooking.setFoodBookings(new HashSet<>(bookedFoods));
-            newBooking = locationBookingRepository.save(newBooking);
-        }
-
-        return mapLocationBookingResponse(newBooking);
+                if(!request.getFoodBookings().isEmpty()){
+                    List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(request.getFoodBookings(), newBooking);
+                    newBooking.setFoodBookings(new HashSet<>(bookedFoods));
+                    newBooking = locationBookingRepository.save(newBooking);
+                }
+                return mapLocationBookingResponse(newBooking);
+            }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day and time before now!");
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day before today!");
     }
 
     @Override

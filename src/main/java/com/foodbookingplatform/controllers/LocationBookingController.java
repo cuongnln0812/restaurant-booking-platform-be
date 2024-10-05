@@ -25,7 +25,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/location-bookings")
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "Bear Authentication")
 @RequiredArgsConstructor
 public class LocationBookingController {
     

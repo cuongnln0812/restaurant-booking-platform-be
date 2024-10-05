@@ -33,9 +33,9 @@ public class LocationBookingRequest {
 
     private Long locationId;
 
-    private Long voucherId;
-
-    private Long promotionId;
+//    private Long voucherId;
+//
+//    private Long promotionId;
 
     private List<FoodBookingRequest> foodBookings;
 }

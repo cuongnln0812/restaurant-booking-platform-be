@@ -4,7 +4,6 @@ import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,7 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "user")
 public class User {
 
@@ -25,7 +23,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, name = "user_name")
+    @Column(unique = true, nullable = false, name = "user_name")
     private String userName;
 
     @Column(nullable = false, name = "full_name")

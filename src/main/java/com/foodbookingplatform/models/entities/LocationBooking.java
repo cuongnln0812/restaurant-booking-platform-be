@@ -41,6 +41,12 @@ public class LocationBooking extends BaseEntity{
     @Column(name = "number_of_guest", nullable = false, length = 65535)
     private int numberOfGuest;
 
+    @Column(name = "number_of_adult", nullable = false, length = 65535)
+    private int numberOfAdult;
+
+    @Column(name = "number_of_children", nullable = false, length = 65535)
+    private int numberOfChildren;
+
     @Column
     private float commission;
 
@@ -57,11 +63,11 @@ public class LocationBooking extends BaseEntity{
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "voucher_Id", nullable = false)
+    @JoinColumn(name = "voucher_Id")
     private Voucher voucher;
 
     @ManyToOne
-    @JoinColumn(name = "promotion_Id", nullable = false)
+    @JoinColumn(name = "promotion_Id")
     private Promotion promotion;
 
     @OneToMany(mappedBy = "locationBooking")

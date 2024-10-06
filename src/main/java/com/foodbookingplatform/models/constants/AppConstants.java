@@ -18,4 +18,5 @@ public class AppConstants {
     public static final String ROLE_LOCATION = "LOCATION_ADMIN";
     public static final String ROLE_USER = "USER";
     public static final String ROLE_SYSTEM = "SYSTEM_ADMIN";
+    public static final String NUMBER_OF_GUEST = "0";
 }

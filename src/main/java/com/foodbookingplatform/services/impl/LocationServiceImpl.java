@@ -9,6 +9,7 @@ import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
 import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
+import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.LocationService;
 import com.foodbookingplatform.utils.GenericSpecification;
@@ -41,11 +42,12 @@ public class LocationServiceImpl implements LocationService {
     private final TagRepository tagRepository;
     private final LocationCategoryRepository locationCategoryRepository;
     private final LocationTagRepository locationTagRepository;
+    private final WorkingHourRepository workingHourRepository;
     private final ModelMapper mapper;
 
     @Override
     public LocationResponse addLocation(LocationRequest locationRequest) {
-        Location savedLocation = validate(locationRequest, locationRequest.getId());
+        Location savedLocation = validate(locationRequest);
         return mapToResponse(savedLocation);
     }
 
@@ -77,7 +79,7 @@ public class LocationServiceImpl implements LocationService {
 
     @Override
     public LocationResponse updateLocation(LocationRequest locationRequest) {
-        Location updatedLocation = validate(locationRequest, locationRequest.getId());
+        Location updatedLocation = validate(locationRequest);
         return mapToResponse(updatedLocation);
     }
 
@@ -135,12 +137,12 @@ public class LocationServiceImpl implements LocationService {
         return specs.stream().reduce(Specification.where(null), Specification::and);
     }
 
-    public Location validate(LocationRequest locationRequest, Long locationId) {
+    public Location validate(LocationRequest locationRequest) {
         Location location;
 
-        if (locationId != 0) {
-            location = locationRepository.findById(locationId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationId));
+        if (locationRequest.getId() != 0) {
+            location = locationRepository.findById(locationRequest.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationRequest.getId()));
             BeanUtils.copyProperties(locationRequest, location, "user", "brand");
 
         } else {
@@ -227,9 +229,11 @@ public class LocationServiceImpl implements LocationService {
     private LocationResponse mapToResponse(Location location){
         List<Category> categories = locationCategoryRepository.findCategoriesByLocationId(location.getId());
         List<Tag> tags = locationTagRepository.findTagsByLocationId(location.getId());
+        List<WorkingHour> workingHours = workingHourRepository.findByLocation_Id(location.getId());
         LocationResponse locationResponse = mapper.map(location, LocationResponse.class);
         locationResponse.setCategory(categories.stream().map(category -> mapper.map(category, CategoryResponse.class)).toList());
         locationResponse.setTag(tags.stream().map(tag -> mapper.map(tag, TagResponse.class)).toList());
+        locationResponse.setWorkingHour(workingHours.stream().map(workingHour -> mapper.map(workingHour, WorkingHourResponse.class)).toList());
         return locationResponse;
     }
 }

@@ -19,7 +19,7 @@ public class AdsRequest {
     private String name;
 
     @NotNull(message = "Ad's price cannot be null")
-    @Min(value = 0, message = "Ad's price must be at least 0")
+    @Min(value = 10000, message = "Ad's price must be at least 10.000VND")
     private float price;
 
     @NotBlank(message = "Ad's name cannot be blank")
@@ -36,6 +36,6 @@ public class AdsRequest {
     private String image;
 
     @NotNull(message = "Ad's duration cannot be null")
-    @Min(value = 0, message = "Ad's duration must be at least 0")
+    @Min(value = 1, message = "Ad's duration must be at least 1 hour")
     private int duration;
 }

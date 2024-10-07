@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -30,11 +32,11 @@ public class PromotionRequest {
 
     @NotNull(message = "Promotion's StartDate cannot be null")
     @FutureOrPresent(message = "StartDate cannot be in the past")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @NotNull(message = "Promotion's EndDate cannot be null")
     @FutureOrPresent(message = "EndDate cannot be in the past")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @NotEmpty(message = "Promotion type cannot be blank")
     @Pattern(regexp = AppConstants.PROMOTION_TYPE_REGEX, message = "Gender include: BILL, PEOPLE, TIME")
@@ -56,9 +58,9 @@ public class PromotionRequest {
     @Min(value = 1, message = "Promotion's min people must be at least 1")
     private Integer minPeople;
 
-    private LocalDateTime startHourTime;
+    private LocalTime startHourTime;
 
-    private LocalDateTime endHourTime;
+    private LocalTime endHourTime;
 
     @NotNull(message = "LocationId cannot be null")
     private Long locationId;

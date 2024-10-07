@@ -1,21 +1,18 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.FoodBooking;
-import com.foodbookingplatform.models.entities.Location;
-import com.foodbookingplatform.models.entities.LocationBooking;
-import com.foodbookingplatform.models.entities.User;
+import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.enums.LocationBookingStatus;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
+import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingRequest;
 import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingResponse;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingResponse;
-import com.foodbookingplatform.repositories.LocationBookingRepository;
-import com.foodbookingplatform.repositories.LocationRepository;
-import com.foodbookingplatform.repositories.UserRepository;
+import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.FoodBookingService;
 import com.foodbookingplatform.services.LocationBookingService;
+import com.foodbookingplatform.services.VoucherService;
 import com.foodbookingplatform.utils.GenericSpecification;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -40,8 +37,11 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
     private final LocationBookingRepository locationBookingRepository;
     private final LocationRepository locationRepository;
+    private final FoodRepository foodRepository;
     private final UserRepository userRepository;
+    private final VoucherRepository voucherRepository;
     private final FoodBookingService foodBookingService;
+    private final VoucherService voucherService;
     private final ModelMapper mapper;
 
     @Override
@@ -58,6 +58,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         }
 
         return bookings.map(this::mapLocationBookingResponse);
+
     }
 
     @Override
@@ -100,6 +101,10 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     @Override
     public LocationBookingResponse createLocationBooking(LocationBookingRequest request) {
         LocationBooking newBooking = new LocationBooking();
+        List<Food> orderedFoods = new ArrayList<>();
+        List<Integer> foodQuantity = new ArrayList<>();
+        float bookingAmount;
+        float totalPrice = 0.0f;
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUserName(username)
@@ -108,6 +113,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 .orElseThrow(() -> new RestaurantBookingException(HttpStatus.BAD_REQUEST, "No restaurant available!"));
         if(!bookedLocation.getStatus().equals(EntityStatus.ACTIVE))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Restaurant is not available for booking!");
+
         if(request.getBookingDate().isAfter(LocalDate.now())){
             if(request.getBookingTime().isAfter(LocalTime.now())){
                 newBooking.setName(request.getName());
@@ -123,12 +129,39 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 newBooking.setStatus(LocationBookingStatus.PENDING);
                 newBooking = locationBookingRepository.save(newBooking);
 
+                if(request.getPromotionId() != null){
+
+                }
+
                 if(!request.getFoodBookings().isEmpty()){
-                    List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(request.getFoodBookings(), newBooking);
+                    for (FoodBookingRequest f : request.getFoodBookings()) {
+                        Food orderedFood = foodRepository.findById(f.getFoodId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Food", "id", f.getFoodId()));
+                        if(!orderedFood.getLocation().equals(bookedLocation))
+                            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available for this restaurant!");
+                        if(!orderedFood.getStatus().equals(EntityStatus.ACTIVE))
+                            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available to pre-order!");
+                        orderedFoods.add(orderedFood);
+                        foodQuantity.add(f.getQuantity());
+                        totalPrice += orderedFood.getPrice();
+                    }
+
+                    List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(orderedFoods, foodQuantity, newBooking);
+
+                    if(request.getVoucherId() != null){
+                        Voucher voucher = voucherRepository.findById(request.getVoucherId())
+                                .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
+                        bookingAmount = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
+                        newBooking.setAmount(bookingAmount);
+                        newBooking.setVoucher(voucher);
+                        voucher.getLocationBookings().add(newBooking);
+                        voucherRepository.save(voucher);
+                    }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You have to pre-order foods in order to apply voucher!");
                     newBooking.setFoodBookings(new HashSet<>(bookedFoods));
                     newBooking = locationBookingRepository.save(newBooking);
                 }
                 return mapLocationBookingResponse(newBooking);
+
             }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day and time before now!");
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day before today!");
     }
@@ -160,6 +193,8 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
         return mapLocationBookingResponse(locationBooking);
     }
+
+
 
 
     private Specification<LocationBooking> specification(Map<String, Object> searchParams){

@@ -28,6 +28,8 @@ public class LocationBookingResponse {
 
     private String phone;
 
+    private Float amount;
+
     private LocalDate bookingDate;
 
     private LocalTime bookingTime;

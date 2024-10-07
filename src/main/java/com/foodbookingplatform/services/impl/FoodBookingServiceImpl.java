@@ -25,28 +25,19 @@ import java.util.List;
 public class FoodBookingServiceImpl implements FoodBookingService {
 
     private final FoodBookingRepository foodBookingRepository;
-    private final FoodRepository foodRepository;
+
     @Override
-    public List<FoodBooking> createFoodBooking(List<FoodBookingRequest> requests, LocationBooking locationBooking) {
+    public List<FoodBooking> createFoodBooking(List<Food> foods, List<Integer> quantity, LocationBooking locationBooking) {
         List<FoodBooking> foodBookings = new ArrayList<>();
 
-        for (FoodBookingRequest request : requests) {
-            Food bookedFood = foodRepository.findById(request.getFoodId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Food", "id", request.getFoodId()));
-            if(!bookedFood.getLocation().equals(locationBooking.getLocation()))
-                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, bookedFood.getName() + " is not available for this restaurant!");
-
-            if (bookedFood.getStatus().equals(EntityStatus.ACTIVE)) {
-                FoodBooking foodBooking = new FoodBooking();
-                foodBooking.setFood(bookedFood);
-                foodBooking.setQuantity(request.getQuantity());
-                foodBooking.setAmount(request.getQuantity() * bookedFood.getPrice());
-                foodBooking.setPaymentDate(LocalDateTime.now());
-                foodBooking.setLocationBooking(locationBooking);
-                foodBookings.add(foodBooking); // Add to the list
-            } else {
-                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, bookedFood.getName() + " is not available to pre-order!");
-            }
+        for (int i = 0; i < foods.size(); i++) {
+            FoodBooking foodBooking = new FoodBooking();
+            foodBooking.setFood(foods.get(i));
+            foodBooking.setQuantity(quantity.get(i));
+            foodBooking.setAmount(quantity.get(i) * foods.get(i).getPrice());
+            foodBooking.setPaymentDate(LocalDateTime.now());
+            foodBooking.setLocationBooking(locationBooking);
+            foodBookings.add(foodBooking); // Add to the list
         }
 
         // Save all the food bookings in bulk and return the saved list

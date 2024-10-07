@@ -32,22 +32,25 @@ public class Location extends BaseEntity{
     private String phone;
 
     @Column(nullable = false)
-    private int suggest;
+    private int onSuggest = 0;
 
     @Column(nullable = false)
-    private boolean sale;
+    private int onSale = 0;
+
+    @Column(nullable = false)
+    private int onBanner = 0;
+
+    @Column(nullable = false)
+    private int view = 0;
+
+    @Column(nullable = false)
+    private int rating = 0;
 
     @Column(nullable = false)
     private String latitude;
 
     @Column(nullable = false)
     private String longitude;
-
-//    @Column(name = "opening_hours", nullable = false)
-//    private LocalTime openingHours;
-//
-//    @Column(name = "closing_hours", nullable = false)
-//    private LocalTime closingHours;
 
     @Column(nullable = false, length = 65535)
     private String description;
@@ -88,7 +91,7 @@ public class Location extends BaseEntity{
     @OneToMany(mappedBy = "location")
     private Set<LocationCategory> locationCategories;
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     private Set<WorkingHour> workingHours;
 }
 

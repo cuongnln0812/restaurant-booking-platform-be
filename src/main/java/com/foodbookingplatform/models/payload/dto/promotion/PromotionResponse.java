@@ -1,7 +1,7 @@
 package com.foodbookingplatform.models.payload.dto.promotion;
 
 import com.foodbookingplatform.models.enums.OfferStatus;
-import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
+import com.foodbookingplatform.models.enums.PromotionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class PromotionResponse {
 
     private OfferStatus status;
 
-    private String promotionType;
+    private PromotionType promotionType;
 
     private String image;
 
@@ -43,6 +43,4 @@ public class PromotionResponse {
     private LocalDateTime startHourTime;
 
     private LocalDateTime endHourTime;
-
-    private LocationResponse location;
 }

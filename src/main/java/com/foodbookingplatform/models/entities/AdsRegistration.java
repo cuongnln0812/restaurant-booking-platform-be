@@ -1,14 +1,11 @@
 package com.foodbookingplatform.models.entities;
 
+import com.foodbookingplatform.models.enums.OfferStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -29,8 +26,9 @@ public class AdsRegistration extends BaseEntity{
     @Column(name = "expire_date", nullable = false, length = 65535)
     private LocalDateTime expireDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean status;
+    private OfferStatus status = OfferStatus.ACTIVE;
 
     @ManyToOne
     @JoinColumn(name = "location_Id", nullable = false)

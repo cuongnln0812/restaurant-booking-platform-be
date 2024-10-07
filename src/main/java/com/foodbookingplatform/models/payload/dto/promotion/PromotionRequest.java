@@ -1,6 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.promotion;
 
-import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.enums.PromotionType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,10 +36,8 @@ public class PromotionRequest {
     @FutureOrPresent(message = "EndDate cannot be in the past")
     private LocalDateTime endDate;
 
-    @NotEmpty(message = "Promotion type cannot be blank")
-    @Pattern(regexp = AppConstants.PROMOTION_TYPE_REGEX, message = "Gender include: BILL, PEOPLE, TIME")
-    @Size(min = 2, message = "Promotion type must have at least 2 characters")
-    private String promotionType;
+    @NotNull(message = "Promotion type cannot be blank")
+    private PromotionType promotionType;
 
     @Min(value = 10000, message = "Promotion's discount must be at least 10.000VND")
     private Double discountValue;

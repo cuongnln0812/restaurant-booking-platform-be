@@ -42,7 +42,6 @@ public class AutomaticGeneratedPassword {
         return new String(password);
     }
 
-    // Overloaded method to use the default password length
     public static String generateRandomPassword() {
         return generateRandomPassword(PASSWORD_LENGTH);
     }

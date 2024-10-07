@@ -2,6 +2,7 @@ package com.foodbookingplatform.services;
 
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
+import com.foodbookingplatform.models.payload.dto.location.LocationResponseLazy;
 import org.springframework.data.domain.Page;
 
 import java.util.Map;
@@ -13,4 +14,7 @@ public interface LocationService {
     Page<LocationResponse> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams);
     LocationResponse updateLocation(LocationRequest locationRequest);
     void deleteLocation(long id);
+
+    //Ads Registration
+    Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size);
 }

@@ -8,8 +8,10 @@ import com.foodbookingplatform.models.payload.dto.promotion.PromotionRequest;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.PromotionRepository;
+import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.PromotionService;
 import com.foodbookingplatform.utils.GenericSpecification;
+import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -23,11 +25,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -35,6 +35,7 @@ import java.util.Map;
 public class PromotionServiceImpl implements PromotionService {
     private final PromotionRepository promotionRepository;
     private final LocationRepository locationRepository;
+    private final UserRepository userRepository;
     private final ModelMapper mapper;
 
     @Override
@@ -58,7 +59,21 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public Page<PromotionResponse> searchAllPromotions(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams) {
+    public Page<PromotionResponse> getAllPromotionsOfLocation(int pageNo, int pageSize, String sortBy, String sortDir, long id) throws AccessDeniedException {
+        boolean isAuthorize = SecurityUtils.isAuthorizeLocation(id, userRepository);
+        if (!isAuthorize) {
+            throw new AccessDeniedException("You do not have permission to access promotions for this location.");
+        }
+
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Promotion> promotionPage = promotionRepository.getPromotionByLocation_Id(id, pageable);
+        return promotionPage.map(this::mapToResponse);
+    }
+
+    @Override
+    public Page<PromotionResponse> searchAllPromotions(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams){
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Promotion> specification = specification(searchParams);
@@ -69,13 +84,23 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public PromotionResponse updatePromotion(PromotionRequest promotionRequest) {
+    public PromotionResponse updatePromotion(PromotionRequest promotionRequest) throws AccessDeniedException {
+        boolean isAuthorize = SecurityUtils.isAuthorizeLocation(promotionRequest.getLocationId(), userRepository);
+        if (!isAuthorize) {
+            throw new AccessDeniedException("You do not have permission to access promotions for this location.");
+        }
+
         Promotion updatedPromotion = validate(promotionRequest, promotionRequest.getId());
         return mapToResponse(updatedPromotion);
     }
 
     @Override
-    public void deletePromotion(long id) {
+    public void deletePromotion(long id) throws AccessDeniedException {
+        boolean isAuthorize = SecurityUtils.isAuthorizeLocation(id, userRepository);
+        if (!isAuthorize) {
+            throw new AccessDeniedException("You do not have permission to access promotions for this location.");
+        }
+
         Promotion promotion = promotionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", id));
         promotion.setStatus(OfferStatus.DISABLED);
         promotionRepository.save(promotion);
@@ -85,8 +110,8 @@ public class PromotionServiceImpl implements PromotionService {
         Promotion promotion;
 
         if (promotionId != 0) {
-            promotion = promotionRepository.findById(promotionId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", promotionId));
+            promotion = promotionRepository.findById(promotionId).orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", promotionId));
+
             if(!promotion.getStatus().equals(OfferStatus.INACTIVE)){
                 throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot update this Promotion!");
             }
@@ -103,12 +128,10 @@ public class PromotionServiceImpl implements PromotionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Location", "id", promotionRequest.getLocationId()));
         promotion.setLocation(location);
 
-        // Handle promotion type-specific fields
         switch (promotionRequest.getPromotionType()) {
-            case "BILL" -> handleBillPromotion(promotionRequest, promotion);
-            case "PEOPLE" -> handlePeoplePromotion(promotionRequest, promotion);
-            case "TIME" -> handleTimePromotion(promotionRequest, promotion);
-            default -> throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Invalid promotion type!");
+            case BILL -> handleBillPromotion(promotionRequest, promotion);
+            case PEOPLE -> handlePeoplePromotion(promotionRequest, promotion);
+            case TIME -> handleTimePromotion(promotionRequest, promotion);
         }
 
         validatePromotionFields(promotionRequest);
@@ -165,7 +188,6 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     private void handleBillPromotion(PromotionRequest promotionRequest, Promotion promotion) {
-        // Fields specific to BILL promotion
         if (promotionRequest.getMinBill() == null) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Minimum bill must be specified for a BILL promotion");
         }
@@ -173,7 +195,6 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     private void handlePeoplePromotion(PromotionRequest promotionRequest, Promotion promotion) {
-        // Fields specific to PEOPLE promotion
         if (promotionRequest.getMinPeople() == null) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Minimum people must be specified for a PEOPLE promotion");
         }
@@ -181,7 +202,6 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     private void handleTimePromotion(PromotionRequest promotionRequest, Promotion promotion) {
-        // Fields specific to TIME promotion
         if (promotionRequest.getStartHourTime() == null || promotionRequest.getEndHourTime() == null) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Start and end times must be specified for a TIME promotion");
         }

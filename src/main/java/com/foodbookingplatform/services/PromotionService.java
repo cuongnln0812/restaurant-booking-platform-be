@@ -5,6 +5,8 @@ import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
 import org.springframework.data.domain.Page;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Map;
 
 public interface PromotionService {
@@ -15,4 +17,5 @@ public interface PromotionService {
     Page<PromotionResponse> searchAllPromotions(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams);
     PromotionResponse updatePromotion(PromotionRequest promotionRequest) throws AccessDeniedException;
     void deletePromotion(long id) throws AccessDeniedException;
+    float applyPromotion(Long promotionId, float totalPrice, int numberOfPeople, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime);
 }

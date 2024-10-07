@@ -1,20 +1,21 @@
 package com.foodbookingplatform.services.impl;
 
-import com.foodbookingplatform.models.entities.Promotion;
-import com.foodbookingplatform.models.entities.User;
-import com.foodbookingplatform.models.entities.UserVoucher;
-import com.foodbookingplatform.models.entities.Voucher;
+import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
+import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingRequest;
+import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
+import com.foodbookingplatform.repositories.FoodRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.repositories.UserVoucherRepository;
 import com.foodbookingplatform.repositories.VoucherRepository;
 import com.foodbookingplatform.services.VoucherService;
 import com.foodbookingplatform.utils.GenericSpecification;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -41,6 +42,7 @@ import java.util.Map;
 public class VoucherServiceImpl implements VoucherService {
     private final VoucherRepository voucherRepository;
     private final UserVoucherRepository userVoucherRepository;
+    private final FoodRepository foodRepository;
     private final UserRepository userRepository;
     private final ModelMapper mapper;
 
@@ -49,6 +51,11 @@ public class VoucherServiceImpl implements VoucherService {
         if(voucherRepository.existsByCode(request.getCode()))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Voucher code existed!");
         Voucher newVoucher = mapper.map(request, Voucher.class);
+        if(request.getMaxDiscountAmount() > request.getMinOrderAmount())
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Max discount amount cannot greater than min order amount");
+        if(request.getDiscount() > 100 || request.getDiscount() < 0)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Discount percentage must be in range of 0% - 100%");
+
         newVoucher.setStatus(OfferStatus.INACTIVE);
         return mapper.map(voucherRepository.save(newVoucher), VoucherResponse.class);
     }
@@ -115,31 +122,58 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher existedVoucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher", "Id", voucherId));
         UserVoucher savedUserVoucher;
+        int quantityAvailable = existedVoucher.getQuantity();
 
-        if(!userVoucherRepository.existsByVoucher(existedVoucher)){
-            UserVoucher newUserVoucher = new UserVoucher();
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User currUser = userRepository.findByUserName(username)
-                            .orElseThrow(() -> new ResourceNotFoundException("Current user is not existed to handle this action!"));
+        if(quantityAvailable == 0)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Out of voucher!");
+        else {
+            if (!userVoucherRepository.existsByVoucher(existedVoucher)) {
+                UserVoucher newUserVoucher = new UserVoucher();
+                String username = SecurityContextHolder.getContext().getAuthentication().getName();
+                User currUser = userRepository.findByUserName(username)
+                        .orElseThrow(() -> new ResourceNotFoundException("Current user is not existed to handle this action!"));
 
-            newUserVoucher.setVoucher(existedVoucher);
-            newUserVoucher.setUser(currUser);
-            newUserVoucher.setQuantityAvailable(1);
-            newUserVoucher.setAssignedDate(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
+                newUserVoucher.setVoucher(existedVoucher);
+                newUserVoucher.setUser(currUser);
+                newUserVoucher.setQuantityAvailable(1);
+                newUserVoucher.setAssignedDate(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
+                savedUserVoucher = userVoucherRepository.save(newUserVoucher);
+            } else {
+                UserVoucher existedUserVoucher = userVoucherRepository.findByVoucher(existedVoucher);
+                int updatedQuantity = existedUserVoucher.getQuantityAvailable() + 1;
 
-            savedUserVoucher = userVoucherRepository.save(newUserVoucher);
-        }else {
-            UserVoucher existedUserVoucher = userVoucherRepository.findByVoucher(existedVoucher);
-            int updatedQuantity = existedUserVoucher.getQuantityAvailable() + 1;
-
-            if(updatedQuantity <= existedVoucher.getQuantityUse()){
-                existedUserVoucher.setQuantityAvailable(updatedQuantity);
-                existedUserVoucher.setAssignedDate(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
-                savedUserVoucher = userVoucherRepository.save(existedUserVoucher);
-            }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You can only add max " + existedVoucher.getQuantityUse() + "vouchers");
+                if (updatedQuantity <= existedVoucher.getQuantityUse()) {
+                    existedUserVoucher.setQuantityAvailable(updatedQuantity);
+                    existedUserVoucher.setAssignedDate(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")));
+                    savedUserVoucher = userVoucherRepository.save(existedUserVoucher);
+                } else
+                    throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You can only add max " + existedVoucher.getQuantityUse() + "vouchers");
+            }
+            //-1 for unlimited voucher
+            if(quantityAvailable != -1){
+                existedVoucher.setQuantity(quantityAvailable - 1);
+            }
         }
         return mapUserVoucherResponse(savedUserVoucher);
     }
+
+    @Override
+    public float applyVoucher(Long voucherId, float totalPrice) {
+        if(totalPrice == 0) {
+            Voucher voucher = voucherRepository.findById(voucherId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", voucherId));
+
+            if (voucher.getStatus() != OfferStatus.ACTIVE)
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Voucher is not available!");
+
+            if (voucher.getMinOrderAmount() > totalPrice)
+                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking does not meet the min amount for voucher!");
+
+            return (totalPrice * voucher.getDiscount());
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You have to pre-order foods in order to apply voucher!");
+    }
+
+
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherActive() {

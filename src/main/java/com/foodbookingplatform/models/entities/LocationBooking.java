@@ -48,6 +48,9 @@ public class LocationBooking extends BaseEntity{
     private int numberOfChildren;
 
     @Column
+    private float amount;
+
+    @Column
     private float commission;
 
     @Column(nullable = false)

@@ -2,8 +2,8 @@ package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.FoodCategory;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryRequest;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryResponse;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryRequest;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryResponse;
 import com.foodbookingplatform.repositories.FoodCategoryRepository;
 import com.foodbookingplatform.services.FoodCategoryService;
 import org.modelmapper.ModelMapper;

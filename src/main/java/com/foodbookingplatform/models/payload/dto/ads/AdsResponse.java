@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.ads;
 
+import com.foodbookingplatform.models.enums.AdsType;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,9 @@ public class AdsResponse {
 
     private String description;
 
-    private String type;
+    private AdsType type;
+
+    private int level;
 
     private EntityStatus status;
 

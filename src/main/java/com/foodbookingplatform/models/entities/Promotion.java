@@ -69,7 +69,7 @@ public class Promotion extends BaseEntity{
     @Column(name = "end_hour_time")
     private LocalDateTime endHourTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "location_Id", nullable = false)
     private Location location;
 

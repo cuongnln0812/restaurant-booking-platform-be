@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.entities;
 
+import com.foodbookingplatform.models.enums.AdsType;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,7 +32,11 @@ public class Ads extends BaseEntity{
     private String description;
 
     @Column(nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private AdsType type;
+
+    @Column(nullable = false)
+    private int level;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -40,8 +45,8 @@ public class Ads extends BaseEntity{
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
-    @Column(name = "duration", nullable = false)
-    private String duration;
+    @Column(nullable = false)
+    private int duration;
 
     @OneToMany(mappedBy = "ads")
     private Set<AdsRegistration> adsRegistrations;

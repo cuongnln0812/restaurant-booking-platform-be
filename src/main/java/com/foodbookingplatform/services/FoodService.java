@@ -1,7 +1,5 @@
 package com.foodbookingplatform.services;
 
-import com.foodbookingplatform.models.payload.dto.brand.BrandRequest;
-import com.foodbookingplatform.models.payload.dto.brand.BrandResponse;
 import com.foodbookingplatform.models.payload.dto.food.FoodRequest;
 import com.foodbookingplatform.models.payload.dto.food.FoodResponse;
 

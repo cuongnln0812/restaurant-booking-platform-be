@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PromotionController {
     private final PromotionService promotionService;
+    private final Map<String, Object> searchParams = new HashMap<>();
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
@@ -42,6 +44,20 @@ public class PromotionController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
+    @GetMapping("/location/{id}")
+    public ResponseEntity<Page<PromotionResponse>> getAllPromotionsOfLocation(
+            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @PathVariable Long id
+    ) throws AccessDeniedException {
+        return ResponseEntity.ok(promotionService.getAllPromotionsOfLocation(pageNo, pageSize, sortBy, sortDir, id));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/search")
     public ResponseEntity<Page<PromotionResponse>> searchPromotions(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -52,10 +68,8 @@ public class PromotionController {
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime endDate,
             @RequestParam(value = "status", required = false) List<OfferStatus> status,
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "title", required = false) Long title
-    ) {
-
-        Map<String, Object> searchParams = new HashMap<>();
+            @RequestParam(value = "title", required = false) String title
+    ){
 
         if (status != null && !status.isEmpty()) searchParams.put("status", status);
         if (startDate != null) searchParams.put("startDate", startDate);
@@ -75,7 +89,7 @@ public class PromotionController {
 
     @ApiResponse(responseCode = "201", description = "Http Status 201 Created")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyRole('LOCATION_ADMIN', 'SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<PromotionResponse> addPromotion(@Valid @RequestBody PromotionRequest request) {
         PromotionResponse response = promotionService.addPromotion(request);
@@ -84,17 +98,17 @@ public class PromotionController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyRole('LOCATION_ADMIN', 'SYSTEM_ADMIN')")
     @PutMapping
-    public ResponseEntity<PromotionResponse> updatePromotion(@Valid @RequestBody PromotionRequest request) {
+    public ResponseEntity<PromotionResponse> updatePromotion(@Valid @RequestBody PromotionRequest request) throws AccessDeniedException {
         return ResponseEntity.ok(promotionService.updatePromotion(request));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyRole('LOCATION_ADMIN', 'SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deletePromotion(@PathVariable Long id) {
+    public ResponseEntity<String> deletePromotion(@PathVariable Long id) throws AccessDeniedException {
         promotionService.deletePromotion(id);
         return ResponseEntity.ok("Promotion deleted successfully");
     }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
@@ -73,28 +74,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
-//    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-//    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
-//        Map<String, Object> body = new HashMap<>();
-//        body.put("status", HttpStatus.BAD_REQUEST.value());
-//        body.put("error", "Invalid Enum Value");
-//
-//        String fieldName = ex.getName();
-//        String invalidValue = ex.getValue().toString();
-//
-//        // Xác định thông báo lỗi dựa trên trường enum bị lỗi
-//        String allowedValues;
-//        if (fieldName.equals("notificationType")) {
-//            allowedValues = "[USER, LOCATION, BOOKING, PROMOTION]";
-//        } else if (fieldName.equals("status")) {
-//            allowedValues = "[ACTIVE, INACTIVE, EXPIRE]";
-//        } else {
-//            allowedValues = "[Unknown Enum]";
-//        }
-//
-//        body.put("message", String.format("The value '%s' is not valid for field '%s'. Allowed values are: %s",
-//                invalidValue, fieldName, allowedValues));
-//
-//        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-//    }
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        String message = "Invalid value provided for the request. Please check the values.";
+
+        if (ex.getMessage().contains("AdsType")) {
+            message = "Invalid value provided for Ads type. Please use one of the following: AREA, FLASH_SALE, BANNER.";
+        } else if (ex.getMessage().contains("PromotionType")) {
+            message = "Invalid value provided for Promotion type. Please use one of the following: BILL, PEOPLE, TIME.";
+        }
+
+        ErrorDetail errorDetails = new ErrorDetail(new Date(), message, request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
 }

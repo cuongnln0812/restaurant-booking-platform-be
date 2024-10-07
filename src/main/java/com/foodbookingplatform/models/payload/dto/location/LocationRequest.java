@@ -29,12 +29,6 @@ public class LocationRequest {
     @Size(min = 2, message = "Location's phone must have at least 2 characters")
     private String phone;
 
-    @NotNull(message = "Location's suggest cannot be null")
-    private int suggest;
-
-    @NotNull(message = "Location's sale cannot be null")
-    private boolean sale;
-
     @NotBlank(message = "Location's latitude cannot be blank")
     @Size(min = 2, message = "Location's latitude must have at least 2 characters")
     private String latitude;

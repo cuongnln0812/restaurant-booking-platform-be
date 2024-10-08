@@ -6,7 +6,6 @@ import lombok.*;
 import org.hibernate.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Set;
@@ -41,10 +40,10 @@ public class Promotion extends BaseEntity{
     private String image;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     // Shared fields for all types
     @Column(name = "discount_value")

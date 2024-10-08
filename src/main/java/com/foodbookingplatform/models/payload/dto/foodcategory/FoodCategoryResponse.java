@@ -1,7 +1,6 @@
-package com.foodbookingplatform.models.payload.dto.foodCategory;
+package com.foodbookingplatform.models.payload.dto.foodcategory;
 
 import com.foodbookingplatform.models.enums.EntityStatus;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

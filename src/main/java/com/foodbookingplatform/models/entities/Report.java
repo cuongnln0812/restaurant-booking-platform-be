@@ -1,5 +1,6 @@
 package com.foodbookingplatform.models.entities;
 
+import com.foodbookingplatform.models.enums.ReportType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Length;
@@ -26,16 +27,13 @@ public class Report extends BaseEntity{
     private Long id;
 
     @Column(name = "report_type", nullable = false)
-    private int reportType;
+    private ReportType reportType;
 
     @Column(nullable = false)
     private String content;
 
     @Column(name = "content_answer")
     private String contentAnswer;
-
-    @Column(name = "report_date", nullable = false)
-    private LocalDateTime reportDate;
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;

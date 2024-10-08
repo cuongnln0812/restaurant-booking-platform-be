@@ -17,5 +17,5 @@ public interface PromotionService {
     Page<PromotionResponse> searchAllPromotions(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams);
     PromotionResponse updatePromotion(PromotionRequest promotionRequest) throws AccessDeniedException;
     void deletePromotion(long id) throws AccessDeniedException;
-    float applyPromotion(Long promotionId, float totalPrice, int numberOfPeople, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime);
+    float applyPromotion(Long promotionId, float totalPrice, int numberOfPeople, LocalDate bookingDate, LocalTime bookingTime);
 }

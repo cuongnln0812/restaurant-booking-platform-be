@@ -158,7 +158,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Float applyVoucher(Long voucherId, float totalPrice) {
+    public float applyVoucher(Long voucherId, float totalPrice) {
         if(totalPrice == 0) {
             Voucher voucher = voucherRepository.findById(voucherId)
                     .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", voucherId));

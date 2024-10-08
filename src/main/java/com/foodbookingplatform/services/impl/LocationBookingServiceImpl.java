@@ -1,6 +1,7 @@
 package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.*;
+import com.foodbookingplatform.models.enums.DayInWeek;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.enums.LocationBookingStatus;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
@@ -27,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -42,6 +44,8 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     private final UserRepository userRepository;
     private final VoucherRepository voucherRepository;
     private final PromotionRepository promotionRepository;
+    private final WorkingHourRepository workingHourRepository;
+    private final UserVoucherRepository userVoucherRepository;
     private final FoodBookingService foodBookingService;
     private final VoucherService voucherService;
     private final PromotionService promotionService;
@@ -118,6 +122,11 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         if(!bookedLocation.getStatus().equals(EntityStatus.ACTIVE))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Restaurant is not available for booking!");
 
+        String dayInWeek = String.valueOf(request.getBookingDate().getDayOfWeek());
+        WorkingHour workingHour = workingHourRepository.findByLocation_IdAndDay(bookedLocation.getId(), DayInWeek.valueOf(dayInWeek));
+        if(request.getBookingTime().isBefore(workingHour.getStartTime()) || request.getBookingTime().isAfter(workingHour.getEndTime()))
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Please book another time!");
+
         if(request.getBookingDate().isAfter(LocalDate.now())){
             if(request.getBookingTime().isAfter(LocalTime.now())){
                 newBooking.setName(request.getName());
@@ -144,7 +153,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available to pre-order!");
                         orderedFoods.add(orderedFood);
                         foodQuantity.add(foodBookingRequest.getQuantity());
-                        totalPrice += orderedFood.getPrice();
+                        totalPrice += orderedFood.getPrice() * foodBookingRequest.getQuantity();
                     }
                 }
 
@@ -161,11 +170,14 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 }
 
                 if(request.getVoucherId() != null && request.getVoucherId() != 0){
-                    Voucher voucher = voucherRepository.findById(request.getVoucherId())
+                    UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(request.getVoucherId(), username)
                             .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
+                    Voucher voucher = userVoucher.getVoucher();
                     voucherDiscountAmount = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
                     newBooking.setVoucher(voucher);
                     voucher.getLocationBookings().add(newBooking);
+                    userVoucher.setQuantityAvailable(userVoucher.getQuantityAvailable() - 1);
+                    userVoucherRepository.save(userVoucher);
                     voucherRepository.save(voucher);
                 }
 
@@ -268,7 +280,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         Set<FoodBooking> foodBookings = booking.getFoodBookings();
 
         mapper.map(booking, response);
-        response.setFreeItem(booking.getPromotion().getFreeItem());
+        if(booking.getPromotion() != null) response.setFreeItem(booking.getPromotion().getFreeItem());
         if(!foodBookings.isEmpty()){
             foodBookings.forEach(foodBooking -> {
                 foodBookingResponses.add(mapFoodBookingResponse(foodBooking));

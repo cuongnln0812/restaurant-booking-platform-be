@@ -41,10 +41,10 @@ public class Promotion extends BaseEntity{
     private String image;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     // Shared fields for all types
     @Column(name = "discount_value")

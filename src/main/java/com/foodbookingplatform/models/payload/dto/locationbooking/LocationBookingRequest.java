@@ -41,9 +41,12 @@ public class LocationBookingRequest {
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime bookingTime;
 
-    @NotNull(message = "There should be at least 1 adult to book")
+    @NotNull(message = "Number of adult should not be blank")
+    @Min(value = 1, message = "There should be at least 1 adult to book")
     private Integer numberOfAdult = 0;
 
+    @NotNull(message = "Number of adult should not be blank")
+    @Min(value = 0, message = "Invalid number of children!")
     private Integer numberOfChildren = 0;
 
     @NotNull(message = "Location must not be blank")

@@ -1,6 +1,5 @@
 package com.foodbookingplatform.models.payload.dto.uservoucher;
 
-import com.foodbookingplatform.models.enums.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserVoucherResponse {
+public class ApplyUserVoucherResponse {
     private Long id;
 
     private String code;
@@ -31,5 +30,5 @@ public class UserVoucherResponse {
 
     private LocalDateTime endDate;
 
-    private OfferStatus status;
+    private boolean isUsable = false;
 }

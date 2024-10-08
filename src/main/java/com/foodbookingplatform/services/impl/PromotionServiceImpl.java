@@ -34,6 +34,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.foodbookingplatform.models.enums.PromotionType.BILL;
+import static com.foodbookingplatform.models.enums.PromotionType.PEOPLE;
+import static com.foodbookingplatform.models.enums.PromotionType.TIME;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -113,9 +117,62 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public float applyPromotion(Long promotionId, float totalPrice, int numberOfPeople,
-                                LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return 0;
+                                LocalDate bookingDate, LocalTime bookingTime) {
+        float discountAmount = 0.0f;
+
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", promotionId));
+        if (promotion.getStatus() != OfferStatus.ACTIVE)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Promotion is not available!");
+
+        switch (promotion.getType()){
+            case "BILL" -> discountAmount = applyBillPromotion(promotion, totalPrice);
+            case "PEOPLE" -> discountAmount = applyPeoplePromotion(promotion, numberOfPeople);
+            case "TIME" -> discountAmount = applyTimePromotion(promotion, bookingDate, bookingTime);
+        }
+
+        return discountAmount;
     }
+
+    private float applyTimePromotion(Promotion promotion, LocalDate bookingDate, LocalTime bookingTime) {
+        if(isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(), promotion.getStartHourTime(),
+                promotion.getEndDate(), promotion.getEndHourTime())){
+            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
+            else return 0;
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Date Time invalid!");
+    }
+
+    private float applyPeoplePromotion(Promotion promotion, int numberOfPeople) {
+        if(promotion.getMinPeople() <= numberOfPeople){
+            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
+            else return 0;
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of people invalid!");
+    }
+
+    private float applyBillPromotion(Promotion promotion, float totalPrice) {
+        if(promotion.getMinBill() <= totalPrice){
+            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
+            else return 0;
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of bill invalid!");
+    }
+
+    public boolean isDateTimeInRange(LocalDate dateToCheck, LocalTime timeToCheck,
+                                     LocalDateTime startDate, LocalTime startTime,
+                                     LocalDateTime endDate, LocalTime endTime) {
+        LocalDate startDateParse = LocalDate.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth());
+        LocalDate endDateParse = LocalDate.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth());
+
+        if ((dateToCheck.isEqual(startDateParse)) || dateToCheck.isAfter(startDateParse) &&
+                (dateToCheck.isEqual(endDateParse) || dateToCheck.isBefore(endDateParse))) {
+            if ((timeToCheck.isAfter(startTime.minusNanos(1)) &&
+                    timeToCheck.isBefore(endTime.plusNanos(1)))) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
 
     public Promotion validate(PromotionRequest promotionRequest, Long promotionId) {
         Promotion promotion;

@@ -29,9 +29,11 @@ public class LocationResponseLazy {
 
     private int rating;
 
-    private String latitude;
+    private double latitude;
 
-    private String longitude;
+    private double longitude;
+
+    private String distance;
 
     private String description;
 

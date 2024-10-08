@@ -16,6 +16,7 @@ import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourRespons
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.LocationService;
 import com.foodbookingplatform.utils.GenericSpecification;
+import com.foodbookingplatform.utils.GeoHashGeneration;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -66,14 +67,34 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponse> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams) {
+    public Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean isNear) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
 
-        Page<Location> locationPage = locationRepository.findAll(specification, pageable);
+        List<Location> locationList = locationRepository.findAll(specification);
+        if(isNear){
+            String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);
+            List<LocationResponseLazy> locationNearSorted = locationList.stream()
+                    .filter(location -> location.getGeoHashCode().startsWith(geoHashCode))
+                    .sorted((location1, location2) -> {
+                        double distance1 = calculateDistance(location1.getLatitude(), location1.getLongitude(), latitude, longitude);
+                        double distance2 = calculateDistance(location2.getLatitude(), location2.getLongitude(), latitude, longitude);
 
-        return locationPage.map(this::mapToResponse);
+                        return Double.compare(distance1, distance2);
+                    })
+                    .map(location -> {
+                        LocationResponseLazy response = mapper.map(location, LocationResponseLazy.class);
+                        double distance = calculateDistance(response.getLatitude(), response.getLongitude(), latitude, longitude);
+                        response.setDistance(formatDistance(distance));
+                        return response;
+                    })
+                    .toList();
+
+            return new PageImpl<>(locationNearSorted, pageable, locationNearSorted.size());
+        }
+        List<LocationResponseLazy> locationResponseLazyList = locationList.stream().map(location -> mapper.map(location, LocationResponseLazy.class)).toList();
+        return new PageImpl<>(locationResponseLazyList, pageable, locationList.size());
     }
 
     @Override
@@ -120,7 +141,7 @@ public class LocationServiceImpl implements LocationService {
 //                .map(adsRegistration -> mapper.map(adsRegistration.getLocation(), LocationResponseLazy.class))
 //                .toList();
 
-        return new PageImpl<>(sortedLocation, pageable, adsRegistrations.getTotalElements());
+        return new PageImpl<>(sortedLocation, pageable, sortedLocation.size());
     }
 
     private Specification<Location> specification(Map<String, Object> searchParams){
@@ -128,42 +149,13 @@ public class LocationServiceImpl implements LocationService {
 
         searchParams.forEach((key, value) -> {
             switch (key) {
-                case "status":
-                    specs.add(GenericSpecification.fieldIn(key, (Collection<?>) value));
-                    break;
-                case "suggest":
-                case "sale":
-                    specs.add(GenericSpecification.fieldIsBoolean(key, (boolean) value));
-                    break;
-                case "openingHours":
-                    if (searchParams.containsKey("closingHours")) {
-                        specs.add(GenericSpecification.fieldBetween("closingHours", (LocalDateTime) searchParams.get("openingHours"), (LocalDateTime) searchParams.get("closingHours")));
-                    } else {
-                        specs.add(GenericSpecification.fieldGreaterThan("openingHours", (LocalDateTime) value));
-                    }
-                    break;
-                case "closingHours":
-                    if (!searchParams.containsKey("openingHours")) {
-                        specs.add(GenericSpecification.fieldLessThan("closingHours", (LocalDateTime) value));
-                    }
-                    break;
-                case "name":
-                case "address":
-                case "phone":
-                    specs.add(GenericSpecification.fieldContains(key, (String) value));
-                    break;
-                case "fullName":
-                    specs.add(GenericSpecification.joinFieldContains("user", key, (String) value));
-                    break;
-                case "brandName":
-                    specs.add(GenericSpecification.joinFieldContains("brand", "name", (String) value));
-                    break;
-                case "categoryName":
-                    specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationCategories", "category", "name", (Collection<?>) value));
-                    break;
-                case "tagName":
-                    specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationTags", "tag", "name", (Collection<?>) value));
-                    break;
+                case "status" -> specs.add(GenericSpecification.fieldIn(key, (Collection<?>) value));
+                case "name" -> specs.add(GenericSpecification.fieldContains(key, (String) value));
+                case "brandName" -> specs.add(GenericSpecification.joinFieldContains("brand", "name", (String) value));
+                case "categoryName" ->
+                        specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationCategories", "category", "name", (Collection<?>) value));
+                case "tagName" ->
+                        specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationTags", "tag", "name", (Collection<?>) value));
             }
         });
 
@@ -172,12 +164,12 @@ public class LocationServiceImpl implements LocationService {
 
     public Location validate(LocationRequest locationRequest) {
         Location location;
+        String geoHashCode = GeoHashGeneration.getGeoHashCode(locationRequest.getLatitude(), locationRequest.getLongitude(), 9);
 
         if (locationRequest.getId() != 0) {
             location = locationRepository.findById(locationRequest.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationRequest.getId()));
             BeanUtils.copyProperties(locationRequest, location, "user", "brand");
-
         } else {
             location = mapper.map(locationRequest, Location.class);
         }
@@ -191,6 +183,7 @@ public class LocationServiceImpl implements LocationService {
         Brand brand = brandRepository.findById(locationRequest.getBrandId())
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", locationRequest.getBrandId()));
 
+        location.setGeoHashCode(geoHashCode);
         location.setUser(user);
         location.setBrand(brand);
         Location savedLocation = locationRepository.save(location);
@@ -271,6 +264,18 @@ public class LocationServiceImpl implements LocationService {
         Collections.shuffle(allLocations);
 
         return new PageImpl<>(allLocations, pageable, locationsPage.getTotalElements());
+    }
+
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        return Math.sqrt(Math.pow((lat1 - lat2), 2) + Math.pow((lon1 - lon2), 2)) * 100;
+    }
+
+    private String formatDistance(double distanceInKm) {
+        if (distanceInKm < 1) {
+            return String.format("%.0fm", distanceInKm * 1000);
+        }
+        return String.format("%.2fkm", distanceInKm);
     }
 
     private LocationResponse mapToResponse(Location location){

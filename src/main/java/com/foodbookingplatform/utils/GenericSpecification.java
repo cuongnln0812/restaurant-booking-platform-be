@@ -1,5 +1,6 @@
 package com.foodbookingplatform.utils;
 
+import jakarta.persistence.criteria.JoinType;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -47,7 +48,25 @@ public class GenericSpecification{
         return (root, query, builder) -> root.join(firstJoinField).join(secondJoinField).get(fieldName).in(values);
     }
 
-    public static <T> Specification<T> joinFieldContainsInThroughMultipleJoins(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
-        return (root, query, builder) -> builder.like(builder.lower(root.join(firstJoinField).join(secondJoinField).get(fieldName)), "%" + keyword.toLowerCase().trim() + "%");
+    public static <T> Specification<T> leftJoinFieldContains(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
+        return (root, query, builder) -> {
+            var leftJoin = root.join(firstJoinField, JoinType.LEFT).join(secondJoinField, JoinType.LEFT);
+            return builder.like(
+                    builder.lower(leftJoin.get(fieldName)),
+                    "%" + keyword.toLowerCase().trim() + "%"
+            );
+        };
     }
+
+    public static <T> Specification<T> rightJoinFieldContains(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
+        return (root, query, builder) -> {
+            var rightJoin = root.join(firstJoinField, JoinType.LEFT).join(secondJoinField, JoinType.LEFT);
+            return builder.like(
+                    builder.lower(rightJoin.get(fieldName)),
+                    "%" + keyword.toLowerCase().trim() + "%"
+            );
+        };
+    }
+
+
 }

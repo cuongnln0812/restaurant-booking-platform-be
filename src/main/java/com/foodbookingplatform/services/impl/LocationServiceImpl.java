@@ -172,23 +172,25 @@ public class LocationServiceImpl implements LocationService {
         }
     }
 
-    private Specification<Location> specification(Map<String, Object> searchParams){
+    private Specification<Location> specification(Map<String, Object> searchParams) {
         List<Specification<Location>> specs = new ArrayList<>();
 
         searchParams.forEach((key, value) -> {
             switch (key) {
                 case "status" -> specs.add(GenericSpecification.fieldIn(key, (Collection<?>) value));
-                case "name" -> specs.add(GenericSpecification.fieldContains(key, (String) value));
-                case "brandName" -> specs.add(GenericSpecification.joinFieldContains("brand", "name", (String) value));
-                case "categoryName" ->
-                        specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationCategories", "category", "name", (Collection<?>) value));
-                case "tagName" ->
-                        specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationTags", "tag", "name", (Collection<?>) value));
+                case "searchText" ->
+                        specs.add(Specification.where(GenericSpecification.<Location>fieldContains("name", (String) value))
+                                .or(GenericSpecification.joinFieldContains("brand", "name", (String) value))
+                                .or(GenericSpecification.leftJoinFieldContains("locationCategories", "category", "name", (String) value))
+                                .or(GenericSpecification.rightJoinFieldContains("locationCategories", "category", "name", (String) value))
+                                .or(GenericSpecification.leftJoinFieldContains("locationTags", "tag", "name", (String) value))
+                                .or(GenericSpecification.rightJoinFieldContains("locationTags", "tag", "name", (String) value)));
             }
         });
 
         return specs.stream().reduce(Specification.where(null), Specification::and);
     }
+
 
     public Location validate(LocationRequest locationRequest) {
         Location location;

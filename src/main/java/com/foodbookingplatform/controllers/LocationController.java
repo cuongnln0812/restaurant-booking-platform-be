@@ -60,10 +60,7 @@ public class LocationController {
             @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
             @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
             @RequestParam(required = false) List<EntityStatus> status,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String brandName,
-            @RequestParam(required = false) List<String> categoryName,
-            @RequestParam(required = false) List<String> tagName,
+            @RequestParam(required = false) String searchText,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) double latitude,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) double longitude,
             @RequestParam boolean searchNearBy
@@ -72,10 +69,7 @@ public class LocationController {
         Map<String, Object> searchParams = new HashMap<>();
 
         if (status != null && !status.isEmpty()) searchParams.put("status", status);
-        if (name != null) searchParams.put("name", name);
-        if (brandName != null) searchParams.put("brandName", brandName);
-        if (categoryName != null && !categoryName.isEmpty()) searchParams.put("categoryName", categoryName);
-        if (tagName != null && !tagName.isEmpty()) searchParams.put("tagName", tagName);
+        if (searchText != null) searchParams.put("searchText", searchText);
 
         return ResponseEntity.ok(locationService.searchAllLocations(pageNo, pageSize, sortBy, sortDir, searchParams, latitude, longitude, searchNearBy));
     }

@@ -4,8 +4,6 @@ import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
-import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingRequest;
-import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
@@ -15,7 +13,6 @@ import com.foodbookingplatform.repositories.UserVoucherRepository;
 import com.foodbookingplatform.repositories.VoucherRepository;
 import com.foodbookingplatform.services.VoucherService;
 import com.foodbookingplatform.utils.GenericSpecification;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -172,8 +169,6 @@ public class VoucherServiceImpl implements VoucherService {
             return (totalPrice * voucher.getDiscount());
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You have to pre-order foods in order to apply voucher!");
     }
-
-
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherActive() {

@@ -67,21 +67,26 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean isNear) {
+    public Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean searchNearBy) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
 
         List<Location> locationList = locationRepository.findAll(specification);
-        if(isNear){
+        if(searchNearBy){
             String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);
             List<LocationResponseLazy> locationNearSorted = locationList.stream()
                     .filter(location -> location.getGeoHashCode().startsWith(geoHashCode))
                     .sorted((location1, location2) -> {
-                        double distance1 = calculateDistance(location1.getLatitude(), location1.getLongitude(), latitude, longitude);
-                        double distance2 = calculateDistance(location2.getLatitude(), location2.getLongitude(), latitude, longitude);
+                        int levelComparison = Integer.compare(location2.getOnSuggest(), location1.getOnSuggest());
+                        if (levelComparison != 0) {
+                            return levelComparison;
+                        }else {
+                            double distance1 = calculateDistance(location1.getLatitude(), location1.getLongitude(), latitude, longitude);
+                            double distance2 = calculateDistance(location2.getLatitude(), location2.getLongitude(), latitude, longitude);
 
-                        return Double.compare(distance1, distance2);
+                            return Double.compare(distance1, distance2);
+                        }
                     })
                     .map(location -> {
                         LocationResponseLazy response = mapper.map(location, LocationResponseLazy.class);
@@ -111,37 +116,60 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size) {
+    public Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size, AdsType adsType) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<AdsRegistration> adsRegistrations = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.BANNER, OfferStatus.ACTIVE, pageable);
+        List<Location> locationList = locationRepository.findAll();
+        List<AdsRegistration> adsRegistrationList;
 
-        // Không có Location đăng kí Ads BANNER
-        if (adsRegistrations.isEmpty()) {
-            return getRandomLocations(pageable).map(location -> mapper.map(location, LocationResponseLazy.class));
+        if(adsType.equals(AdsType.BANNER)){
+            adsRegistrationList = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.BANNER, OfferStatus.ACTIVE);
+        }else{
+            adsRegistrationList = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.FLASH_SALE, OfferStatus.ACTIVE);
         }
 
-        // Sắp xếp danh sách theo level của Ads, nếu cùng level thì sắp xếp theo thời gian quảng cáo còn lại của location
-        List<LocationResponseLazy> sortedLocation = adsRegistrations.getContent().stream()
-                .sorted((ad1, ad2) -> {
-                    int levelComparison = Integer.compare(ad2.getLocation().getOnBanner(), ad1.getLocation().getOnBanner());
-                    if (levelComparison != 0) {
-                        return levelComparison;
-                    }
+        List<Location> locationsWithAds;
+        List<Location> locationsWithoutAds = new ArrayList<>(locationList);
 
-                    LocalDateTime now = LocalDateTime.now();
-                    long remainingTimeAd1 = Duration.between(now, ad1.getExpireDate()).getSeconds();
-                    long remainingTimeAd2 = Duration.between(now, ad2.getExpireDate()).getSeconds();
+        if(adsRegistrationList == null){
+            List<LocationResponseLazy> locationRandomList = getRandomLocations(locationsWithoutAds)
+                    .stream().map(location -> mapper.map(location, LocationResponseLazy.class)).toList();
 
-                    return Long.compare(remainingTimeAd2, remainingTimeAd1);
-                })
-                .map(adsRegistration -> mapper.map(adsRegistration.getLocation(), LocationResponseLazy.class))
-                .toList();
+            return new PageImpl<>(locationRandomList, pageable, locationRandomList.size());
+        }else {
+            adsRegistrationList.forEach(adsRegistration -> locationsWithoutAds.removeIf(location -> location.getId().equals(adsRegistration.getLocation().getId())));
 
-//        List<LocationResponseLazy> sortedLocations = sortedLocation.stream()
-//                .map(adsRegistration -> mapper.map(adsRegistration.getLocation(), LocationResponseLazy.class))
-//                .toList();
+            locationsWithAds = adsRegistrationList.stream()
+                    .sorted((loc1, loc2) -> {
+                        int levelComparison;
+                        if (adsType.equals(AdsType.BANNER)){
+                            levelComparison = Integer.compare(loc2.getLocation().getOnBanner(), loc1.getLocation().getOnBanner());
+                        } else {
+                            levelComparison = Integer.compare(loc2.getLocation().getOnSale(), loc1.getLocation().getOnSale());
+                        }
 
-        return new PageImpl<>(sortedLocation, pageable, sortedLocation.size());
+                        if (levelComparison != 0) {
+                            return levelComparison;
+                        }
+
+                        LocalDateTime now = LocalDateTime.now();
+                        long remainingTimeLoc1 = Duration.between(now, loc1.getExpireDate()).toSeconds();
+                        long remainingTimeLoc2 = Duration.between(now, loc2.getExpireDate()).toSeconds();
+
+                        return Long.compare(remainingTimeLoc2, remainingTimeLoc1);
+                    })
+                    .map(AdsRegistration::getLocation)
+                    .toList();
+
+            List<Location> locationRandomList = getRandomLocations(locationsWithoutAds);
+            List<Location> combinedLocations = new ArrayList<>(locationsWithAds);
+            combinedLocations.addAll(locationRandomList);
+
+            List<LocationResponseLazy> locationResponseLazyList = combinedLocations.stream()
+                    .map(location -> mapper.map(location, LocationResponseLazy.class))
+                    .toList();
+
+            return new PageImpl<>(locationResponseLazyList, pageable, locationResponseLazyList.size());
+        }
     }
 
     private Specification<Location> specification(Map<String, Object> searchParams){
@@ -252,20 +280,16 @@ public class LocationServiceImpl implements LocationService {
         return savedLocation;
     }
 
-    //
-    private Page<Location> getRandomLocations(Pageable pageable) {
-        Page<Location> locationsPage = locationRepository.findAll(pageable);
+    private List<Location> getRandomLocations(List<Location> locationRandomList) {
 
-        if (!locationsPage.hasContent()) {
+        if (locationRandomList.isEmpty()) {
             throw new ResourceNotFoundException("Location", "any", "No locations found.");
         }
 
-        List<Location> allLocations = new ArrayList<>(locationsPage.getContent());
-        Collections.shuffle(allLocations);
+        Collections.shuffle(locationRandomList);
 
-        return new PageImpl<>(allLocations, pageable, locationsPage.getTotalElements());
+        return locationRandomList;
     }
-
 
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         return Math.sqrt(Math.pow((lat1 - lat2), 2) + Math.pow((lon1 - lon2), 2)) * 100;

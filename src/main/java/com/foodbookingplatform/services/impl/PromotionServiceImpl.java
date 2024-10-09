@@ -156,14 +156,14 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionActive() {
-        List<Promotion> promotionsActive = promotionRepository.findPromotionInactive(LocalDateTime.now(), OfferStatus.INACTIVE);
+        List<Promotion> promotionsActive = promotionRepository.findByStartDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);
         promotionsActive.forEach(promotion -> promotion.setStatus(OfferStatus.ACTIVE));
         promotionRepository.saveAll(promotionsActive);
     }
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionExpire() {
-        List<Promotion> promotionsExpire = promotionRepository.findPromotionActive(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<Promotion> promotionsExpire = promotionRepository.findByEndDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
         promotionsExpire.forEach(promotion -> promotion.setStatus(OfferStatus.EXPIRE));
         promotionRepository.saveAll(promotionsExpire);
     }

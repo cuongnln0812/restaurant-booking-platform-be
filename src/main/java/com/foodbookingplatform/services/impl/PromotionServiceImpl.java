@@ -4,8 +4,12 @@ import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
+import com.foodbookingplatform.models.payload.dto.promotion.ApplyPromotionResponse;
+import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionRequest;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.PromotionRepository;
 import com.foodbookingplatform.repositories.UserRepository;
@@ -22,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,9 +121,55 @@ public class PromotionServiceImpl implements PromotionService {
     }
 
     @Override
-    public float applyPromotion(Long promotionId, float totalPrice, int numberOfPeople,
+    public List<ApplyPromotionResponse> getUsablePromotionListOfLocation(Long locationId, Float totalPrice, Integer numberOfPeople,
+                                                                     LocalDate bookingDate, LocalTime bookingTime) {
+        List<Promotion> promotionResponses = promotionRepository.findAllByLocationIdAndStatus(locationId, OfferStatus.ACTIVE);
+        return promotionResponses.stream()
+                .map(promotion -> {
+                    ApplyPromotionResponse response = mapper.map(promotion, ApplyPromotionResponse.class);
+                    boolean isUsable = false;
+
+                    switch (promotion.getType()) {
+                        case "BILL" -> {
+                            if (totalPrice == null) {
+                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Total price must not be null for BILL promotion");
+                            }
+                            if (promotion.getMinBill() <= totalPrice) {
+                                isUsable = true;
+                            }
+                        }
+                        case "PEOPLE" -> {
+                            if (numberOfPeople == null) {
+                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Number of people must not be null for PEOPLE promotion");
+                            }
+                            if (promotion.getMinPeople() <= numberOfPeople) {
+                                isUsable = true;
+                            }
+                        }
+                        case "TIME" -> {
+                            if (bookingDate == null || bookingTime == null) {
+                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking date and time must not be null for TIME promotion");
+                            }
+                            if (isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(),
+                                    promotion.getStartHourTime(), promotion.getEndDate(),
+                                    promotion.getEndHourTime())) {
+                                isUsable = true;
+                            }
+                        }
+                        default -> throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Unknown promotion type: " + promotion.getType());
+                    }
+
+                    // Set the usable status
+                    response.setUsable(isUsable);
+                    return response;
+                })
+                .toList();
+    }
+
+    @Override
+    public CheckPromotionResponse applyPromotion(Long promotionId, Float totalPrice, Integer numberOfPeople,
                                 LocalDate bookingDate, LocalTime bookingTime) {
-        float discountAmount = 0.0f;
+        CheckPromotionResponse checkPromotionResponse = new CheckPromotionResponse();
 
         Promotion promotion = promotionRepository.findById(promotionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", promotionId));
@@ -126,34 +177,48 @@ public class PromotionServiceImpl implements PromotionService {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Promotion is not available!");
 
         switch (promotion.getType()){
-            case "BILL" -> discountAmount = applyBillPromotion(promotion, totalPrice);
-            case "PEOPLE" -> discountAmount = applyPeoplePromotion(promotion, numberOfPeople);
-            case "TIME" -> discountAmount = applyTimePromotion(promotion, bookingDate, bookingTime);
+            case "BILL" -> checkPromotionResponse = applyBillPromotion(promotion, totalPrice);
+            case "PEOPLE" -> checkPromotionResponse = applyPeoplePromotion(promotion, numberOfPeople);
+            case "TIME" -> checkPromotionResponse = applyTimePromotion(promotion, bookingDate, bookingTime);
         }
 
-        return discountAmount;
+        return checkPromotionResponse;
     }
 
-    private float applyTimePromotion(Promotion promotion, LocalDate bookingDate, LocalTime bookingTime) {
+    private CheckPromotionResponse applyTimePromotion(Promotion promotion, LocalDate bookingDate, LocalTime bookingTime) {
+        if(bookingTime == null || bookingDate == null)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+                    + promotion.getTitle());
         if(isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(), promotion.getStartHourTime(),
                 promotion.getEndDate(), promotion.getEndHourTime())){
-            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
-            else return 0;
+            return getCheckPromotionResponse(promotion);
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Date Time invalid!");
     }
 
-    private float applyPeoplePromotion(Promotion promotion, int numberOfPeople) {
+    private CheckPromotionResponse applyPeoplePromotion(Promotion promotion, int numberOfPeople) {
+        if(numberOfPeople == 0 )
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+                    + promotion.getTitle());
         if(promotion.getMinPeople() <= numberOfPeople){
-            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
-            else return 0;
+            return getCheckPromotionResponse(promotion);
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of people invalid!");
     }
 
-    private float applyBillPromotion(Promotion promotion, float totalPrice) {
+    private CheckPromotionResponse applyBillPromotion(Promotion promotion, float totalPrice) {
+        if(totalPrice > 0)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+                    + promotion.getTitle());
         if(promotion.getMinBill() <= totalPrice){
-            if(promotion.getDiscountValue() != 0) return Float.parseFloat(promotion.getDiscountValue().toString());
-            else return 0;
+            return getCheckPromotionResponse(promotion);
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of bill invalid!");
+    }
+
+    private CheckPromotionResponse getCheckPromotionResponse(Promotion promotion){
+        CheckPromotionResponse response = new CheckPromotionResponse();
+        response.setPromotionId(promotion.getId());
+        if(promotion.getDiscountValue() != null && promotion.getDiscountValue() != 0) response.setDiscountedValue(Float.parseFloat(promotion.getDiscountValue().toString()));
+        if(promotion.getFreeItem() != null) response.setFreeItem(promotion.getFreeItem());
+        return response;
     }
 
     public boolean isDateTimeInRange(LocalDate dateToCheck, LocalTime timeToCheck,
@@ -172,7 +237,6 @@ public class PromotionServiceImpl implements PromotionService {
         }
         return false;
     }
-
 
     public Promotion validate(PromotionRequest promotionRequest, Long promotionId) {
         Promotion promotion;

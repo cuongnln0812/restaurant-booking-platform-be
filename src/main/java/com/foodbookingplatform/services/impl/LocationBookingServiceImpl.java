@@ -10,6 +10,8 @@ import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingRequest
 import com.foodbookingplatform.models.payload.dto.foodbooking.FoodBookingResponse;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingResponse;
+import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.FoodBookingService;
 import com.foodbookingplatform.services.LocationBookingService;
@@ -162,8 +164,9 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 if(request.getPromotionId() != null && request.getPromotionId() != 0 ){
                     Promotion promotion = promotionRepository.findById(request.getPromotionId())
                             .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", request.getPromotionId()));
-                    promotionDiscountAmount = promotionService.applyPromotion(request.getPromotionId(), totalPrice,
+                    CheckPromotionResponse checkPromotionResponse = promotionService.applyPromotion(request.getPromotionId(), totalPrice,
                             newBooking.getNumberOfGuest(), newBooking.getBookingDate(), newBooking.getBookingTime());
+                    promotionDiscountAmount = checkPromotionResponse.getDiscountedValue();
                     newBooking.setPromotion(promotion);
                     promotion.getLocationBookings().add(newBooking);
                     promotionRepository.save(promotion);
@@ -173,7 +176,8 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                     UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(request.getVoucherId(), username)
                             .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
                     Voucher voucher = userVoucher.getVoucher();
-                    voucherDiscountAmount = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
+                    CheckVoucherResponse checkVoucherResponse = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
+                    voucherDiscountAmount = checkVoucherResponse.getDiscountedValue();
                     newBooking.setVoucher(voucher);
                     voucher.getLocationBookings().add(newBooking);
                     userVoucher.setQuantityAvailable(userVoucher.getQuantityAvailable() - 1);

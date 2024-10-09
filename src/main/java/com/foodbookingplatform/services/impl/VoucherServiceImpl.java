@@ -190,9 +190,6 @@ public class VoucherServiceImpl implements VoucherService {
                 .toList();
     }
 
-
-
-
     @Scheduled(fixedRate = 10000)
     public void handleVoucherActive() {
         List<Voucher> voucherActive = voucherRepository.findVoucherByStartDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);

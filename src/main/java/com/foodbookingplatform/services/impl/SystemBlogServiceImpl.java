@@ -64,6 +64,7 @@ public class SystemBlogServiceImpl implements SystemBlogService {
     @Override
     @Transactional
     public SystemBlogResponse createSystemBlog(SystemBlogRequest blog) {
+
         SystemBlog newBlog = mapper.map(blog, SystemBlog.class);
         newBlog.setStatus(BlogStatus.PENDING);
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

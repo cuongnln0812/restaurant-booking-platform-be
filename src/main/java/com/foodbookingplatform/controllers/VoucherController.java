@@ -2,10 +2,13 @@ package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.enums.OfferStatus;
+import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
 import com.foodbookingplatform.services.VoucherService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -66,6 +69,26 @@ public class VoucherController {
     @GetMapping("/user")
     public ResponseEntity<List<UserVoucherResponse>> viewUserVoucher() {
         List<UserVoucherResponse>  response = voucherService.viewAllVoucherOfUser();
+        return ResponseEntity.ok(response);
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @Operation(description = "Use for getting usable voucher list of logged in user and the total price of the booking " +
+            "If it is usable, it returns response contains voucher's detail and isUsable true, or else false")
+    @PreAuthorize("hasAnyRole('USER')")
+    @GetMapping("/user/usable-vouchers")
+    public ResponseEntity<List<ApplyUserVoucherResponse>> viewUsableVoucherOfUser(@RequestParam Float totalPrice) {
+        List<ApplyUserVoucherResponse> response = voucherService.getUsableVoucherListOfUser(totalPrice);
+        return ResponseEntity.ok(response);
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @Operation(description = "Use for checking and applying voucher. " +
+            "If it is usable, it returns the discounted value from the total price, or else throws exception with error message")
+    @PreAuthorize("hasAnyRole('USER')")
+    @PostMapping("/applying/{voucherId}")
+    public ResponseEntity<CheckVoucherResponse> applyVoucher(@PathVariable Long voucherId, @RequestParam Float totalPrice) {
+        CheckVoucherResponse response = voucherService.applyVoucher(voucherId, totalPrice);
         return ResponseEntity.ok(response);
     }
 

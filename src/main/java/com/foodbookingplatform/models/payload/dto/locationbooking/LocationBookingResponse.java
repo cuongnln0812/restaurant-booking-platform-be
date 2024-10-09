@@ -38,6 +38,8 @@ public class LocationBookingResponse {
 
     private Integer numberOfChildren;
 
+    private String freeItem;
+
     private LocationBookingStatus status;
 
     private List<FoodBookingResponse> foodBookings;

@@ -3,6 +3,7 @@ package com.foodbookingplatform.controllers;
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
@@ -86,8 +87,8 @@ public class VoucherController {
             "If it is usable, it returns the discounted value from the total price, or else throws exception with error message")
     @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/applying/{voucherId}")
-    public ResponseEntity<Float> applyVoucher(@PathVariable Long voucherId, @RequestParam Float totalPrice) {
-        Float response = voucherService.applyVoucher(voucherId, totalPrice);
+    public ResponseEntity<CheckVoucherResponse> applyVoucher(@PathVariable Long voucherId, @RequestParam Float totalPrice) {
+        CheckVoucherResponse response = voucherService.applyVoucher(voucherId, totalPrice);
         return ResponseEntity.ok(response);
     }
 

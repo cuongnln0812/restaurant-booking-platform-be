@@ -2,6 +2,8 @@ package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.enums.OfferStatus;
+import com.foodbookingplatform.models.payload.dto.promotion.ApplyPromotionResponse;
+import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionRequest;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
 import com.foodbookingplatform.services.PromotionService;
@@ -17,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -85,6 +88,30 @@ public class PromotionController {
     @GetMapping("{id}")
     public ResponseEntity<PromotionResponse> getPromotion(@PathVariable Long id) {
         return ResponseEntity.ok(promotionService.getPromotion(id));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/usable-promotions/{locationId}")
+    public ResponseEntity<List<ApplyPromotionResponse>> getUsablePromotionListOfLocation(
+            @PathVariable Long locationId,
+            @RequestParam(required = false) Float totalPrice,
+            @RequestParam(required = false) Integer numberOfPeople,
+            @RequestParam(required = false) LocalDate bookingDate,
+            @RequestParam(required = false) LocalTime bookingTime) {
+        return ResponseEntity.ok(promotionService.getUsablePromotionListOfLocation(locationId, totalPrice, numberOfPeople, bookingDate, bookingTime));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PostMapping("/applying/{locationId}")
+    public ResponseEntity<CheckPromotionResponse> applyPromotion(
+            @PathVariable Long locationId,
+            @RequestParam(required = false) Float totalPrice,
+            @RequestParam(required = false) Integer numberOfPeople,
+            @RequestParam(required = false) LocalDate bookingDate,
+            @RequestParam(required = false) LocalTime bookingTime) {
+        return ResponseEntity.ok(promotionService.applyPromotion(locationId, totalPrice, numberOfPeople, bookingDate, bookingTime));
     }
 
     @ApiResponse(responseCode = "201", description = "Http Status 201 Created")

@@ -5,6 +5,7 @@ import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
@@ -158,7 +159,8 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Float applyVoucher(Long voucherId, Float totalPrice) {
+    public CheckVoucherResponse applyVoucher(Long voucherId, Float totalPrice) {
+        CheckVoucherResponse checkVoucherResponse = new CheckVoucherResponse();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         if(totalPrice > 0) {
             UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(voucherId, username)
@@ -166,8 +168,10 @@ public class VoucherServiceImpl implements VoucherService {
             Voucher voucher = checkVoucherValid(totalPrice, userVoucher);
 
             float discountedAmount = (totalPrice * voucher.getDiscount()) / 100;
-
-            return discountedAmount > voucher.getMaxDiscountAmount() ? voucher.getMaxDiscountAmount() : discountedAmount;
+            discountedAmount = discountedAmount > voucher.getMaxDiscountAmount() ? voucher.getMaxDiscountAmount() : discountedAmount;
+            checkVoucherResponse.setVoucherId(voucherId);
+            checkVoucherResponse.setDiscountedValue(discountedAmount);
+            return checkVoucherResponse;
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You have to pre-order foods in order to apply voucher!");
     }
 
@@ -191,14 +195,14 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherActive() {
-        List<Voucher> voucherActive = voucherRepository.findVoucherByStartDateAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);
+        List<Voucher> voucherActive = voucherRepository.findVoucherByStartDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);
         voucherActive.forEach(v -> v.setStatus(OfferStatus.ACTIVE));
         voucherRepository.saveAll(voucherActive);
     }
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherExpire() {
-        List<Voucher> voucherExpire = voucherRepository.findVoucherByEndDateAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<Voucher> voucherExpire = voucherRepository.findVoucherByEndDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
         voucherExpire.forEach(v -> v.setStatus(OfferStatus.EXPIRE));
         voucherRepository.saveAll(voucherExpire);
     }

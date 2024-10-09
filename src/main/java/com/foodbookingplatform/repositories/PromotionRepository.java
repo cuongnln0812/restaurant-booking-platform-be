@@ -20,4 +20,6 @@ public interface PromotionRepository extends JpaRepository<Promotion, Long>, Jpa
     List<Promotion> findPromotionActive(@Param("now")LocalDateTime now,@Param("status") OfferStatus status);
 
     Page<Promotion> getPromotionByLocation_Id(Long id, Pageable pageable);
+
+    List<Promotion> findAllByLocationIdAndStatus(Long locationId, OfferStatus status);
 }

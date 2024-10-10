@@ -5,7 +5,6 @@ import com.foodbookingplatform.models.enums.AdsType;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
-import com.foodbookingplatform.models.payload.dto.location.LocationResponseLazy;
 import com.foodbookingplatform.services.LocationService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -43,7 +42,7 @@ public class LocationController {
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/banner")
-    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithBannerAds(@Valid
+    public ResponseEntity<Page<LocationResponse>> getLocationsWithBannerAds(@Valid
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam AdsType adsType
@@ -54,7 +53,7 @@ public class LocationController {
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/search")
-    public ResponseEntity<Page<LocationResponseLazy>> searchLocations(
+    public ResponseEntity<Page<LocationResponse>> searchLocations(
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,

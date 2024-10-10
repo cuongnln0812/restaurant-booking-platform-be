@@ -10,7 +10,6 @@ import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.payload.dto.category.CategoryResponse;
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
-import com.foodbookingplatform.models.payload.dto.location.LocationResponseLazy;
 import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
 import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourResponse;
 import com.foodbookingplatform.repositories.*;
@@ -67,7 +66,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean searchNearBy) {
+    public Page<LocationResponse> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean searchNearBy) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
@@ -75,7 +74,7 @@ public class LocationServiceImpl implements LocationService {
         List<Location> locationList = locationRepository.findAll(specification);
         if(searchNearBy){
             String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);
-            List<LocationResponseLazy> locationNearSorted = locationList.stream()
+            List<LocationResponse> locationNearSorted = locationList.stream()
                     .filter(location -> location.getGeoHashCode().startsWith(geoHashCode))
                     .sorted((location1, location2) -> {
                         int levelComparison = Integer.compare(location2.getOnSuggest(), location1.getOnSuggest());
@@ -89,7 +88,7 @@ public class LocationServiceImpl implements LocationService {
                         }
                     })
                     .map(location -> {
-                        LocationResponseLazy response = mapper.map(location, LocationResponseLazy.class);
+                        LocationResponse response = mapToResponse(location);
                         double distance = calculateDistance(response.getLatitude(), response.getLongitude(), latitude, longitude);
                         response.setDistance(formatDistance(distance));
                         return response;
@@ -98,7 +97,7 @@ public class LocationServiceImpl implements LocationService {
 
             return new PageImpl<>(locationNearSorted, pageable, locationNearSorted.size());
         }
-        List<LocationResponseLazy> locationResponseLazyList = locationList.stream().map(location -> mapper.map(location, LocationResponseLazy.class)).toList();
+        List<LocationResponse> locationResponseLazyList = locationList.stream().map(this::mapToResponse).toList();
         return new PageImpl<>(locationResponseLazyList, pageable, locationList.size());
     }
 
@@ -116,7 +115,7 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size, AdsType adsType) {
+    public Page<LocationResponse> getLocationsWithBannerAds(int page, int size, AdsType adsType) {
         Pageable pageable = PageRequest.of(page, size);
         List<Location> locationList = locationRepository.findAll();
         List<AdsRegistration> adsRegistrationList;
@@ -131,8 +130,8 @@ public class LocationServiceImpl implements LocationService {
         List<Location> locationsWithoutAds = new ArrayList<>(locationList);
 
         if(adsRegistrationList == null){
-            List<LocationResponseLazy> locationRandomList = getRandomLocations(locationsWithoutAds)
-                    .stream().map(location -> mapper.map(location, LocationResponseLazy.class)).toList();
+            List<LocationResponse> locationRandomList = getRandomLocations(locationsWithoutAds)
+                    .stream().map(this::mapToResponse).toList();
 
             return new PageImpl<>(locationRandomList, pageable, locationRandomList.size());
         }else {
@@ -164,8 +163,8 @@ public class LocationServiceImpl implements LocationService {
             List<Location> combinedLocations = new ArrayList<>(locationsWithAds);
             combinedLocations.addAll(locationRandomList);
 
-            List<LocationResponseLazy> locationResponseLazyList = combinedLocations.stream()
-                    .map(location -> mapper.map(location, LocationResponseLazy.class))
+            List<LocationResponse> locationResponseLazyList = combinedLocations.stream()
+                    .map(this::mapToResponse)
                     .toList();
 
             return new PageImpl<>(locationResponseLazyList, pageable, locationResponseLazyList.size());

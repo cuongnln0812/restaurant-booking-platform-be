@@ -10,7 +10,7 @@ VALUES
     ('Ăn trưa'),
     ('Ăn tối'),
     ('Hẹn hò'),
-    ('Meeting');
+    ('Gặp mặt');
 
 INSERT INTO `category` (`name`, `image`, `status`, `created_by`)
 VALUES
@@ -172,3 +172,37 @@ VALUES
     ('FRIDAY', '00:00:00', '23:59:59', 14),
     ('SATURDAY', '00:00:00', '23:59:59', 14),
     ('SUNDAY', '00:00:00', '23:59:59', 14);
+
+INSERT INTO `location_category` (`created_by`, `category_id`, `location_id`)
+VALUES
+    ('admin', '1', '1'),
+    ('admin', '2', '2'),
+    ('admin', '3', '3'),
+    ('admin', '4', '4'),
+    ('admin', '1', '5'),
+    ('admin', '2', '6'),
+    ('admin', '3', '7'),
+    ('admin', '4', '8'),
+    ('admin', '1', '9'),
+    ('admin', '2', '10'),
+    ('admin', '3', '11'),
+    ('admin', '4', '12'),
+    ('admin', '1', '13'),
+    ('admin', '2', '14');
+
+INSERT INTO `location_tag` (`created_by`, `tag_id`, `location_id`)
+VALUES
+    ('admin', '1', '1'),
+    ('admin', '2', '2'),
+    ('admin', '3', '3'),
+    ('admin', '4', '4'),
+    ('admin', '1', '5'),
+    ('admin', '2', '6'),
+    ('admin', '3', '7'),
+    ('admin', '4', '8'),
+    ('admin', '1', '9'),
+    ('admin', '2', '10'),
+    ('admin', '3', '11'),
+    ('admin', '4', '12'),
+    ('admin', '5', '13'),
+    ('admin', '5', '14');

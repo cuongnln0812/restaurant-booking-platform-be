@@ -40,7 +40,7 @@ public class LocationResponse {
 
     private double longitude;
 
-//    private String distance;
+    private String distance;
 
     private String description;
 

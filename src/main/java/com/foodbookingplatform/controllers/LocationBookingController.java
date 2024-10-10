@@ -67,7 +67,7 @@ public class LocationBookingController {
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN')")
     @GetMapping("location/{locationId}")
     public ResponseEntity<Page<LocationBookingResponse>> getAllBookingByLocation(
             @PathVariable(name = "locationId") Long locationId,

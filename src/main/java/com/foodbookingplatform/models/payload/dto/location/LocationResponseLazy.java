@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,4 +42,8 @@ public class LocationResponseLazy {
     private EntityStatus status;
 
     private String image;
+
+    private List<String> categoryName;
+
+    private List<String> tagName;
 }

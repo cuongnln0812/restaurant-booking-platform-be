@@ -18,6 +18,8 @@ public class GeoHashGeneration {
         String nearby10 = getGeoHashCode(10.77383221225152, 106.70078825376534, 9);
         String nearby11 = getGeoHashCode(10.800190205392171, 106.7358976241099, 9);
         String nearby12 = getGeoHashCode(10.81290129289196, 106.73474480034143, 9);
+        String nearby13 = getGeoHashCode(10.789192559519389, 106.68527342411488, 9);
+        String nearby14 = getGeoHashCode(10.807955784181551, 106.65597108110464, 9);
 
         System.out.println("Current Location GeoHash: " + currentLocation);
         System.out.println("Nearby Location 1 GeoHash: " + nearby01);
@@ -32,6 +34,8 @@ public class GeoHashGeneration {
         System.out.println("Nearby Location 2 GeoHash: " + nearby10);
         System.out.println("Nearby Location 2 GeoHash: " + nearby11);
         System.out.println("Nearby Location 2 GeoHash: " + nearby12);
+        System.out.println("Nearby Location 2 GeoHash: " + nearby13);
+        System.out.println("Nearby Location 2 GeoHash: " + nearby14);
     }
 
     public static String getGeoHashCode(double latitude, double longitude, int precision){

@@ -42,13 +42,34 @@ public class LocationController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @GetMapping("/banner")
-    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithBannerAds(@Valid
+    @GetMapping("/ads-type")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithAdsType(@Valid
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             @RequestParam AdsType adsType
             ) {
         return ResponseEntity.ok(locationService.getLocationsWithBannerAds(pageNo, pageSize, adsType));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/recommend")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsRecommend(@RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                                                            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize
+    ) {
+        return ResponseEntity.ok(locationService.getLocationsRecommend(pageNo, pageSize));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/tag")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithTag(@RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+                                                                          @RequestParam String tagName
+    ) {
+        return ResponseEntity.ok(locationService.getLocationsWithTag(pageNo, pageSize, sortBy, sortDir, tagName));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")

@@ -17,5 +17,7 @@ public interface LocationService {
     void deleteLocation(long id);
 
     //Ads Registration
-    Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size, AdsType adsType);
+    Page<LocationResponseLazy> getLocationsWithBannerAds(int pageNo, int pageSize, AdsType adsType);
+    Page<LocationResponseLazy> getLocationsRecommend(int pageNo, int pageSize);
+    Page<LocationResponseLazy> getLocationsWithTag(int pageNo, int pageSize, String sortBy, String sortDir, String tagName);
 }

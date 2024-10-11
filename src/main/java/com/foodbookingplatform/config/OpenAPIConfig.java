@@ -11,9 +11,8 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(info = @Info(contact = @Contact(
 
 ), description = "OpenAPI documentation for Spring Security", title = "OpenAPI specification", version = "1.0"), servers = {
-                @Server(description = "DEV ENV", url = "http://localhost:8080"
-
-                )
+                @Server(description = "DEV ENV", url = "http://localhost:8080"),
+                @Server(description = "PRODUCTION ENV", url = "https://restaurant-booking-api-f979.onrender.com")
 })
 @SecurityScheme(name = "Bear Authentication",
         description = "JWT auth description",

@@ -116,8 +116,8 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size, AdsType adsType) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<LocationResponseLazy> getLocationsWithBannerAds(int pageNo, int pageSize, AdsType adsType) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
         List<Location> locationList = locationRepository.findAll();
         List<AdsRegistration> adsRegistrationList;
 
@@ -170,6 +170,39 @@ public class LocationServiceImpl implements LocationService {
 
             return new PageImpl<>(locationResponseLazyList, pageable, locationResponseLazyList.size());
         }
+    }
+
+    @Override
+    public Page<LocationResponseLazy> getLocationsRecommend(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        List<Location> locationList = locationRepository.findAll();
+
+        List<LocationResponseLazy> locationsRecommend = locationList.stream()
+                    .sorted((loc1, loc2) -> {
+                        int ratingComparison;
+                        ratingComparison = Integer.compare(loc2.getRating(), loc1.getRating());
+
+                        if (ratingComparison != 0) {
+                            return ratingComparison;
+                        }
+
+                        return Long.compare(loc2.getView(), loc1.getView());
+                    })
+                    .map(this::mapToResponseLazy)
+                    .toList();
+
+        return new PageImpl<>(locationsRecommend, pageable, locationsRecommend.size());
+    }
+
+    @Override
+    public Page<LocationResponseLazy> getLocationsWithTag(int pageNo, int pageSize, String sortBy, String sortDir, String tagName) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Specification<Location> specification = GenericSpecification.rightJoinFieldContains("locationTags", "tag", "name", tagName);
+
+        Page<Location> locationList = locationRepository.findAll(specification, pageable);
+
+        return locationList.map(this::mapToResponseLazy);
     }
 
     private Specification<Location> specification(Map<String, Object> searchParams) {

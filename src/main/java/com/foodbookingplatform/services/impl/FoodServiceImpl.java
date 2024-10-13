@@ -51,6 +51,15 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
+    public Page<FoodResponse> getAllFoodsByLocation(int pageNo, int pageSize, String sortBy, String sortDir, Long locationId) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<Food> foodPage = foodRepository.getFoodByLocation_Id(locationId, pageable);
+
+        return foodPage.map(food -> mapper.map(food, FoodResponse.class));
+    }
+
+    @Override
     public List<FoodResponse> searchFoods(int pageNo, int pageSize, String sortBy, String sortDir, String searchText) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);

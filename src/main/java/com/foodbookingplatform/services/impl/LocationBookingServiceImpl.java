@@ -134,70 +134,71 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         if(request.getBookingTime().isBefore(workingHour.getStartTime()) || request.getBookingTime().isAfter(workingHour.getEndTime()))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Please book another time!");
 
-        if(request.getBookingDate().isAfter(LocalDate.now())){
-            if(request.getBookingTime().isAfter(LocalTime.now())){
-                newBooking.setName(request.getName());
-                newBooking.setAddress(request.getAddress());
-                newBooking.setPhone(request.getPhone());
-                newBooking.setBookingDate(request.getBookingDate());
-                newBooking.setBookingTime(request.getBookingTime());
-                newBooking.setNumberOfAdult(request.getNumberOfAdult());
-                newBooking.setNumberOfChildren(request.getNumberOfChildren());
-                newBooking.setNumberOfGuest(request.getNumberOfAdult() + request.getNumberOfChildren());
-                newBooking.setLocation(bookedLocation);
-                newBooking.setUser(user);
-                newBooking.setStatus(LocationBookingStatus.PENDING);
-                newBooking = locationBookingRepository.save(newBooking);
+        if(request.getBookingDate().isBefore(LocalDate.now())) {
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book in the past!");
+        } else if(request.getBookingDate().isEqual(LocalDate.now()) && request.getBookingTime().isBefore(LocalTime.now())) {
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book in the past!");
+        }
 
-                if(!request.getFoodBookings().isEmpty()) {
-                    for (int i = 0; i < request.getFoodBookings().size(); i++) {
-                        FoodBookingRequest foodBookingRequest = request.getFoodBookings().get(i);
-                        Food orderedFood = foodRepository.findById(foodBookingRequest.getFoodId())
-                                .orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodBookingRequest.getFoodId()));
-                        if (!orderedFood.getLocation().equals(bookedLocation))
-                            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available for this restaurant!");
-                        if (!orderedFood.getStatus().equals(EntityStatus.ACTIVE))
-                            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available to pre-order!");
-                        orderedFoods.add(orderedFood);
-                        foodQuantity.add(foodBookingRequest.getQuantity());
-                        totalPrice += orderedFood.getPrice() * foodBookingRequest.getQuantity();
-                    }
-                }
+        newBooking.setName(request.getName());
+        newBooking.setAddress(request.getAddress());
+        newBooking.setPhone(request.getPhone());
+        newBooking.setBookingDate(request.getBookingDate());
+        newBooking.setBookingTime(request.getBookingTime());
+        newBooking.setNumberOfAdult(request.getNumberOfAdult());
+        newBooking.setNumberOfChildren(request.getNumberOfChildren());
+        newBooking.setNumberOfGuest(request.getNumberOfAdult() + request.getNumberOfChildren());
+        newBooking.setLocation(bookedLocation);
+        newBooking.setUser(user);
+        newBooking.setStatus(LocationBookingStatus.PENDING);
+        newBooking = locationBookingRepository.save(newBooking);
 
-                List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(orderedFoods, foodQuantity, newBooking);
+        if(!request.getFoodBookings().isEmpty()) {
+            for (int i = 0; i < request.getFoodBookings().size(); i++) {
+                FoodBookingRequest foodBookingRequest = request.getFoodBookings().get(i);
+                Food orderedFood = foodRepository.findById(foodBookingRequest.getFoodId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Food", "id", foodBookingRequest.getFoodId()));
+                if (!orderedFood.getLocation().equals(bookedLocation))
+                    throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available for this restaurant!");
+                if (!orderedFood.getStatus().equals(EntityStatus.ACTIVE))
+                    throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, orderedFood.getName() + " is not available to pre-order!");
+                orderedFoods.add(orderedFood);
+                foodQuantity.add(foodBookingRequest.getQuantity());
+                totalPrice += orderedFood.getPrice() * foodBookingRequest.getQuantity();
+            }
+        }
 
-                if(request.getPromotionId() != null && request.getPromotionId() != 0 ){
-                    Promotion promotion = promotionRepository.findById(request.getPromotionId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", request.getPromotionId()));
-                    CheckPromotionResponse checkPromotionResponse = promotionService.applyPromotion(request.getPromotionId(), totalPrice,
-                            newBooking.getNumberOfGuest(), newBooking.getBookingDate(), newBooking.getBookingTime());
-                    promotionDiscountAmount = checkPromotionResponse.getDiscountedValue();
-                    newBooking.setPromotion(promotion);
-                    promotion.getLocationBookings().add(newBooking);
-                    promotionRepository.save(promotion);
-                }
+        List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(orderedFoods, foodQuantity, newBooking);
 
-                if(request.getVoucherId() != null && request.getVoucherId() != 0){
-                    UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(request.getVoucherId(), username)
-                            .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
-                    Voucher voucher = userVoucher.getVoucher();
-                    CheckVoucherResponse checkVoucherResponse = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
-                    voucherDiscountAmount = checkVoucherResponse.getDiscountedValue();
-                    newBooking.setVoucher(voucher);
-                    voucher.getLocationBookings().add(newBooking);
-                    userVoucher.setQuantityAvailable(userVoucher.getQuantityAvailable() - 1);
-                    userVoucherRepository.save(userVoucher);
-                    voucherRepository.save(voucher);
-                }
+        if(request.getPromotionId() != null && request.getPromotionId() != 0 ){
+            Promotion promotion = promotionRepository.findById(request.getPromotionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", request.getPromotionId()));
+            CheckPromotionResponse checkPromotionResponse = promotionService.applyPromotion(request.getPromotionId(), totalPrice,
+                    newBooking.getNumberOfGuest(), newBooking.getBookingDate(), newBooking.getBookingTime());
+            promotionDiscountAmount = checkPromotionResponse.getDiscountedValue();
+            newBooking.setPromotion(promotion);
+            promotion.getLocationBookings().add(newBooking);
+            promotionRepository.save(promotion);
+        }
 
-                newBooking.setFoodBookings(new HashSet<>(bookedFoods));
-                newBooking.setAmount(totalPrice - promotionDiscountAmount - voucherDiscountAmount);
-                newBooking = locationBookingRepository.save(newBooking);
+        if(request.getVoucherId() != null && request.getVoucherId() != 0){
+            UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(request.getVoucherId(), username)
+                    .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
+            Voucher voucher = userVoucher.getVoucher();
+            CheckVoucherResponse checkVoucherResponse = voucherService.applyVoucher(request.getVoucherId(), totalPrice);
+            voucherDiscountAmount = checkVoucherResponse.getDiscountedValue();
+            newBooking.setVoucher(voucher);
+            voucher.getLocationBookings().add(newBooking);
+            userVoucher.setQuantityAvailable(userVoucher.getQuantityAvailable() - 1);
+            userVoucherRepository.save(userVoucher);
+            voucherRepository.save(voucher);
+        }
 
-                return mapLocationBookingResponse(newBooking);
+        newBooking.setFoodBookings(new HashSet<>(bookedFoods));
+        newBooking.setAmount(totalPrice - promotionDiscountAmount - voucherDiscountAmount);
+        newBooking = locationBookingRepository.save(newBooking);
 
-            }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day and time before now!");
-        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book the day before today!");
+        return mapLocationBookingResponse(newBooking);
     }
 
     @Override

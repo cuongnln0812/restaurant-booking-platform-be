@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,7 @@ public class LocationBookingController {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "address", required = false) String address,
             @RequestParam(value = "phone", required = false) Long phone
-    ) {
+    ) throws AccessDeniedException {
         Map<String, Object> keyword = new HashMap<>();
 
         if (status != null && !status.isEmpty()) keyword.put("status", status);

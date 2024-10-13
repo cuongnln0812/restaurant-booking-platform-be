@@ -341,6 +341,7 @@ public class LocationServiceImpl implements LocationService {
         List<Category> categories = locationCategoryRepository.findCategoriesByLocationId(location.getId());
         List<Tag> tags = locationTagRepository.findTagsByLocationId(location.getId());
         List<WorkingHour> workingHours = workingHourRepository.findByLocation_Id(location.getId());
+
         LocationResponse locationResponse = mapper.map(location, LocationResponse.class);
         locationResponse.setCategory(categories.stream().map(category -> mapper.map(category, CategoryResponse.class)).toList());
         locationResponse.setTag(tags.stream().map(tag -> mapper.map(tag, TagResponse.class)).toList());

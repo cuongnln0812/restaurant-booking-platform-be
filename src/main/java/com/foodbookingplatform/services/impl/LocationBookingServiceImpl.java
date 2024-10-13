@@ -18,6 +18,7 @@ import com.foodbookingplatform.services.LocationBookingService;
 import com.foodbookingplatform.services.PromotionService;
 import com.foodbookingplatform.services.VoucherService;
 import com.foodbookingplatform.utils.GenericSpecification;
+import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -71,10 +73,13 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     }
 
     @Override
-    public Page<LocationBookingResponse> getAllBookingByLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword) {
+    public Page<LocationBookingResponse> getAllBookingByLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword) throws AccessDeniedException {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<LocationBooking> bookings;
+
+        if(!SecurityUtils.isAuthorizeLocation(locationId, userRepository))
+            throw new RestaurantBookingException(HttpStatus.NOT_FOUND, "You dont have this location with id: " + locationId);
 
         if(!keyword.isEmpty()) {
             Specification<LocationBooking> specification = specification(keyword);

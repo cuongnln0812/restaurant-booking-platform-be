@@ -65,7 +65,7 @@ public class AuthController {
     @Operation(
             summary = "Generate AccessToken and Refresh Token"
     )
-    @PostMapping("/refresh_token")
+    @PostMapping("/refresh-token")
     public ResponseEntity<JWTAuthResponse> refreshToken(
             HttpServletRequest request,
             HttpServletResponse response

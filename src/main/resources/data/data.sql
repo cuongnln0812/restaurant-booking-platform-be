@@ -336,3 +336,17 @@ VALUES (3, 'a', '2024-10-10 18:28:03', NULL, NULL, 'b', 200000, '2024-06-07', '0
 INSERT INTO `payment_history`
 VALUES (1, 'admin@admin', '2024-10-10 18:29:21', 'admin@admin', '2024-10-11 01:46:27.918204', 'PAID', 400000, 3, 1),
        (14, 'admin@admin', '2024-10-10 19:02:38', 'admin@admin', '2024-10-11 09:26:59.259083', 'PAID', 400000, 4, 1);
+
+
+INSERT INTO food_category (id, image, name, created_by, created_date, modified_by, modified_date)
+VALUES
+    (1, 'category1_image.jpg', 'Appetizers', 'admin', '2024-10-08 10:00:00', 'admin', '2024-10-08 10:00:00'),
+    (2, 'category2_image.jpg', 'Main Courses', 'admin', '2024-10-08 10:10:00', 'admin', '2024-10-08 10:10:00'),
+    (3, 'category3_image.jpg', 'Desserts', 'admin', '2024-10-08 10:20:00', 'admin', '2024-10-08 10:20:00');
+
+INSERT INTO food (id, name, price, description, status, image, food_category_id, location_id, created_by, created_date, modified_by, modified_date)
+VALUES
+    (1, 'Spring Rolls', 50.00, 'Fresh spring rolls with shrimp and vegetables', 'ACTIVE', 'spring_rolls.jpg', 1, 1, 'admin', '2024-10-08 10:30:00', 'admin', '2024-10-08 10:30:00'),
+    (2, 'Grilled Chicken', 120.00, 'Grilled chicken served with a side of fries', 'ACTIVE', 'grilled_chicken.jpg', 2, 1, 'admin', '2024-10-08 10:35:00', 'admin', '2024-10-08 10:35:00'),
+    (3, 'Chocolate Cake', 80.00, 'Delicious chocolate cake topped with whipped cream', 'ACTIVE', 'chocolate_cake.jpg', 3, 1, 'admin', '2024-10-08 10:40:00', 'admin', '2024-10-08 10:40:00'),
+    (4, 'Pasta Carbonara', 100.00, 'Pasta with creamy carbonara sauce', 'ACTIVE', 'pasta_carbonara.jpg', 2, 1, 'admin', '2024-10-08 10:45:00', 'admin', '2024-10-08 10:45:00');

@@ -1,9 +1,7 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
-import com.foodbookingplatform.models.entities.LocationBooking;
 import com.foodbookingplatform.models.enums.LocationBookingStatus;
-import com.foodbookingplatform.models.payload.dto.address.AddressRequest;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingResponse;
 import com.foodbookingplatform.services.LocationBookingService;
@@ -13,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

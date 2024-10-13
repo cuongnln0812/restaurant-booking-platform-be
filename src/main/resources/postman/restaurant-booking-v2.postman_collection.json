@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "899d4042-d277-40e3-b11b-d2790c87360b",
+		"_postman_id": "b9d06573-a082-4fae-bf0c-6ff0065b7613",
 		"name": "restaurant-booking",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "20104645",
-		"_collection_link": "https://dark-zodiac-76463.postman.co/workspace/TestApisAllProjects~641169b4-1a03-47c3-8f03-2bfb8d5f86b0/collection/20104645-899d4042-d277-40e3-b11b-d2790c87360b?action=share&source=collection_link&creator=20104645"
+		"_exporter_id": "29956265",
+		"_collection_link": "https://martian-capsule-948520.postman.co/workspace/My-Workspace~cedbe8b2-557f-40cb-892b-a176a21815c7/collection/29956265-b9d06573-a082-4fae-bf0c-6ff0065b7613?action=share&source=collection_link&creator=29956265"
 	},
 	"item": [
 		{
@@ -307,7 +307,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzQzMDYyMiwiZXhwIjoxNzI3NTE3MDIyfQ.iyEX85N6TL7hIGNdsu-3-IsahJhaKdSk2znORBIS0E9x8l-OzPhjSXu1DsWRV5l0",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3Mjg3MjM0OTMsImV4cCI6MTcyODgwOTg5M30.F9eijxSlGj-sBGcw2_FVXNenzpz9d8g5-TropbkdOvHv62-NMRJ3P60LRG0wzdai",
 									"type": "string"
 								}
 							]
@@ -324,12 +324,13 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/v1/auth/info",
-							"protocol": "http",
+							"raw": "https://restaurant-booking-api-f979.onrender.com/api/v1/auth/info",
+							"protocol": "https",
 							"host": [
-								"localhost"
+								"restaurant-booking-api-f979",
+								"onrender",
+								"com"
 							],
-							"port": "8080",
 							"path": [
 								"api",
 								"v1",
@@ -362,7 +363,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"userNameOrEmailOrPhone\": \"admin@admin\",\r\n  \"password\": \"admin@admin\"\r\n}",
+							"raw": "// {\r\n//   \"userNameOrEmailOrPhone\": \"nguyentiendung\",\r\n//   \"password\": \"ntiendung@ntiendung\"\r\n// }\r\n{\r\n  \"userNameOrEmailOrPhone\": \"admin@admin\",\r\n  \"password\": \"admin@admin\"\r\n}\r\n// {\r\n//   \"userNameOrEmailOrPhone\": \"nguyenducson2915@gmail.com\",\r\n//   \"password\": \"P#zIeMxc5r\"\r\n// }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -455,7 +456,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjEyNjAwNSwiZXhwIjoxNzI2MjEyNDA1fQ.XcU-QcO8S9jDqzFw1tWxUGr4k_t3jhRuCQepndzbjfvp8VIK-Xbce1-ZymstcaZz",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5MTI4NCwiZXhwIjoxNzI4Mjc3Njg0fQ.c7xQurzoku8aHtIkp_bfg6UkRHBSmEFix8IXiMhEJwLA-PmbrbqDMVT9UE57ywyS",
 									"type": "string"
 								}
 							]
@@ -888,7 +889,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODQwMDE2MywiZXhwIjoxNzI4NDg2NTYzfQ.qR8ybExcLwT0C5u5XMZfY6O4jbYjSVIfZVhL82Utw77OZVn89vuFPgmCmv04fbhw",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODA1NTcyMSwiZXhwIjoxNzI4MTQyMTIxfQ.nnJ4Nq-u7pu1_Oi3z7CfzlIxgIGgXmFuIMZ7mbp_7wzQ9jFdK2w-oNx4nxQF2t3o",
 									"type": "string"
 								}
 							]
@@ -896,12 +897,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/locations?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"locations"
+								"locations",
+								"search"
 							],
 							"query": [
 								{
@@ -926,6 +928,178 @@
 					"response": []
 				},
 				{
+					"name": "get-all-location-ads-banner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/ads-type?pageNo=0&pageSize=10&adsType=BANNER",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"ads-type"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "adsType",
+									"value": "BANNER"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-ads-flash-sale",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/ads-type?pageNo=0&pageSize=10&adsType=FLASH_SALE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"ads-type"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "adsType",
+									"value": "FLASH_SALE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-recommend",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/recommend?pageNo=0&pageSize=10",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"recommend"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-with-tag",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/tag?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&tagName=%C4%83n%20s%C3%A1ng",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"tag"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "tagName",
+									"value": "%C4%83n%20s%C3%A1ng"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "search-location",
 					"request": {
 						"auth": {
@@ -941,7 +1115,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&status=ACTIVE&searchNearBy=true&latitude=10.801761659566852&longitude=106.63903980875249&searchText=bb",
+							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&name=a&status=ACTIVE",
 							"host": [
 								"{{API_LOCAL}}"
 							],
@@ -967,24 +1141,12 @@
 									"value": "asc"
 								},
 								{
+									"key": "name",
+									"value": "a"
+								},
+								{
 									"key": "status",
 									"value": "ACTIVE"
-								},
-								{
-									"key": "searchNearBy",
-									"value": "true"
-								},
-								{
-									"key": "latitude",
-									"value": "10.801761659566852"
-								},
-								{
-									"key": "longitude",
-									"value": "106.63903980875249"
-								},
-								{
-									"key": "searchText",
-									"value": "bb"
 								}
 							]
 						}
@@ -1027,7 +1189,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODM3MzE5MiwiZXhwIjoxNzI4NDU5NTkyfQ.E5zzoRbnWvV9IkCwtXl4A6-Q4w6ytDFIfUsr2KTCxviHco05geE4UAeeEyOqhdz0",
 									"type": "string"
 								}
 							]
@@ -1036,7 +1198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"address\": \"string\",\r\n  \"phone\": \"0514419520\",\r\n  \"suggest\": true,\r\n  \"sale\": true,\r\n  \"latitude\": \"string\",\r\n  \"longitude\": \"string\",\r\n  \"openingHours\": \"09:00:00\",\r\n  \"closingHours\": \"15:00:00\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 2,\r\n  \"brandId\": 1,\r\n  \"categoryId\": [\r\n    1,2\r\n  ],\r\n  \"tagId\": [\r\n    2\r\n  ]\r\n}",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"address\": \"string\",\r\n  \"phone\": \"0514419520\",\r\n  \"suggest\": true,\r\n  \"sale\": true,\r\n  \"latitude\": \"string\",\r\n  \"longitude\": \"string\",\r\n  \"openingHours\": \"09:00:00\",\r\n  \"closingHours\": \"15:00:00\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 1,\r\n  \"brandId\": 1,\r\n  \"categoryId\": [\r\n    1,2\r\n  ],\r\n  \"tagId\": [\r\n    2\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1170,6 +1332,53 @@
 					"response": []
 				},
 				{
+					"name": "get-all-promotions-of-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgxOTEzNDksImV4cCI6MTcyODI3Nzc0OX0.b8H9Hmga2FVcIm88DOjVCpLV750_0CvMBEtyr2O4Gkt7HNMfb-vtgMPOKfbpdQZl",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/location/2?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"location",
+								"2"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "search-promotions",
 					"request": {
 						"auth": {
@@ -1223,7 +1432,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE4NTY1NCwiZXhwIjoxNzI4MjcyMDU0fQ.MENAPooTzNDiF2VLjwn1P3npHAbSSSr7zX9r4yTBnVK0kdJ8-igG26eVJcO4AjDw",
 									"type": "string"
 								}
 							]
@@ -1251,7 +1460,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE4NTY1NCwiZXhwIjoxNzI4MjcyMDU0fQ.MENAPooTzNDiF2VLjwn1P3npHAbSSSr7zX9r4yTBnVK0kdJ8-igG26eVJcO4AjDw",
 									"type": "string"
 								}
 							]
@@ -1451,7 +1660,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5NTkzMiwiZXhwIjoxNzI4MjgyMzMyfQ.lPxZLurHO6nmtKKI_rtE__DQW7JLNM-YOzdEKWfM8903ydNmxjapOzUHE84SeNLf",
 									"type": "string"
 								}
 							]
@@ -1479,7 +1688,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODQzNzI1NiwiZXhwIjoxNzI4NTIzNjU2fQ.dq1MkGELwCED70vIxxztzbsr-GJgnl-IIynkTbPjSgePkrJxBktjkbyNIcuaY6ki",
 									"type": "string"
 								}
 							]
@@ -1488,7 +1697,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"price\": 10000,\r\n  \"description\": \"string\",\r\n  \"type\": \"FLASH_SALE\",\r\n  \"image\": \"string\",\r\n  \"duration\": 1\r\n}",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"price\": 10000,\r\n  \"description\": \"string\",\r\n  \"type\": \"BANNER\",\r\n  \"level\": 3,\r\n  \"image\": \"string\",\r\n  \"duration\": 10\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1515,7 +1724,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5NTkzMiwiZXhwIjoxNzI4MjgyMzMyfQ.lPxZLurHO6nmtKKI_rtE__DQW7JLNM-YOzdEKWfM8903ydNmxjapOzUHE84SeNLf",
 									"type": "string"
 								}
 							]
@@ -1524,7 +1733,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"string\",\r\n    \"price\": 10000.500,\r\n    \"description\": \"string\",\r\n    \"type\": \"FLASH_SALE\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"string\",\r\n    \"duration\": 2\r\n}",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"string\",\r\n    \"price\": 10000.0,\r\n    \"description\": \"string\",\r\n    \"type\": \"FLASH_SALE\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"string\",\r\n    \"duration\": 100\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1574,35 +1783,137 @@
 			]
 		},
 		{
-			"name": "food-category",
+			"name": "ads-registration",
 			"item": [
 				{
-					"name": "get-food-category-by-id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{API_LOCAL}}/food-categories/1",
-							"host": [
-								"{{API_LOCAL}}"
-							],
-							"path": [
-								"food-categories",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "add-food-category",
+					"name": "get-all-ads-registration",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgyMDc5MzMsImV4cCI6MTcyODI5NDMzM30.DUoB-M3gmtYXAcKwSGqdXIxCszUGQ5gulj_zwNyibGPMVRLXQFkR_wCzR35CFAdM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-registration-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgyMDc5MzMsImV4cCI6MTcyODI5NDMzM30.DUoB-M3gmtYXAcKwSGqdXIxCszUGQ5gulj_zwNyibGPMVRLXQFkR_wCzR35CFAdM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations/6",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-registration-of-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations/location/1?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations",
+								"location",
+								"1"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
 									"type": "string"
 								}
 							]
@@ -1611,7 +1922,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Kao\"\r\n}",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1619,67 +1930,26 @@
 							}
 						},
 						"url": {
-							"raw": "{{API_LOCAL}}/food-categories",
+							"raw": "{{API_LOCAL}}/ads-registrations",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"food-categories"
+								"ads-registrations"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "get-all-food-categories",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{API_LOCAL}}/food-categories",
-							"host": [
-								"{{API_LOCAL}}"
-							],
-							"path": [
-								"food-categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "search-categories",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{API_LOCAL}}/food-categories/search?keyword=un",
-							"host": [
-								"{{API_LOCAL}}"
-							],
-							"path": [
-								"food-categories",
-								"search"
-							],
-							"query": [
-								{
-									"key": "keyword",
-									"value": "un"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "update-food-category",
+					"name": "update-ads-registration",
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
 									"type": "string"
 								}
 							]
@@ -1688,7 +1958,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 4,\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Miến\"\r\n}",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1696,12 +1966,68 @@
 							}
 						},
 						"url": {
-							"raw": "{{API_LOCAL}}/food-categories",
+							"raw": "{{API_LOCAL}}/ads-registrations?id=1&offerStatus=ACTIVE",
 							"host": [
 								"{{API_LOCAL}}"
 							],
 							"path": [
-								"food-categories"
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "offerStatus",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations?id=1&offerStatus=ACTIVE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "offerStatus",
+									"value": "ACTIVE"
+								}
 							]
 						}
 					},
@@ -1862,6 +2188,142 @@
 							"path": [
 								"payment-histories",
 								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "food-category",
+			"item": [
+				{
+					"name": "get-food-category-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-food-category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Kao\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-food-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories/search?keyword=un",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "un"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-food-category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Miến\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
 							]
 						}
 					},

@@ -122,7 +122,7 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Override
     public List<ApplyPromotionResponse> getUsablePromotionListOfLocation(Long locationId, Float totalPrice, Integer numberOfPeople,
-                                                                     LocalDate bookingDate, LocalTime bookingTime) {
+                                                                         LocalDate bookingDate, LocalTime bookingTime) {
         List<Promotion> promotionResponses = promotionRepository.findAllByLocationIdAndStatus(locationId, OfferStatus.ACTIVE);
         return promotionResponses.stream()
                 .map(promotion -> {
@@ -131,28 +131,23 @@ public class PromotionServiceImpl implements PromotionService {
 
                     switch (promotion.getType()) {
                         case "BILL" -> {
-                            if (totalPrice == null) {
-                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Total price must not be null for BILL promotion");
-                            }
-                            if (promotion.getMinBill() <= totalPrice) {
+                            // Nếu totalPrice không được truyền, bỏ qua phần kiểm tra
+                            if (totalPrice != null && promotion.getMinBill() <= totalPrice) {
                                 isUsable = true;
                             }
                         }
                         case "PEOPLE" -> {
-                            if (numberOfPeople == null) {
-                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Number of people must not be null for PEOPLE promotion");
-                            }
-                            if (promotion.getMinPeople() <= numberOfPeople) {
+                            // Nếu numberOfPeople không được truyền, bỏ qua phần kiểm tra
+                            if (numberOfPeople != null && promotion.getMinPeople() <= numberOfPeople) {
                                 isUsable = true;
                             }
                         }
                         case "TIME" -> {
-                            if (bookingDate == null || bookingTime == null) {
-                                throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking date and time must not be null for TIME promotion");
-                            }
-                            if (isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(),
-                                    promotion.getStartHourTime(), promotion.getEndDate(),
-                                    promotion.getEndHourTime())) {
+                            // Nếu bookingDate hoặc bookingTime không được truyền, bỏ qua phần kiểm tra
+                            if (bookingDate != null && bookingTime != null &&
+                                    isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(),
+                                            promotion.getStartHourTime(), promotion.getEndDate(),
+                                            promotion.getEndHourTime())) {
                                 isUsable = true;
                             }
                         }
@@ -165,6 +160,7 @@ public class PromotionServiceImpl implements PromotionService {
                 })
                 .toList();
     }
+
 
     @Override
     public CheckPromotionResponse applyPromotion(Long promotionId, Float totalPrice, Integer numberOfPeople,

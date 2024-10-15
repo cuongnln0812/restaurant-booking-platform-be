@@ -191,18 +191,18 @@ public class PromotionServiceImpl implements PromotionService {
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Date Time invalid!");
     }
 
-    private CheckPromotionResponse applyPeoplePromotion(Promotion promotion, int numberOfPeople) {
-        if(numberOfPeople == 0 )
-            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+    private CheckPromotionResponse applyPeoplePromotion(Promotion promotion, Integer numberOfPeople) {
+        if(numberOfPeople == null )
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Number of people is required for this type of promotion: "
                     + promotion.getTitle());
         if(promotion.getMinPeople() <= numberOfPeople){
             return getCheckPromotionResponse(promotion);
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of people invalid!");
     }
 
-    private CheckPromotionResponse applyBillPromotion(Promotion promotion, float totalPrice) {
-        if(totalPrice > 0)
-            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+    private CheckPromotionResponse applyBillPromotion(Promotion promotion, Float totalPrice) {
+        if(totalPrice == null)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Total price is required for this type of promotion: "
                     + promotion.getTitle());
         if(promotion.getMinBill() <= totalPrice){
             return getCheckPromotionResponse(promotion);

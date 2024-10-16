@@ -72,6 +72,7 @@ public class LocationServiceImpl implements LocationService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
 
+
         List<Location> locationList = locationRepository.findAll(specification);
         if(searchNearBy){
             String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);
@@ -95,11 +96,19 @@ public class LocationServiceImpl implements LocationService {
                         return response;
                     })
                     .toList();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationNearSorted.size());
+            List<LocationResponseLazy> pagedLocationNearSorted = locationNearSorted.subList(start, end);
 
-            return new PageImpl<>(locationNearSorted, pageable, locationNearSorted.size());
+            return new PageImpl<>(pagedLocationNearSorted, pageable, locationNearSorted.size());
         }
         List<LocationResponseLazy> locationResponseLazyList = locationList.stream().map(this::mapToResponseLazy).toList();
-        return new PageImpl<>(locationResponseLazyList, pageable, locationList.size());
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), locationResponseLazyList.size());
+        List<LocationResponseLazy> pagedLocationNearSorted = locationResponseLazyList.subList(start, end);
+
+        return new PageImpl<>(pagedLocationNearSorted, pageable, locationResponseLazyList.size());
     }
 
     @Override
@@ -134,7 +143,11 @@ public class LocationServiceImpl implements LocationService {
             List<LocationResponseLazy> locationRandomList = getRandomLocations(locationsWithoutAds)
                     .stream().map(this::mapToResponseLazy).toList();
 
-            return new PageImpl<>(locationRandomList, pageable, locationRandomList.size());
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationRandomList.size());
+            List<LocationResponseLazy> pagedLocationRandomSorted = locationRandomList.subList(start, end);
+
+            return new PageImpl<>(pagedLocationRandomSorted, pageable, locationRandomList.size());
         }else {
             adsRegistrationList.forEach(adsRegistration -> locationsWithoutAds.removeIf(location -> location.getId().equals(adsRegistration.getLocation().getId())));
 
@@ -168,7 +181,11 @@ public class LocationServiceImpl implements LocationService {
                     .map(this::mapToResponseLazy)
                     .toList();
 
-            return new PageImpl<>(locationResponseLazyList, pageable, locationResponseLazyList.size());
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationResponseLazyList.size());
+            List<LocationResponseLazy> pagedLocationResponseLazySorted = locationResponseLazyList.subList(start, end);
+
+            return new PageImpl<>(pagedLocationResponseLazySorted, pageable, locationResponseLazyList.size());
         }
     }
 
@@ -191,7 +208,11 @@ public class LocationServiceImpl implements LocationService {
                     .map(this::mapToResponseLazy)
                     .toList();
 
-        return new PageImpl<>(locationsRecommend, pageable, locationsRecommend.size());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), locationsRecommend.size());
+        List<LocationResponseLazy> pagedLocationRecommendSorted = locationsRecommend.subList(start, end);
+
+        return new PageImpl<>(pagedLocationRecommendSorted, pageable, locationsRecommend.size());
     }
 
     @Override

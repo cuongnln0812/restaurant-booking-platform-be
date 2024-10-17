@@ -13,10 +13,7 @@ import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookin
 import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.repositories.*;
-import com.foodbookingplatform.services.FoodBookingService;
-import com.foodbookingplatform.services.LocationBookingService;
-import com.foodbookingplatform.services.PromotionService;
-import com.foodbookingplatform.services.VoucherService;
+import com.foodbookingplatform.services.*;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +50,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     private final FoodBookingService foodBookingService;
     private final VoucherService voucherService;
     private final PromotionService promotionService;
+    private final EmailService emailService;
     private final ModelMapper mapper;
 
     @Override
@@ -197,7 +195,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         newBooking.setFoodBookings(new HashSet<>(bookedFoods));
         newBooking.setAmount(totalPrice - promotionDiscountAmount - voucherDiscountAmount);
         newBooking = locationBookingRepository.save(newBooking);
-
+        sendMailCreateBooking(newBooking);
         return mapLocationBookingResponse(newBooking);
     }
 
@@ -216,8 +214,11 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     public LocationBookingResponse approveLocationBooking(Long bookingId) {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
+
         if(locationBooking.getStatus().equals(LocationBookingStatus.PENDING)){
             locationBooking.setStatus(LocationBookingStatus.CONFIRMED);
+            locationBooking = locationBookingRepository.save(locationBooking);
+            sendMailApproveBooking(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only pending bookings are able to be approved");
     }
@@ -282,6 +283,54 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         });
 
         return specs.stream().reduce(Specification.where(null), Specification::and);
+    }
+
+    private void sendMailApproveBooking(LocationBooking locationBooking) {
+        String subject = "[SkedEat Thông báo Đặt Chỗ]: Đặt Chỗ Của Bạn Đã Được Xác Nhận!";
+        String content = String.format(
+                "Kính gửi %s,\n\nChúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng **%d** đã được xác nhận thành công!\n\n" +
+                        "**Chi tiết Đặt Chỗ:**\n" +
+                        "- **Địa điểm:** %s\n" +
+                        "- **Ngày:** %s\n" +
+                        "- **Giờ:** %s\n" +
+                        "- **Trạng thái:** Đã xác nhận\n\n" +
+                        "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.\n\n" +
+                        "Trân trọng,\n" +
+                        "[Tên Công Ty của Bạn]\n" +
+                        "[Thông Tin Liên Hệ của Công Ty]",
+                locationBooking.getUser().getFullName(),  // Giả sử bạn có phương thức getName() cho người dùng
+                locationBooking.getLocation().getName(),
+                locationBooking.getLocation().getName(),   // Giả sử bạn có phương thức để lấy tên địa điểm
+                locationBooking.getBookingDate(),      // Giả sử bạn có phương thức để lấy ngày đặt chỗ
+                locationBooking.getBookingTime()        // Giả sử bạn có phương thức để lấy giờ đặt chỗ
+        );
+
+        emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
+
+    }
+
+    private void sendMailCreateBooking(LocationBooking locationBooking){
+        String subject = "[SkedEat Thông Báo Đặt Chỗ]: Đơn Đặt Chỗ Của Bạn Đang Chờ Xác Nhận!";
+        String content = String.format(
+                "Kính gửi %s,\n\nChúng tôi xin thông báo rằng đơn đặt chỗ của bạn với nhà hàng **%s** hiện đang chờ xác nhận.\n\n" +
+                        "**Chi tiết Đặt Chỗ:**\n" +
+                        "- **Địa điểm:** %s\n" +
+                        "- **Ngày:** %s\n" +
+                        "- **Giờ:** %s\n" +
+                        "- **Trạng thái:** Đang chờ xác nhận\n\n" +
+                        "Chúng tôi sẽ thông báo cho bạn ngay khi đơn đặt chỗ của bạn được xác nhận. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.\n\n" +
+                        "Trân trọng,\n" +
+                        "[Tên Công Ty của Bạn]\n" +
+                        "[Thông Tin Liên Hệ của Công Ty]",
+                locationBooking.getUser().getFullName(),  // Giả sử bạn có phương thức getName() cho người dùng
+                locationBooking.getLocation().getName() ,
+                locationBooking.getLocation().getName() ,     // Giả sử bạn có phương thức để lấy tên địa điểm
+                locationBooking.getBookingDate(),      // Giả sử bạn có phương thức để lấy ngày đặt chỗ
+                locationBooking.getBookingTime()        // Giả sử bạn có phương thức để lấy giờ đặt chỗ
+        );
+
+        emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
+
     }
 
     private LocationBookingResponse mapLocationBookingResponse(LocationBooking booking){

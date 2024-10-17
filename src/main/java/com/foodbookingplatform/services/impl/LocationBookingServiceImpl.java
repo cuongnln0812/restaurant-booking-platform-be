@@ -287,47 +287,84 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
     private void sendMailApproveBooking(LocationBooking locationBooking) {
         String subject = "[SkedEat Thông báo Đặt Chỗ]: Đặt Chỗ Của Bạn Đã Được Xác Nhận!";
-        String content = String.format(
-                "Kính gửi %s,\n\nChúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng **%d** đã được xác nhận thành công!\n\n" +
-                        "**Chi tiết Đặt Chỗ:**\n" +
-                        "- **Địa điểm:** %s\n" +
-                        "- **Ngày:** %s\n" +
-                        "- **Giờ:** %s\n" +
-                        "- **Trạng thái:** Đã xác nhận\n\n" +
-                        "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.\n\n" +
-                        "Trân trọng,\n" +
-                        "[Tên Công Ty của Bạn]\n" +
-                        "[Thông Tin Liên Hệ của Công Ty]",
-                locationBooking.getUser().getFullName(),  // Giả sử bạn có phương thức getName() cho người dùng
-                locationBooking.getLocation().getName(),
-                locationBooking.getLocation().getName(),   // Giả sử bạn có phương thức để lấy tên địa điểm
-                locationBooking.getBookingDate(),      // Giả sử bạn có phương thức để lấy ngày đặt chỗ
-                locationBooking.getBookingTime()        // Giả sử bạn có phương thức để lấy giờ đặt chỗ
-        );
+        String content = "<html>" +
+                "<head>" +
+                "<style>" +
+                "table { width: 100%; border-collapse: collapse; }" +
+                "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
+                "th { background-color: #f2f2f2; }" +
+                "body { font-family: Arial, sans-serif; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                String.format("Kính gửi %s,<br><br>Chúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng <strong>%s</strong> đã được xác nhận thành công!<br><br>" +
+                                "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
+                                "<table>" +
+                                "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
+                                "<tr><td>Địa điểm</td><td>%s</td></tr>" +
+                                "<tr><td>Ngày</td><td>%s</td></tr>" +
+                                "<tr><td>Giờ</td><td>%s</td></tr>" +
+                                "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
+                                "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
+                                "<tr><td>Trạng thái</td><td>Đã xác nhận</td></tr>" +
+                                "</table><br>" +
+                                "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
+                                "Trân trọng,<br>" +
+                                "SkedEat<br>",
+                        locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
+                        locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
+                        locationBooking.getLocation().getName(),  // Tên địa điểm
+                        locationBooking.getBookingDate(),         // Ngày đặt chỗ
+                        locationBooking.getBookingTime(),         // Giờ đặt chỗ
+                        locationBooking.getNumberOfAdult(),         // Số lượng người lớn
+                        locationBooking.getNumberOfChildren()        // Số lượng trẻ em
+                ) +
+                "</body>" +
+                "</html>";
+
 
         emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
-
     }
+
 
     private void sendMailCreateBooking(LocationBooking locationBooking){
         String subject = "[SkedEat Thông Báo Đặt Chỗ]: Đơn Đặt Chỗ Của Bạn Đang Chờ Xác Nhận!";
-        String content = String.format(
-                "Kính gửi %s,\n\nChúng tôi xin thông báo rằng đơn đặt chỗ của bạn với nhà hàng **%s** hiện đang chờ xác nhận.\n\n" +
-                        "**Chi tiết Đặt Chỗ:**\n" +
-                        "- **Địa điểm:** %s\n" +
-                        "- **Ngày:** %s\n" +
-                        "- **Giờ:** %s\n" +
-                        "- **Trạng thái:** Đang chờ xác nhận\n\n" +
-                        "Chúng tôi sẽ thông báo cho bạn ngay khi đơn đặt chỗ của bạn được xác nhận. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.\n\n" +
-                        "Trân trọng,\n" +
-                        "[Tên Công Ty của Bạn]\n" +
-                        "[Thông Tin Liên Hệ của Công Ty]",
-                locationBooking.getUser().getFullName(),  // Giả sử bạn có phương thức getName() cho người dùng
-                locationBooking.getLocation().getName() ,
-                locationBooking.getLocation().getName() ,     // Giả sử bạn có phương thức để lấy tên địa điểm
-                locationBooking.getBookingDate(),      // Giả sử bạn có phương thức để lấy ngày đặt chỗ
-                locationBooking.getBookingTime()        // Giả sử bạn có phương thức để lấy giờ đặt chỗ
-        );
+        String content = "<html>" +
+                "<head>" +
+                "<style>" +
+                "table { width: 100%; border-collapse: collapse; }" +
+                "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
+                "th { background-color: #f2f2f2; }" +
+                "body { font-family: Arial, sans-serif; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                String.format(
+                        "Kính gửi %s,<br><br>Chúng tôi xin thông báo rằng đơn đặt chỗ của bạn với nhà hàng <b>%s</b> hiện đang chờ xác nhận.<br><br>" +
+                                "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
+                                "<table>" +
+                                "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
+                                "<tr><td>Địa điểm</td><td>%s</td></tr>" +
+                                "<tr><td>Ngày</td><td>%s</td></tr>" +
+                                "<tr><td>Giờ</td><td>%s</td></tr>" +
+                                "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
+                                "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
+                                "<tr><td>Trạng thái</td><td>Chờ xác nhận</td></tr>" +
+                                "</table><br>" +
+                                "Chúng tôi sẽ thông báo cho bạn ngay khi đơn đặt chỗ của bạn được xác nhận. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
+                                "Trân trọng,<br>" +
+                                "SkedEat<br>",
+                        locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
+                        locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
+                        locationBooking.getLocation().getName(),  // Tên địa điểm
+                        locationBooking.getBookingDate(),         // Ngày đặt chỗ
+                        locationBooking.getBookingTime(),         // Giờ đặt chỗ
+                        locationBooking.getNumberOfAdult(),         // Số lượng người lớn
+                        locationBooking.getNumberOfChildren()        // Số lượng trẻ em
+                ) +
+                "</body>" +
+                "</html>";
+
 
         emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
 

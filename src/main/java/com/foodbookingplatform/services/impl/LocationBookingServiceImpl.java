@@ -13,10 +13,7 @@ import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookin
 import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.repositories.*;
-import com.foodbookingplatform.services.FoodBookingService;
-import com.foodbookingplatform.services.LocationBookingService;
-import com.foodbookingplatform.services.PromotionService;
-import com.foodbookingplatform.services.VoucherService;
+import com.foodbookingplatform.services.*;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +50,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     private final FoodBookingService foodBookingService;
     private final VoucherService voucherService;
     private final PromotionService promotionService;
+    private final EmailService emailService;
     private final ModelMapper mapper;
 
     @Override
@@ -197,7 +195,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         newBooking.setFoodBookings(new HashSet<>(bookedFoods));
         newBooking.setAmount(totalPrice - promotionDiscountAmount - voucherDiscountAmount);
         newBooking = locationBookingRepository.save(newBooking);
-
+        sendMailCreateBooking(newBooking);
         return mapLocationBookingResponse(newBooking);
     }
 
@@ -216,8 +214,11 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     public LocationBookingResponse approveLocationBooking(Long bookingId) {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
+
         if(locationBooking.getStatus().equals(LocationBookingStatus.PENDING)){
             locationBooking.setStatus(LocationBookingStatus.CONFIRMED);
+            locationBooking = locationBookingRepository.save(locationBooking);
+            sendMailApproveBooking(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only pending bookings are able to be approved");
     }
@@ -282,6 +283,91 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         });
 
         return specs.stream().reduce(Specification.where(null), Specification::and);
+    }
+
+    private void sendMailApproveBooking(LocationBooking locationBooking) {
+        String subject = "[SkedEat Thông báo Đặt Chỗ]: Đặt Chỗ Của Bạn Đã Được Xác Nhận!";
+        String content = "<html>" +
+                "<head>" +
+                "<style>" +
+                "table { width: 100%; border-collapse: collapse; }" +
+                "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
+                "th { background-color: #f2f2f2; }" +
+                "body { font-family: Arial, sans-serif; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                String.format("Kính gửi %s,<br><br>Chúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng <strong>%s</strong> đã được xác nhận thành công!<br><br>" +
+                                "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
+                                "<table>" +
+                                "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
+                                "<tr><td>Địa điểm</td><td>%s</td></tr>" +
+                                "<tr><td>Ngày</td><td>%s</td></tr>" +
+                                "<tr><td>Giờ</td><td>%s</td></tr>" +
+                                "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
+                                "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
+                                "<tr><td>Trạng thái</td><td>Đã xác nhận</td></tr>" +
+                                "</table><br>" +
+                                "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
+                                "Trân trọng,<br>" +
+                                "SkedEat<br>",
+                        locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
+                        locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
+                        locationBooking.getLocation().getName(),  // Tên địa điểm
+                        locationBooking.getBookingDate(),         // Ngày đặt chỗ
+                        locationBooking.getBookingTime(),         // Giờ đặt chỗ
+                        locationBooking.getNumberOfAdult(),         // Số lượng người lớn
+                        locationBooking.getNumberOfChildren()        // Số lượng trẻ em
+                ) +
+                "</body>" +
+                "</html>";
+
+
+        emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
+    }
+
+
+    private void sendMailCreateBooking(LocationBooking locationBooking){
+        String subject = "[SkedEat Thông Báo Đặt Chỗ]: Đơn Đặt Chỗ Của Bạn Đang Chờ Xác Nhận!";
+        String content = "<html>" +
+                "<head>" +
+                "<style>" +
+                "table { width: 100%; border-collapse: collapse; }" +
+                "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
+                "th { background-color: #f2f2f2; }" +
+                "body { font-family: Arial, sans-serif; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                String.format(
+                        "Kính gửi %s,<br><br>Chúng tôi xin thông báo rằng đơn đặt chỗ của bạn với nhà hàng <b>%s</b> hiện đang chờ xác nhận.<br><br>" +
+                                "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
+                                "<table>" +
+                                "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
+                                "<tr><td>Địa điểm</td><td>%s</td></tr>" +
+                                "<tr><td>Ngày</td><td>%s</td></tr>" +
+                                "<tr><td>Giờ</td><td>%s</td></tr>" +
+                                "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
+                                "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
+                                "<tr><td>Trạng thái</td><td>Chờ xác nhận</td></tr>" +
+                                "</table><br>" +
+                                "Chúng tôi sẽ thông báo cho bạn ngay khi đơn đặt chỗ của bạn được xác nhận. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
+                                "Trân trọng,<br>" +
+                                "SkedEat<br>",
+                        locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
+                        locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
+                        locationBooking.getLocation().getName(),  // Tên địa điểm
+                        locationBooking.getBookingDate(),         // Ngày đặt chỗ
+                        locationBooking.getBookingTime(),         // Giờ đặt chỗ
+                        locationBooking.getNumberOfAdult(),         // Số lượng người lớn
+                        locationBooking.getNumberOfChildren()        // Số lượng trẻ em
+                ) +
+                "</body>" +
+                "</html>";
+
+
+        emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
+
     }
 
     private LocationBookingResponse mapLocationBookingResponse(LocationBooking booking){

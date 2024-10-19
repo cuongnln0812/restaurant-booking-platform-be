@@ -353,9 +353,9 @@ public class LocationServiceImpl implements LocationService {
 
     private String formatDistance(double distanceInKm) {
         if (distanceInKm < 1) {
-            return String.format("%.0fm", distanceInKm * 1000);
+            return String.format("%.0f m", distanceInKm * 1000);
         }
-        return String.format("%.2fkm", distanceInKm);
+        return String.format("%.2f km", distanceInKm);
     }
 
     private LocationResponse mapToResponse(Location location){

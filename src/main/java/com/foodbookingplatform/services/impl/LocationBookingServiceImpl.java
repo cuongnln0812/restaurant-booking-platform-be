@@ -19,10 +19,7 @@ import com.foodbookingplatform.utils.QRCodeGenerator;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -79,10 +75,14 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
         if(!SecurityUtils.isAuthorizeLocation(locationId, userRepository))
             throw new RestaurantBookingException(HttpStatus.NOT_FOUND, "You dont have this location with id: " + locationId);
+        Location location = locationRepository.findById(locationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Location", "locationId", locationId));
 
         if(!keyword.isEmpty()) {
-            Specification<LocationBooking> specification = specification(keyword);
-            bookings = locationBookingRepository.findAllByLocationId(locationId, specification, pageable);
+            Specification<LocationBooking> locationSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("location"), location);
+            Specification<LocationBooking> keywordSpec = specification(keyword);
+            Specification<LocationBooking> combinedSpec = Specification.where(locationSpec).and(keywordSpec);
+            bookings = locationBookingRepository.findAll(combinedSpec, pageable);
         }else {
             bookings = locationBookingRepository.findAllByLocationId(locationId, pageable);
         }
@@ -102,8 +102,10 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
         if(!keyword.isEmpty()) {
-            Specification<LocationBooking> specification = specification(keyword);
-            bookings = locationBookingRepository.findAllByUser(user, specification, pageable);
+            Specification<LocationBooking> userSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
+            Specification<LocationBooking> keywordSpec = specification(keyword);
+            Specification<LocationBooking> combinedSpec = Specification.where(userSpec).and(keywordSpec);
+            bookings = locationBookingRepository.findAll(combinedSpec, pageable);
         }else {
             bookings = locationBookingRepository.findAllByUser(user, pageable);
         }

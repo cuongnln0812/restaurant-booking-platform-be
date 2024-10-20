@@ -72,7 +72,6 @@ public class LocationServiceImpl implements LocationService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
 
-
         List<Location> locationList = locationRepository.findAll(specification);
         if(searchNearBy){
             String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);

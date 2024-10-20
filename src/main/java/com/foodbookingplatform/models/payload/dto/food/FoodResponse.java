@@ -1,6 +1,7 @@
 package com.foodbookingplatform.models.payload.dto.food;
 
 import com.foodbookingplatform.models.enums.EntityStatus;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,4 +24,6 @@ public class FoodResponse{
     private EntityStatus status;
 
     private String image;
+
+    private FoodCategoryResponse foodCategory;
 }

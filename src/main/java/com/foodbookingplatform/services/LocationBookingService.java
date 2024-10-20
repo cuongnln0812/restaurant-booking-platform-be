@@ -5,7 +5,6 @@ import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookin
 import org.springframework.data.domain.Page;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 import java.util.Map;
 
 public interface LocationBookingService {
@@ -16,5 +15,6 @@ public interface LocationBookingService {
     LocationBookingResponse createLocationBooking(LocationBookingRequest request);
     LocationBookingResponse cancelLocationBooking(Long bookingId);
     LocationBookingResponse approveLocationBooking(Long bookingId);
+    LocationBookingResponse successLocationBooking(Long bookingId);
     LocationBookingResponse getLocationBookingDetail(Long bookingId);
 }

@@ -162,5 +162,12 @@ public class LocationBookingController {
     public ResponseEntity<LocationBookingResponse> approveLocationBooking(@PathVariable Long id) {
         return ResponseEntity.ok(locationBookingService.approveLocationBooking(id));
     }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @PreAuthorize("hasRole('LOCATION_ADMIN')")
+    @PutMapping("success/{id}")
+    public ResponseEntity<LocationBookingResponse> successLocationBooking(@PathVariable Long id) {
+        return ResponseEntity.ok(locationBookingService.successLocationBooking(id));
+    }
     
 }

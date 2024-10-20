@@ -13,6 +13,10 @@ import com.foodbookingplatform.repositories.PaymentHistoryRepository;
 import com.foodbookingplatform.repositories.PaymentMethodRepository;
 import com.foodbookingplatform.services.PaymentHistoryService;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +33,14 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         this.paymentMethodRepository = paymentMethodRepository;
         this.locationBookingRepository = locationBookingRepository;
         this.mapper = modelMapper;
+    }
+
+    @Override
+    public Page<PaymentHistoryResponse> getAllByLocationId(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Page<PaymentHistory> pageResult = paymentHistoryRepository.findAllByLocationId(locationId, pageable);
+        return pageResult.map(entity -> mapper.map(entity, PaymentHistoryResponse.class));
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.foodbookingplatform.repositories;
 
+import com.foodbookingplatform.models.entities.Location;
 import com.foodbookingplatform.models.entities.LocationBooking;
 import com.foodbookingplatform.models.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

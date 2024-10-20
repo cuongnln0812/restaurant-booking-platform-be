@@ -22,4 +22,5 @@ public class UserResponse {
     private boolean isFirstLogin;
     private String image;
     private String roleName;
+    private Long locationId;
 }

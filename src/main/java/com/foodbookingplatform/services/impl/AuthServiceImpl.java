@@ -136,7 +136,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUserNameOrEmailOrPhone(userName, userName, userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
         List<Location> location = locationRepository.getLocationsByUserId(user.getId());
-        return mapToResponse(user , location.get(0).getId());
+        return mapToResponse(user , location.size() == 0 ? 0 : location.get(0).getId());
     }
 
     @Override

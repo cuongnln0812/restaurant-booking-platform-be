@@ -15,6 +15,7 @@ import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherRespon
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.*;
 import com.foodbookingplatform.utils.GenericSpecification;
+import com.foodbookingplatform.utils.QRCodeGenerator;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -286,44 +287,49 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     }
 
     private void sendMailApproveBooking(LocationBooking locationBooking) {
-        String subject = "[SkedEat Thông báo Đặt Chỗ]: Đặt Chỗ Của Bạn Đã Được Xác Nhận!";
-        String content = "<html>" +
-                "<head>" +
-                "<style>" +
-                "table { width: 100%; border-collapse: collapse; }" +
-                "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
-                "th { background-color: #f2f2f2; }" +
-                "body { font-family: Arial, sans-serif; }" +
-                "</style>" +
-                "</head>" +
-                "<body>" +
-                String.format("Kính gửi %s,<br><br>Chúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng <strong>%s</strong> đã được xác nhận thành công!<br><br>" +
-                                "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
-                                "<table>" +
-                                "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
-                                "<tr><td>Địa điểm</td><td>%s</td></tr>" +
-                                "<tr><td>Ngày</td><td>%s</td></tr>" +
-                                "<tr><td>Giờ</td><td>%s</td></tr>" +
-                                "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
-                                "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
-                                "<tr><td>Trạng thái</td><td>Đã xác nhận</td></tr>" +
-                                "</table><br>" +
-                                "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
-                                "Trân trọng,<br>" +
-                                "SkedEat<br>",
-                        locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
-                        locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
-                        locationBooking.getLocation().getName(),  // Tên địa điểm
-                        locationBooking.getBookingDate(),         // Ngày đặt chỗ
-                        locationBooking.getBookingTime(),         // Giờ đặt chỗ
-                        locationBooking.getNumberOfAdult(),         // Số lượng người lớn
-                        locationBooking.getNumberOfChildren()        // Số lượng trẻ em
-                ) +
-                "</body>" +
-                "</html>";
-
-
-        emailService.sendEmail(locationBooking.getUser().getEmail(), subject, content);
+        try {
+            byte[] qrCodeImage = QRCodeGenerator.generateQRCodeImage(QRCodeGenerator.baseUrl);
+            String subject = "[SkedEat Thông báo Đặt Chỗ]: Đặt Chỗ Của Bạn Đã Được Xác Nhận!";
+            String content = "<html>" +
+                    "<head>" +
+                    "<style>" +
+                    "table { width: 100%; border-collapse: collapse; }" +
+                    "th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }" +
+                    "th { background-color: #f2f2f2; }" +
+                    "body { font-family: Arial, sans-serif; }" +
+                    "</style>" +
+                    "</head>" +
+                    "<body>" +
+                    String.format("Kính gửi %s,<br><br>Chúng tôi vui mừng thông báo rằng đơn đặt chỗ của bạn với nhà hàng <strong>%s</strong> đã được xác nhận thành công!<br><br>" +
+                                    "<strong>Chi tiết Đặt Chỗ:</strong><br>" +
+                                    "<table>" +
+                                    "<tr style='background-color: #f2f2f2;'><th>Thông Tin</th><th>Giá Trị</th></tr>" +
+                                    "<tr><td>Địa điểm</td><td>%s</td></tr>" +
+                                    "<tr><td>Ngày</td><td>%s</td></tr>" +
+                                    "<tr><td>Giờ</td><td>%s</td></tr>" +
+                                    "<tr><td>Số lượng người lớn</td><td>%d</td></tr>" +
+                                    "<tr><td>Số lượng trẻ em</td><td>%d</td></tr>" +
+                                    "<tr><td>Trạng thái</td><td>Đã xác nhận</td></tr>" +
+                                    "</table><br>" +
+                                    "Hãy đưa mã QR thông tin đặt chỗ của bạn cho nhân viên nhà hàng khi bạn đến<br>" +
+                                    "<br><small>(Bạn cũng có thể tìm thấy mã QR trong tệp đính kèm)</small><br>" +
+                                    "Cảm ơn bạn đã chọn chúng tôi cho nhu cầu đặt chỗ của bạn. Nếu bạn có bất kỳ câu hỏi nào hoặc cần hỗ trợ thêm, xin vui lòng liên hệ với chúng tôi.<br><br>" +
+                                    "Trân trọng,<br>" +
+                                    "SkedEat<br>",
+                            locationBooking.getUser().getFullName(),  // Lấy tên đầy đủ của người dùng
+                            locationBooking.getLocation().getName(),  // Lấy tên nhà hàng
+                            locationBooking.getLocation().getName(),  // Tên địa điểm
+                            locationBooking.getBookingDate(),         // Ngày đặt chỗ
+                            locationBooking.getBookingTime(),         // Giờ đặt chỗ
+                            locationBooking.getNumberOfAdult(),         // Số lượng người lớn
+                            locationBooking.getNumberOfChildren()        // Số lượng trẻ em
+                    ) +
+                    "</body>" +
+                    "</html>";
+            emailService.sendEmailWithQR(locationBooking.getUser().getEmail(), subject, content, qrCodeImage);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
 

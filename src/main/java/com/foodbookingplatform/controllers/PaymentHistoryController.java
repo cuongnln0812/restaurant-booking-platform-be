@@ -35,6 +35,20 @@ public class PaymentHistoryController {
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasAnyRole('USER', 'LOCATION_ADMIN', 'SYSTEM_ADMIN')")
+    @GetMapping("locations/{locationId}")
+    public ResponseEntity<Page<PaymentHistoryResponse>> getPaymentHistoriesOfLocationPagination(
+            @PathVariable(name = "locationId") Long locationId,
+            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    ) {
+        return ResponseEntity.ok(paymentHistoryService.getAllByLocationId(locationId, pageNo, pageSize, sortBy, sortDir));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('USER', 'LOCATION_ADMIN', 'SYSTEM_ADMIN')")
     @GetMapping("{id}")
     public ResponseEntity<PaymentHistoryResponse> getPaymentHistoryById(@PathVariable Long id) {
         PaymentHistoryResponse reportResponse = paymentHistoryService.get(id);

@@ -1,6 +1,7 @@
 package com.foodbookingplatform;
 
 import com.foodbookingplatform.auditing.ApplicationAuditAware;
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.beans.factory.annotation.Value;
+import vn.payos.PayOS;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +26,25 @@ import java.util.List;
 public class FoodBookingPlatformApplication {
 
     private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+
+    @Value("${payos.client-id}")
+    private String clientId;
+
+    @Value("${payos.api-key}")
+    private String apiKey;
+
+    @Value("${payos.checksum-key}")
+    private String checksumKey;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("checksum: " + checksumKey);
+    }
+
+    @Bean
+    public PayOS payOS() {
+        return new PayOS(clientId, apiKey, checksumKey);
+    }
 
     @Bean
     public CorsFilter corsFilter() {

@@ -86,7 +86,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             response.set("data", null);
 
             WebhookData data = payOS.verifyPaymentWebhookData(webhookBody);
-            System.out.println("PAYOS DATA WEBHOOK: " + data);
+            System.out.println("PAYOS DATA WEBHOOK: " + data.getCode() + " " + data.getPaymentLinkId() + " " + data.getDesc());
             return response;
         } catch (Exception e) {
             e.printStackTrace();

@@ -69,7 +69,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteFood(@PathVariable Long id) {
         foodService.deleteFood(id);
@@ -78,7 +78,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<FoodResponse> addFood(@RequestBody @Valid FoodRequest request) {
         FoodResponse response = foodService.addFood(request);
@@ -87,7 +87,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @PutMapping
     public ResponseEntity<FoodResponse> updateFood(@RequestBody @Valid FoodRequest request) {
         return ResponseEntity.ok(foodService.updateFood(request));

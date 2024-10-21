@@ -234,7 +234,6 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         if(locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)){
             locationBooking.setStatus(LocationBookingStatus.SUCCESSFUL);
             locationBooking = locationBookingRepository.save(locationBooking);
-            sendMailApproveBooking(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only confirmed bookings are able to be success");
     }

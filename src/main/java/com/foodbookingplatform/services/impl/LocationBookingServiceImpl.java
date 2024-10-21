@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
@@ -35,6 +36,9 @@ import java.util.*;
 @RequiredArgsConstructor
 @Transactional
 public class LocationBookingServiceImpl implements LocationBookingService {
+
+    @Value("${commission-amount}")
+    private String commisionAmount;
 
     private final LocationBookingRepository locationBookingRepository;
     private final LocationRepository locationRepository;
@@ -233,6 +237,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
         if(locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)){
             locationBooking.setStatus(LocationBookingStatus.SUCCESSFUL);
+            locationBooking.setCommission(Float.parseFloat(commisionAmount));
             locationBooking = locationBookingRepository.save(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
         }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only confirmed bookings are able to be success");

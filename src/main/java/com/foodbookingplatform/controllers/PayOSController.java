@@ -3,6 +3,7 @@ package com.foodbookingplatform.controllers;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.payload.dto.payos.CreatePaymentDTO;
 import com.foodbookingplatform.services.PayOSService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class PayOSController {
     private final PayOSService payOSService;
 
     @PostMapping(path = "/create-payment-link")
-    public ResponseEntity<ObjectNode> createPaymentLink(@RequestBody CreatePaymentDTO createPaymentDTO) {
+    public ResponseEntity<ObjectNode> createPaymentLink(@RequestBody @Valid CreatePaymentDTO createPaymentDTO) {
         return ResponseEntity.ok(payOSService.createPayment(createPaymentDTO));
     }
 

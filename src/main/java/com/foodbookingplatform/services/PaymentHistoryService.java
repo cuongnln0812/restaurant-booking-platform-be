@@ -6,4 +6,6 @@ import org.springframework.data.domain.Page;
 
 public interface PaymentHistoryService extends BaseService<PaymentHistoryRequest, PaymentHistoryResponse> {
     Page<PaymentHistoryResponse> getAllByLocationId(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir);
+
+
 }

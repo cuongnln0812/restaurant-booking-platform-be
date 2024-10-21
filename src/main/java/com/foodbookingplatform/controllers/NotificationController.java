@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +87,27 @@ public class NotificationController {
         if (fullName != null) searchParams.put("fullName", fullName);
 
         return ResponseEntity.ok(notificationService.searchNotifications(pageNo, pageSize, sortBy, sortDir, searchParams));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PostMapping("/commission-monthly-payment")
+    @PreAuthorize("hasRole('LOCATION_ADMIN')")
+    public ResponseEntity<Map<String, Object>> receiveNotification(@RequestBody Map<String, Object> payload) {
+        int month = ((Number) payload.get("month")).intValue();
+        int year = ((Number) payload.get("year")).intValue();
+        int totalAmount = ((Number) payload.get("totalAmount")).intValue();
+        DecimalFormat currencyFormat = new DecimalFormat("#,###");
+        String formattedTotalAmount = currencyFormat.format(totalAmount);
+
+        // Tạo một map để chứa thông tin phản hồi
+        Map<String, Object> responsePayload = new HashMap<>();
+        responsePayload.put("status", "success");
+        responsePayload.put("message", "Thanh toán tiền hoa hồng tháng " + month + "/" + year + " số tiền: " + formattedTotalAmount + " VND");
+        responsePayload.put("totalAmount", totalAmount);
+
+        // Trả về response với thông điệp và totalAmount
+        return ResponseEntity.ok(responsePayload);
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")

@@ -1,38 +1,48 @@
 package com.foodbookingplatform.services.impl;
 
+import com.foodbookingplatform.models.entities.LocationBooking;
 import com.foodbookingplatform.models.entities.Notification;
 import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.enums.EntityStatus;
+import com.foodbookingplatform.models.enums.LocationBookingStatus;
+import com.foodbookingplatform.models.enums.RoleType;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationRequest;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationResponse;
+import com.foodbookingplatform.repositories.LocationBookingRepository;
 import com.foodbookingplatform.repositories.NotificationRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.NotificationService;
 import com.foodbookingplatform.utils.GenericSpecification;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
+    private final LocationBookingRepository locationBookingRepository;
     private final UserRepository userRepository;
     private final ModelMapper mapper;
+
+    @Value("${webhook-url}")
+    private String WEBHOOK_URL_PREFIX;
 
     @Override
     public List<NotificationResponse> addNotification(NotificationRequest notificationRequest) {
@@ -108,6 +118,40 @@ public class NotificationServiceImpl implements NotificationService {
             notificationRepository.save(notification);
         }
     }
+
+    public float calculateMonthlyPayment(Long userId, int month, int year) {
+        List<LocationBooking> successfulBookings = locationBookingRepository.findAllSuccessfulBookings(
+                userId, LocationBookingStatus.SUCCESSFUL, month, year);
+
+        return (float) successfulBookings.stream()
+                .mapToDouble(LocationBooking::getCommission)
+                .sum();
+    }
+
+    public void sendWebhookNotification(int month, int year , int totalAmount) {
+        RestTemplate restTemplate = new RestTemplate();
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("month", month);
+        payload.put("year", year);
+        payload.put("totalAmount", totalAmount);
+
+        restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notification/commission-monthly-payment", payload, String.class);
+    }
+
+    @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
+    public void calculateAndSendMonthlyBilling() {
+        String roleName = "LOCATION_ADMIN";
+        List<Long> locationAdminIds = userRepository.findAllUserIdByRoleName(roleName);
+        int month = LocalDate.now().getMonthValue();
+        int year = LocalDate.now().getYear();
+        // Lặp qua từng nhà hàng và gửi thông báo webhook
+        for (Long id  : locationAdminIds) {
+            float totalAmount = calculateMonthlyPayment(id, month, year);
+            int roundedAmount = (int) Math.floor(totalAmount);
+            sendWebhookNotification(month, year, roundedAmount);
+        }
+    }
+
 
     //map các dkien của user thành 1 specification
     private Specification<Notification> specification(Map<String, Object> searchParams){

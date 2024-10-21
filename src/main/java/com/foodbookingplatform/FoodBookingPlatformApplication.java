@@ -36,11 +36,6 @@ public class FoodBookingPlatformApplication {
     @Value("${payos.checksum-key}")
     private String checksumKey;
 
-    @PostConstruct
-    public void init() {
-        System.out.println("checksum: " + checksumKey);
-    }
-
     @Bean
     public PayOS payOS() {
         return new PayOS(clientId, apiKey, checksumKey);

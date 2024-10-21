@@ -135,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
         payload.put("year", year);
         payload.put("totalAmount", totalAmount);
 
-        restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notification/commission-monthly-payment", payload, String.class);
+        restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notifications/commission-monthly-payment", payload, String.class);
     }
 
     @Scheduled(cron = "0 * * * * ?")  // Mỗi phút

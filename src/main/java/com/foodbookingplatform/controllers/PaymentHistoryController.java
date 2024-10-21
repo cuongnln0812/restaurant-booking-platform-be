@@ -1,5 +1,7 @@
 package com.foodbookingplatform.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
@@ -78,5 +80,12 @@ public class PaymentHistoryController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         paymentHistoryService.delete(id);
         return ResponseEntity.ok().build();
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @PostMapping(path = "/payos-transfer-handler")
+    public ResponseEntity<ObjectNode> payOsTransferHandler(@RequestBody ObjectNode body) throws JsonProcessingException {
+        ObjectNode node = paymentHistoryService.payOsTransferHandler(body);
+        return ResponseEntity.ok(node);
     }
 }

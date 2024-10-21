@@ -1,5 +1,8 @@
 package com.foodbookingplatform.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.entities.LocationBooking;
 import com.foodbookingplatform.models.entities.PaymentHistory;
 import com.foodbookingplatform.models.entities.PaymentMethod;
@@ -20,16 +23,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+import vn.payos.PayOS;
+import vn.payos.type.Webhook;
+import vn.payos.type.WebhookData;
 
 @Service
 public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, PaymentHistoryRequest, PaymentHistoryResponse> implements PaymentHistoryService {
+    private final PayOS payOS;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final LocationBookingRepository locationBookingRepository;
     private final ModelMapper mapper;
 
-    public PaymentHistoryServiceImpl(PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, ModelMapper modelMapper) {
+    public PaymentHistoryServiceImpl(PayOS payOS, PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, ModelMapper modelMapper) {
         super(paymentHistoryRepository, modelMapper, PaymentHistory.class, PaymentHistoryRequest.class, PaymentHistoryResponse.class);
+        this.payOS = payOS;
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.locationBookingRepository = locationBookingRepository;
@@ -61,6 +70,33 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         }
         return null;
     }
+
+    @Override
+    public ObjectNode payOsTransferHandler(@RequestBody ObjectNode body)
+            throws JsonProcessingException, IllegalArgumentException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode response = objectMapper.createObjectNode();
+        Webhook webhookBody = objectMapper.treeToValue(body, Webhook.class);
+
+        try {
+            // Init Response
+            response.put("error", 0);
+            response.put("message", "Webhook delivered");
+            response.set("data", null);
+
+            WebhookData data = payOS.verifyPaymentWebhookData(webhookBody);
+            System.out.println(data);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("error", -1);
+            response.put("message", e.getMessage());
+            response.set("data", null);
+            return response;
+        }
+    }
+
 
     private PaymentHistory mapAndSavePaymentHistory(PaymentHistoryRequest request, boolean createMode) {
         PaymentMethod paymentMethod = findPaymentMethodById(request.getPaymentMethodId());

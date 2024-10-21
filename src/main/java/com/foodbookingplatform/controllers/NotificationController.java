@@ -90,8 +90,10 @@ public class NotificationController {
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-    @PostMapping("/commission-monthly-payment")
-    public ResponseEntity<Map<String, Object>> receiveNotification(@RequestBody Map<String, Object> payload) {
+    @PostMapping("/commission-monthly-payment/{userId}")
+    public ResponseEntity<Map<String, Object>> receiveNotification(
+            @PathVariable(name = "userId") Long userId,
+            @RequestBody Map<String, Object> payload) {
         int month = ((Number) payload.get("month")).intValue();
         int year = ((Number) payload.get("year")).intValue();
         int totalAmount = ((Number) payload.get("totalAmount")).intValue();

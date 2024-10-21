@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.payload.dto.payos.CreatePaymentDTO;
 import com.foodbookingplatform.models.payload.dto.payos.ItemDTO;
+import com.foodbookingplatform.models.payload.dto.payos.WebhookUrlDTO;
 import com.foodbookingplatform.services.PayOSService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
@@ -85,4 +87,24 @@ public class PayOSServiceImpl implements PayOSService {
             return response;
         }
     }
+
+    @Override
+    public ObjectNode confirmWebhook(WebhookUrlDTO requestBody) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode response = objectMapper.createObjectNode();
+        try {
+            String str = payOS.confirmWebhook(requestBody.getWebhookUrl());
+            response.set("data", objectMapper.valueToTree(str));
+            response.put("error", 0);
+            response.put("message", "ok");
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("error", -1);
+            response.put("message", e.getMessage());
+            response.set("data", null);
+            return response;
+        }
+    }
+
 }

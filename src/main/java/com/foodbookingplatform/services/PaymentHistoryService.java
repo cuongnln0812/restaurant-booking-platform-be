@@ -1,11 +1,16 @@
 package com.foodbookingplatform.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestBody;
+import vn.payos.type.Webhook;
+import vn.payos.type.WebhookData;
 
 public interface PaymentHistoryService extends BaseService<PaymentHistoryRequest, PaymentHistoryResponse> {
     Page<PaymentHistoryResponse> getAllByLocationId(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir);
-
-
+    ObjectNode payOsTransferHandler(ObjectNode body) throws JsonProcessingException, IllegalArgumentException;
 }

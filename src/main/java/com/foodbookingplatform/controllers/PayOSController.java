@@ -2,6 +2,7 @@ package com.foodbookingplatform.controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.payload.dto.payos.CreatePaymentDTO;
+import com.foodbookingplatform.models.payload.dto.payos.WebhookUrlDTO;
 import com.foodbookingplatform.services.PayOSService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,11 @@ public class PayOSController {
     @PostMapping(path = "/create-payment-link")
     public ResponseEntity<ObjectNode> createPaymentLink(@RequestBody @Valid CreatePaymentDTO createPaymentDTO) {
         return ResponseEntity.ok(payOSService.createPayment(createPaymentDTO));
+    }
+
+    @PostMapping(path = "/confirm-webhook")
+    public ResponseEntity<ObjectNode> confirmWebhook(@RequestBody @Valid WebhookUrlDTO webhookUrlDTO) {
+        return ResponseEntity.ok(payOSService.confirmWebhook(webhookUrlDTO));
     }
 
 }

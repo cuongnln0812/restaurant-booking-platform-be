@@ -128,27 +128,29 @@ public class NotificationServiceImpl implements NotificationService {
                 .sum();
     }
 
-    public void sendWebhookNotification(int month, int year , int totalAmount) {
+    public void sendWebhookNotification(Long userId, int month, int year , int totalAmount) {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, Object> payload = new HashMap<>();
         payload.put("month", month);
         payload.put("year", year);
         payload.put("totalAmount", totalAmount);
 
-        restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notifications/commission-monthly-payment", payload, String.class);
+        restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notifications/commission-monthly-payment/" + userId, payload, String.class);
     }
 
     @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
     public void calculateAndSendMonthlyBilling() {
         String roleName = "LOCATION_ADMIN";
         List<Long> locationAdminIds = userRepository.findAllUserIdByRoleName(roleName);
-        int month = LocalDate.now().getMonthValue();
-        int year = LocalDate.now().getYear();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate previousMonthDate = currentDate.minusMonths(1);
+        int month = previousMonthDate.getMonthValue();
+        int year = previousMonthDate.getYear();
         // Lặp qua từng nhà hàng và gửi thông báo webhook
         for (Long id  : locationAdminIds) {
             float totalAmount = calculateMonthlyPayment(id, month, year);
             int roundedAmount = (int) Math.floor(totalAmount);
-            sendWebhookNotification(month, year, roundedAmount);
+            sendWebhookNotification(id, month, year, roundedAmount);
         }
     }
 

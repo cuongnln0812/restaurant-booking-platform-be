@@ -227,6 +227,18 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     }
 
     @Override
+    public LocationBookingResponse successLocationBooking(Long bookingId) {
+        LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
+
+        if(locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)){
+            locationBooking.setStatus(LocationBookingStatus.SUCCESSFUL);
+            locationBooking = locationBookingRepository.save(locationBooking);
+            return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only confirmed bookings are able to be success");
+    }
+
+    @Override
     public LocationBookingResponse getLocationBookingDetail(Long bookingId) {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
@@ -386,9 +398,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         mapper.map(booking, response);
         if(booking.getPromotion() != null) response.setFreeItem(booking.getPromotion().getFreeItem());
         if(!foodBookings.isEmpty()){
-            foodBookings.forEach(foodBooking -> {
-                foodBookingResponses.add(mapFoodBookingResponse(foodBooking));
-            });
+            foodBookings.forEach(foodBooking -> foodBookingResponses.add(mapFoodBookingResponse(foodBooking)));
         }
         response.setFoodBookings(foodBookingResponses);
         return response;

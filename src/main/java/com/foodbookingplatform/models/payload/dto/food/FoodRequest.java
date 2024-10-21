@@ -3,7 +3,6 @@ package com.foodbookingplatform.models.payload.dto.food;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,4 +30,6 @@ public class FoodRequest {
     private String image;
 
     private Long foodCategoryId;
+
+    private Long locationId;
 }

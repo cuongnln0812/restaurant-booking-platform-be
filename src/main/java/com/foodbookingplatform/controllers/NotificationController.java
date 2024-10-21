@@ -90,9 +90,7 @@ public class NotificationController {
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-    @SecurityRequirement(name = "Bear Authentication")
     @PostMapping("/commission-monthly-payment")
-    @PreAuthorize("hasRole('LOCATION_ADMIN')")
     public ResponseEntity<Map<String, Object>> receiveNotification(@RequestBody Map<String, Object> payload) {
         int month = ((Number) payload.get("month")).intValue();
         int year = ((Number) payload.get("year")).intValue();

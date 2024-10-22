@@ -12,7 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "payos_transaction")
-public class PayOSTransaction extends BaseEntity{
+public class PayOSTransaction{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

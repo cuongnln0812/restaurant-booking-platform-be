@@ -1,41 +1,41 @@
 package com.foodbookingplatform.utils;
 
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
-import com.foodbookingplatform.repositories.MonthlyCommissionPaymentRepository;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class PaymentCodeGenerator {
     @Getter
     private static final String COMMISSION_PAYMENT_CODE = "200";
     @Getter
     private static final String ORDER_PAYMENT_CODE = "100";
-    private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("ddMMyyyyHHmmss");
 
+    // Generate an order code with a UNIX timestamp for the current time (in seconds)
     public static String generateOrderCode(long userId) {
-        Date now = new Date();
-        String dateTime = DATE_TIME_FORMAT.format(now);
-        return ORDER_PAYMENT_CODE + dateTime + userId;
+        long timestamp = Instant.now().getEpochSecond(); // Get current UNIX timestamp in seconds
+        return ORDER_PAYMENT_CODE + timestamp + userId;
     }
 
+    // Generate a commission code with a UNIX timestamp
     public static String generateCommissionCode(long userId) {
-        Date now = new Date();
-        String dateTime = DATE_TIME_FORMAT.format(now);
-        return COMMISSION_PAYMENT_CODE + dateTime + userId;
+        long timestamp = Instant.now().getEpochSecond(); // Get current UNIX timestamp in seconds
+        return COMMISSION_PAYMENT_CODE + timestamp + userId;
     }
 
+    // Extract the userId from the order code
     public static long getUserIdFromOrderCode(long orderCode) {
         String orderCodeString = String.valueOf(orderCode);
 
         // Length constants
         int paymentCodeLength = 3;      // Payment code (100 or 200)
-        int dateTimeLength = 14;        // ddMMyyyyHHmmss
+        int timestampLength = 10;       // UNIX timestamp in seconds
 
         // Calculate the starting index for userId
-        int userIdStartIndex = paymentCodeLength + dateTimeLength;
+        int userIdStartIndex = paymentCodeLength + timestampLength;
 
         if (userIdStartIndex < orderCodeString.length()) {
             String userIdString = orderCodeString.substring(userIdStartIndex);
@@ -45,77 +45,63 @@ public class PaymentCodeGenerator {
         }
     }
 
-    public static int getMonthFromOrderCode(long orderCode) {
-        String orderCodeString = String.valueOf(orderCode);
-
-        // Position constants for month in ddMMyyyyHHmmss
-        int paymentCodeLength = 3;
-        int dayLength = 2;
-        int monthStartIndex = paymentCodeLength + dayLength;
-        int monthLength = 2;
-
-        String monthString = orderCodeString.substring(monthStartIndex, monthStartIndex + monthLength);
-        return Integer.parseInt(monthString);
-    }
-
-    public static int getYearFromOrderCode(long orderCode) {
-        String orderCodeString = String.valueOf(orderCode);
-
-        // Position constants for year in ddMMyyyyHHmmss
-        int paymentCodeLength = 3;
-        int dayLength = 2;
-        int monthLength = 2;
-        int yearStartIndex = paymentCodeLength + dayLength + monthLength;
-        int yearLength = 4;
-
-        String yearString = orderCodeString.substring(yearStartIndex, yearStartIndex + yearLength);
-        return Integer.parseInt(yearString);
-    }
-
-    public static String getTimeFromOrderCode(long orderCode) {
-        String orderCodeString = String.valueOf(orderCode);
-
-        // Position constants for time in ddMMyyyyHHmmss
-        int paymentCodeLength = 3;
-        int dateLength = 8;  // ddMMyyyy
-        int timeStartIndex = paymentCodeLength + dateLength;
-        int timeLength = 6;  // HHmmss
-
-        String timeString = orderCodeString.substring(timeStartIndex, timeStartIndex + timeLength);
-        return formatTime(timeString);
-    }
-
-    public static String getDateTimeFromOrderCode(long orderCode) {
-        String orderCodeString = String.valueOf(orderCode);
-
-        int paymentCodeLength = 3;
-        int dateTimeStartIndex = paymentCodeLength;
-        int dateTimeLength = 14;  // ddMMyyyyHHmmss
-
-        String dateTimeString = orderCodeString.substring(dateTimeStartIndex, dateTimeStartIndex + dateTimeLength);
-        return formatDateTime(dateTimeString);
-    }
-
-    private static String formatTime(String timeString) {
-        // Format HHmmss to HH:mm:ss
-        return timeString.substring(0, 2) + ":" +
-                timeString.substring(2, 4) + ":" +
-                timeString.substring(4, 6);
-    }
-
-    private static String formatDateTime(String dateTimeString) {
-        // Format ddMMyyyyHHmmss to dd-MM-yyyy HH:mm:ss
-        return dateTimeString.substring(0, 2) + "-" +
-                dateTimeString.substring(2, 4) + "-" +
-                dateTimeString.substring(4, 8) + " " +
-                dateTimeString.substring(8, 10) + ":" +
-                dateTimeString.substring(10, 12) + ":" +
-                dateTimeString.substring(12, 14);
-    }
-
+    // Extract the payment code from the order code
     public static String getPaymentCodeFromOrderCode(long orderCode) {
         String orderCodeString = String.valueOf(orderCode);
         int paymentCodeLength = 3;
         return orderCodeString.substring(0, paymentCodeLength);
     }
+
+    // Extract the UNIX timestamp from the order code
+    public static long getTimestampFromOrderCode(long orderCode) {
+        String orderCodeString = String.valueOf(orderCode);
+
+        // Length constants
+        int paymentCodeLength = 3;
+        int timestampLength = 10;  // Length of the UNIX timestamp in seconds
+
+        // Extract the timestamp substring
+        int timestampStartIndex = paymentCodeLength;
+        String timestampString = orderCodeString.substring(timestampStartIndex, timestampStartIndex + timestampLength);
+        return Long.parseLong(timestampString);
+    }
+
+    // Convert timestamp to human-readable date and time
+    public static String getDateTimeFromOrderCode(long orderCode) {
+        long timestamp = getTimestampFromOrderCode(orderCode);
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        return instant.toString(); // ISO-8601 format, e.g., 2024-10-22T10:15:30Z
+    }
+
+    public static int getMonthFromOrderCode(long orderCode) {
+        long timestamp = getTimestampFromOrderCode(orderCode);
+        // Set time zone to Asia/Ho_Chi_Minh
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("Asia/Ho_Chi_Minh"));
+        return dateTime.getMonthValue(); // Returns month as an integer (1 for January, 12 for December)
+    }
+
+    public static int getYearFromOrderCode(long orderCode) {
+        long timestamp = getTimestampFromOrderCode(orderCode);
+        // Set time zone to Asia/Ho_Chi_Minh
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("Asia/Ho_Chi_Minh"));
+        return dateTime.getYear(); // Returns the year
+    }
+
+    public static int getLastMonthFromOrderCode(long orderCode) {
+        long timestamp = getTimestampFromOrderCode(orderCode);
+        // Set time zone to Asia/Ho_Chi_Minh and adjust to the last month
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime lastMonthDateTime = dateTime.minusMonths(1); // Move to the previous month
+        return lastMonthDateTime.getMonthValue(); // Returns month as an integer (1 for January, 12 for December)
+    }
+
+    // Extract the year from the previous month's timestamp in the Asia/Ho_Chi_Minh time zone
+    public static int getLastYearFromOrderCode(long orderCode) {
+        long timestamp = getTimestampFromOrderCode(orderCode);
+        // Set time zone to Asia/Ho_Chi_Minh and adjust to the last month
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.of("Asia/Ho_Chi_Minh"));
+        LocalDateTime lastMonthDateTime = dateTime.minusMonths(1); // Move to the previous month
+        return lastMonthDateTime.getYear(); // Returns the year
+    }
+
 }

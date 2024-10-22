@@ -97,8 +97,8 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             long orderCode = data.getOrderCode();
 
             long userId = PaymentCodeGenerator.getUserIdFromOrderCode(orderCode);
-            int month = PaymentCodeGenerator.getMonthFromOrderCode(orderCode);
-            int year = PaymentCodeGenerator.getYearFromOrderCode(orderCode);
+            int month = PaymentCodeGenerator.getLastMonthFromOrderCode(orderCode);
+            int year = PaymentCodeGenerator.getLastYearFromOrderCode(orderCode);
             String paymentCode = PaymentCodeGenerator.getPaymentCodeFromOrderCode(orderCode);
 
             if(paymentCode.equals(PaymentCodeGenerator.getCOMMISSION_PAYMENT_CODE())) {

@@ -93,7 +93,7 @@ public class NotificationController {
     @PostMapping("/commission-monthly-payment/{userId}")
     public ResponseEntity<Map<String, Object>> receiveNotification(
             @PathVariable(name = "userId") Long userId,
-            @RequestBody Map<String, Object> payload) {
+            @RequestBody(required = false) Map<String, Object> payload) {
         int month = ((Number) payload.get("month")).intValue();
         int year = ((Number) payload.get("year")).intValue();
         int totalAmount = ((Number) payload.get("totalAmount")).intValue();

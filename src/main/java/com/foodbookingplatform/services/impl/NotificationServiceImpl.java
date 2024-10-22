@@ -49,6 +49,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Value("${webhook-url}")
     private String WEBHOOK_URL_PREFIX;
 
+    @Value("${fixed-amount}")
+    private String FIXED_RATE;
+
+
     @Override
     public List<NotificationResponse> addNotification(NotificationRequest notificationRequest) {
         List<Notification> notificationList = new ArrayList<>();
@@ -138,7 +142,8 @@ public class NotificationServiceImpl implements NotificationService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("month", month);
         payload.put("year", year);
-        payload.put("totalAmount", totalAmount);
+        payload.put("commissionAmount", totalAmount);
+        payload.put("fixedAmount", Integer.parseInt(FIXED_RATE));
 
         restTemplate.postForEntity(WEBHOOK_URL_PREFIX + "/api/v1/notifications/commission-monthly-payment/" + userId, payload, String.class);
     }

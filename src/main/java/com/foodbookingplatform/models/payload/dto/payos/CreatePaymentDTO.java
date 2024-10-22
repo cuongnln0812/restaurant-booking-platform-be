@@ -18,7 +18,7 @@ public class CreatePaymentDTO {
     private String buyerName;
     private String buyerPhone;
     @NotBlank(message = "Description cannot be blank!")
-    @Size(min = 1, max = 25, message = "Description must be between 1 and 25 characters!")
+    @Size(min = 1, max = 20, message = "Description must be between 1 and 20 characters!")
     private String description;
     @NotEmpty(message = "Item list cannot be empty!")
     @Size(min = 1, message = "There must be at least 1 item!")
@@ -27,4 +27,5 @@ public class CreatePaymentDTO {
     private String returnUrl;
     @NotBlank(message = "Cancel Url cannot be blank!")
     private String cancelUrl;
+    private String paymentType;
 }

@@ -106,6 +106,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Location> locations;
 
+    @OneToMany(mappedBy = "user")
+    private Set<PayOSTransaction> transactions;
+
     @ManyToOne
     @JoinColumn(name = "role_Id", nullable = false)
     private Role role;

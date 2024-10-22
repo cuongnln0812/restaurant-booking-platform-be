@@ -2,14 +2,21 @@ package com.foodbookingplatform.services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.foodbookingplatform.models.entities.User;
+import com.foodbookingplatform.models.exception.ResourceNotFoundException;
+import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.payload.dto.payos.CreatePaymentDTO;
 import com.foodbookingplatform.models.payload.dto.payos.ItemDTO;
 import com.foodbookingplatform.models.payload.dto.payos.WebhookUrlDTO;
+import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.PayOSService;
+import com.foodbookingplatform.utils.PaymentCodeGenerator;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
@@ -23,19 +30,30 @@ import java.util.*;
 @Transactional
 public class PayOSServiceImpl implements PayOSService {
     private final PayOS payOS;
+    private final UserRepository userRepository;
+
     @Value("${payos.expired-time-minutes}")
     private String EXPIRED_TIME;
+    private final long COMMISSION_PAYMENT_CODE = 200;
+    private final long ORDER_PAYMENT_CODE = 100;
 
-    public PayOSServiceImpl(PayOS payOS) {
+
+    public PayOSServiceImpl(PayOS payOS, UserRepository userRepository) {
         super();
         this.payOS = payOS;
+        this.userRepository = userRepository;
     }
     @Override
     public ObjectNode createPayment(CreatePaymentDTO createPaymentDTO) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
         ObjectMapper objectMapper = new ObjectMapper();
         List<ItemData> itemList;
         ObjectNode response = objectMapper.createObjectNode();
         try {
+            final long orderCode;
             final String buyerName = createPaymentDTO.getBuyerName();
             final String buyerPhone = createPaymentDTO.getBuyerPhone();
             final String description = createPaymentDTO.getDescription();
@@ -45,8 +63,20 @@ public class PayOSServiceImpl implements PayOSService {
                     .map(ItemDTO::getPrice)
                     .reduce(0, Integer::sum);
 
-            String currentTimeString = (String.valueOf(new Date().getTime()));
-            long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
+            switch (createPaymentDTO.getPaymentType()) {
+                case "COMMISSION":
+                    if (StringUtils.equals(user.getRole().getName(), "LOCATION_ADMIN")) {
+                        orderCode = Long.parseLong(PaymentCodeGenerator.generateCommissionCode(user.getId()));
+                    } else {
+                        throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only Location Admin can pay commission.");
+                    }
+                    break;
+                case "ORDER":
+                    orderCode = Long.parseLong(PaymentCodeGenerator.generateOrderCode(user.getId()));
+                    break;
+                default:
+                    throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Invalid type of payment type (Only COMMISSION or ORDER type)");
+            }
 
             //UnixTimestamp
             Instant now = Instant.now();

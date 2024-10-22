@@ -1,6 +1,7 @@
 package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.entities.LocationBooking;
+import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
 import com.foodbookingplatform.models.entities.Notification;
 import com.foodbookingplatform.models.entities.User;
 import com.foodbookingplatform.models.enums.EntityStatus;
@@ -10,11 +11,13 @@ import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationRequest;
 import com.foodbookingplatform.models.payload.dto.notification.NotificationResponse;
 import com.foodbookingplatform.repositories.LocationBookingRepository;
+import com.foodbookingplatform.repositories.MonthlyCommissionPaymentRepository;
 import com.foodbookingplatform.repositories.NotificationRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.NotificationService;
 import com.foodbookingplatform.utils.GenericSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -35,9 +38,11 @@ import java.util.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final LocationBookingRepository locationBookingRepository;
+    private final MonthlyCommissionPaymentRepository commissionPaymentRepository;
     private final UserRepository userRepository;
     private final ModelMapper mapper;
 
@@ -139,18 +144,62 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
+    @Transactional
     public void calculateAndSendMonthlyBilling() {
+        log.info("Starting monthly billing calculation...");
         String roleName = "LOCATION_ADMIN";
         List<Long> locationAdminIds = userRepository.findAllUserIdByRoleName(roleName);
         LocalDate currentDate = LocalDate.now();
         LocalDate previousMonthDate = currentDate.minusMonths(1);
         int month = previousMonthDate.getMonthValue();
         int year = previousMonthDate.getYear();
-        // Lặp qua từng nhà hàng và gửi thông báo webhook
-        for (Long id  : locationAdminIds) {
-            float totalAmount = calculateMonthlyPayment(id, month, year);
+
+        for (Long userId : locationAdminIds) {
+            try {
+                processUserCommission(userId, month, year);
+            } catch (Exception e) {
+                log.error("Error processing commission for userId: {}", userId, e);
+            }
+        }
+        log.info("Completed monthly billing calculation.");
+    }
+
+    @Transactional
+    public void processUserCommission(Long userId, int month, int year) {
+        // Kiểm tra xem đã có bản ghi cho tháng này chưa
+        Optional<MonthlyCommissionPayment> existingPaymentOpt = commissionPaymentRepository.findByUserIdAndMonthAndYear(userId, month, year);
+
+        if (existingPaymentOpt.isPresent()) {
+            // Nếu đã tồn tại và chưa thanh toán, có thể cập nhật lại số tiền nếu cần
+            MonthlyCommissionPayment payment = existingPaymentOpt.get();
+            if (!payment.isPaid()) {
+                float newTotalAmount = calculateMonthlyPayment(userId, month, year);
+                int newRoundedAmount = (int) Math.floor(newTotalAmount);
+
+                if (newRoundedAmount != payment.getTotalAmount()) {
+                    payment.setTotalAmount(newRoundedAmount);
+                    commissionPaymentRepository.save(payment);
+                    sendWebhookNotification(userId, month, year, newRoundedAmount);
+                    log.info("Updated commission amount for userId: {}, month: {}, year: {}, new amount: {}",
+                            userId, month, year, newRoundedAmount);
+                }
+            }
+        } else {
+            // Nếu chưa tồn tại, tạo mới
+            float totalAmount = calculateMonthlyPayment(userId, month, year);
             int roundedAmount = (int) Math.floor(totalAmount);
-            sendWebhookNotification(id, month, year, roundedAmount);
+
+            MonthlyCommissionPayment newPayment = new MonthlyCommissionPayment();
+            newPayment.setUserId(userId);
+            newPayment.setMonth(month);
+            newPayment.setYear(year);
+            newPayment.setTotalAmount(roundedAmount);
+            newPayment.setPaid(false);
+
+            commissionPaymentRepository.save(newPayment);
+            sendWebhookNotification(userId, month, year, roundedAmount);
+            log.info("Created new commission payment for userId: {}, month: {}, year: {}, amount: {}",
+                    userId, month, year, roundedAmount);
         }
     }
 

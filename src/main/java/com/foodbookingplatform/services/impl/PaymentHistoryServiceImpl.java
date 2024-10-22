@@ -3,19 +3,16 @@ package com.foodbookingplatform.services.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.foodbookingplatform.models.entities.LocationBooking;
-import com.foodbookingplatform.models.entities.PaymentHistory;
-import com.foodbookingplatform.models.entities.PaymentMethod;
+import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.PaymentStatus;
 
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
-import com.foodbookingplatform.repositories.LocationBookingRepository;
-import com.foodbookingplatform.repositories.PaymentHistoryRepository;
-import com.foodbookingplatform.repositories.PaymentMethodRepository;
+import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.PaymentHistoryService;
+import com.foodbookingplatform.utils.PaymentCodeGenerator;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,10 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import vn.payos.PayOS;
 import vn.payos.type.Webhook;
 import vn.payos.type.WebhookData;
+
+import java.util.Optional;
 
 @Service
 public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, PaymentHistoryRequest, PaymentHistoryResponse> implements PaymentHistoryService {
@@ -34,14 +34,20 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final LocationBookingRepository locationBookingRepository;
+    private final PayOSTransactionRepository transactionRepository;
+    private final MonthlyCommissionPaymentRepository commissionPaymentRepository;
+    private final UserRepository userRepository;
     private final ModelMapper mapper;
 
-    public PaymentHistoryServiceImpl(PayOS payOS, PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, ModelMapper modelMapper) {
+    public PaymentHistoryServiceImpl(PayOS payOS, PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, PayOSTransactionRepository transactionRepository, MonthlyCommissionPaymentRepository commissionPaymentRepository, UserRepository userRepository, ModelMapper modelMapper) {
         super(paymentHistoryRepository, modelMapper, PaymentHistory.class, PaymentHistoryRequest.class, PaymentHistoryResponse.class);
         this.payOS = payOS;
         this.paymentHistoryRepository = paymentHistoryRepository;
         this.paymentMethodRepository = paymentMethodRepository;
         this.locationBookingRepository = locationBookingRepository;
+        this.transactionRepository = transactionRepository;
+        this.commissionPaymentRepository = commissionPaymentRepository;
+        this.userRepository = userRepository;
         this.mapper = modelMapper;
     }
 
@@ -72,6 +78,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     }
 
     @Override
+    @Transactional
     public ObjectNode payOsTransferHandler(@RequestBody ObjectNode body)
             throws JsonProcessingException, IllegalArgumentException {
 
@@ -87,6 +94,30 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
 
             WebhookData data = payOS.verifyPaymentWebhookData(webhookBody);
             System.out.println("PAYOS DATA WEBHOOK: " + data.getCode() + " " + data.getPaymentLinkId() + " " + data.getDesc());
+            long orderCode = data.getOrderCode();
+
+            long userId = PaymentCodeGenerator.getUserIdFromOrderCode(orderCode);
+            int month = PaymentCodeGenerator.getMonthFromOrderCode(orderCode);
+            int year = PaymentCodeGenerator.getYearFromOrderCode(orderCode);
+            String paymentCode = PaymentCodeGenerator.getPaymentCodeFromOrderCode(orderCode);
+
+            if(paymentCode.equals(PaymentCodeGenerator.getCOMMISSION_PAYMENT_CODE())) {
+                Optional<MonthlyCommissionPayment> commissionPaymentOpt = commissionPaymentRepository.findByUserIdAndMonthAndYear(userId, month, year);
+                if(commissionPaymentOpt.isPresent()) {
+                    MonthlyCommissionPayment commissionPayment = commissionPaymentOpt.get();
+                    commissionPayment.setPaid(true);
+                    commissionPayment.setPaidAt(data.getTransactionDateTime());
+                    commissionPaymentRepository.save(commissionPayment);
+                }
+            }
+
+            User user = userRepository.findById(PaymentCodeGenerator.getUserIdFromOrderCode(data.getOrderCode()))
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+
+            PayOSTransaction transaction = transactionRepository.save(mapToTransaction(data, user));
+            user.getTransactions().add(transaction);
+            userRepository.save(user);
+
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,4 +157,27 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         return paymentMethodRepository.findById(paymentMethodId)
                 .orElseThrow(() -> new ResourceNotFoundException("PaymentMethod", "id", paymentMethodId));
     }
+
+    private PayOSTransaction mapToTransaction(WebhookData data, User user) {
+        return PayOSTransaction.builder()
+                .orderCode(data.getOrderCode())
+                .amount(data.getAmount())
+                .description(data.getDescription())
+                .accountNumber(data.getAccountNumber())
+                .reference(data.getReference())
+                .transactionDateTime(data.getTransactionDateTime())
+                .currency(data.getCurrency())
+                .paymentLinkId(data.getPaymentLinkId())
+                .code(data.getCode())
+                .desc(data.getDesc())
+                .counterAccountBankId(data.getCounterAccountBankId())
+                .counterAccountBankName(data.getCounterAccountBankName())
+                .counterAccountName(data.getCounterAccountName())
+                .counterAccountNumber(data.getCounterAccountNumber())
+                .virtualAccountName(data.getVirtualAccountName())
+                .virtualAccountNumber(data.getVirtualAccountNumber())
+                .user(user)
+                .build();
+    }
+
 }

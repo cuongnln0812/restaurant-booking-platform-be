@@ -28,4 +28,5 @@ public interface LocationBookingRepository extends JpaRepository<LocationBooking
                                                     @Param("status") LocationBookingStatus status,
                                                     @Param("month") int month,
                                                     @Param("year") int year);
+    List<LocationBooking> findAllByLocationUserAndStatus(User user, LocationBookingStatus status);
 }

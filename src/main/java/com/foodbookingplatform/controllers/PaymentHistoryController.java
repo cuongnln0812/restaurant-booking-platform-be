@@ -3,6 +3,7 @@ package com.foodbookingplatform.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
 import com.foodbookingplatform.services.PaymentHistoryService;
@@ -54,6 +55,15 @@ public class PaymentHistoryController {
     @GetMapping("{id}")
     public ResponseEntity<PaymentHistoryResponse> getPaymentHistoryById(@PathVariable Long id) {
         PaymentHistoryResponse reportResponse = paymentHistoryService.get(id);
+        return ResponseEntity.ok(reportResponse);
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('LOCATION_ADMIN')")
+    @GetMapping("/monthly-commission-payment")
+    public ResponseEntity<MonthlyCommissionPayment> getMonthlyPaymentHistory(@RequestParam(name = "month") int month, @RequestParam(name = "year") int year) {
+        MonthlyCommissionPayment reportResponse = paymentHistoryService.getMonthlyPaymentOfLocationAdminByMonthAndYear(month, year);
         return ResponseEntity.ok(reportResponse);
     }
 

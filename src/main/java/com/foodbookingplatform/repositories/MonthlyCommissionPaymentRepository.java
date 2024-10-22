@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MonthlyCommissionPaymentRepository extends JpaRepository<MonthlyCommissionPayment, Long> {
     Optional<MonthlyCommissionPayment> findByUserIdAndMonthAndYear(long userId, int month, int year);
-
+    Optional<MonthlyCommissionPayment> findByUserId(Long userId);
 }

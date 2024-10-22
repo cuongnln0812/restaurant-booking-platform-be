@@ -90,27 +90,6 @@ public class NotificationController {
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-    @PostMapping("/commission-monthly-payment/{userId}")
-    public ResponseEntity<Map<String, Object>> receiveNotification(
-            @PathVariable(name = "userId") Long userId,
-            @RequestBody(required = false) Map<String, Object> payload) {
-        int month = ((Number) payload.get("month")).intValue();
-        int year = ((Number) payload.get("year")).intValue();
-        int totalAmount = ((Number) payload.get("totalAmount")).intValue();
-        DecimalFormat currencyFormat = new DecimalFormat("#,###");
-        String formattedTotalAmount = currencyFormat.format(totalAmount);
-
-        // Tạo một map để chứa thông tin phản hồi
-        Map<String, Object> responsePayload = new HashMap<>();
-        responsePayload.put("status", "success");
-        responsePayload.put("message", "Thanh toán tiền hoa hồng tháng " + month + "/" + year + " số tiền: " + formattedTotalAmount + " VND");
-        responsePayload.put("totalAmount", totalAmount);
-
-        // Trả về response với thông điệp và totalAmount
-        return ResponseEntity.ok(responsePayload);
-    }
-
-    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('USER') or hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @GetMapping("{id}")

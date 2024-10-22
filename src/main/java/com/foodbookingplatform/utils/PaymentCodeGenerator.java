@@ -13,92 +13,109 @@ public class PaymentCodeGenerator {
     private static final String COMMISSION_PAYMENT_CODE = "200";
     @Getter
     private static final String ORDER_PAYMENT_CODE = "100";
+    private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("ddMMyyyyHHmmss");
 
     public static String generateOrderCode(long userId) {
         Date now = new Date();
-
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-        String day = dayFormat.format(now);
-        String month = monthFormat.format(now);
-        String year = yearFormat.format(now);
-
-        return ORDER_PAYMENT_CODE + day + month + year + userId;
+        String dateTime = DATE_TIME_FORMAT.format(now);
+        return ORDER_PAYMENT_CODE + dateTime + userId;
     }
 
     public static String generateCommissionCode(long userId) {
         Date now = new Date();
-
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-        String day = dayFormat.format(now);
-        String month = monthFormat.format(now);
-        String year = yearFormat.format(now);
-
-        return COMMISSION_PAYMENT_CODE + day + month + year + userId;
+        String dateTime = DATE_TIME_FORMAT.format(now);
+        return COMMISSION_PAYMENT_CODE + dateTime + userId;
     }
 
     public static long getUserIdFromOrderCode(long orderCode) {
-        // Convert the long orderCode to a string for manipulation
         String orderCodeString = String.valueOf(orderCode);
 
-        // Assuming the fixed lengths of the payment code (3) and date components (2 + 2 + 4)
-        int paymentCodeLength = 3; // Length of COMMISSION_PAYMENT_CODE or ORDER_PAYMENT_CODE
-        int dayLength = 2;          // Length of day
-        int monthLength = 2;        // Length of month
-        int yearLength = 4;         // Length of year
+        // Length constants
+        int paymentCodeLength = 3;      // Payment code (100 or 200)
+        int dateTimeLength = 14;        // ddMMyyyyHHmmss
 
-        // Calculate the starting index for userId extraction
-        int userIdStartIndex = paymentCodeLength + dayLength + monthLength + yearLength;
+        // Calculate the starting index for userId
+        int userIdStartIndex = paymentCodeLength + dateTimeLength;
 
-        // Check if orderCodeString is long enough to extract userId
         if (userIdStartIndex < orderCodeString.length()) {
-            // Extract the userId part from the order code
             String userIdString = orderCodeString.substring(userIdStartIndex);
             return Long.parseLong(userIdString);
         } else {
-            // Handle cases where the order code does not have a valid userId
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Invalid order code: " + orderCode);
         }
     }
 
     public static int getMonthFromOrderCode(long orderCode) {
-        // Convert the long orderCode to a string for manipulation
         String orderCodeString = String.valueOf(orderCode);
 
-        // Assuming the fixed lengths of the payment code (3) and date components (2 + 2 + 4)
-        int paymentCodeLength = 3; // Length of COMMISSION_PAYMENT_CODE or ORDER_PAYMENT_CODE
-        int dayLength = 2;          // Length of day
-        int monthLength = 2;        // Length of month
+        // Position constants for month in ddMMyyyyHHmmss
+        int paymentCodeLength = 3;
+        int dayLength = 2;
+        int monthStartIndex = paymentCodeLength + dayLength;
+        int monthLength = 2;
 
-        // Extract month from the order code
-        String monthString = orderCodeString.substring(paymentCodeLength + dayLength, paymentCodeLength + dayLength + monthLength);
+        String monthString = orderCodeString.substring(monthStartIndex, monthStartIndex + monthLength);
         return Integer.parseInt(monthString);
     }
 
     public static int getYearFromOrderCode(long orderCode) {
-        // Convert the long orderCode to a string for manipulation
         String orderCodeString = String.valueOf(orderCode);
 
-        // Assuming the fixed lengths of the payment code (3) and date components (2 + 2 + 4)
-        int paymentCodeLength = 3; // Length of COMMISSION_PAYMENT_CODE or ORDER_PAYMENT_CODE
-        int dayLength = 2;          // Length of day
-        int monthLength = 2;        // Length of month
-        int yearLength = 4;         // Length of year
+        // Position constants for year in ddMMyyyyHHmmss
+        int paymentCodeLength = 3;
+        int dayLength = 2;
+        int monthLength = 2;
+        int yearStartIndex = paymentCodeLength + dayLength + monthLength;
+        int yearLength = 4;
 
-        // Extract year from the order code
-        String yearString = orderCodeString.substring(paymentCodeLength + dayLength + monthLength + dayLength, paymentCodeLength + dayLength + monthLength + yearLength);
+        String yearString = orderCodeString.substring(yearStartIndex, yearStartIndex + yearLength);
         return Integer.parseInt(yearString);
+    }
+
+    public static String getTimeFromOrderCode(long orderCode) {
+        String orderCodeString = String.valueOf(orderCode);
+
+        // Position constants for time in ddMMyyyyHHmmss
+        int paymentCodeLength = 3;
+        int dateLength = 8;  // ddMMyyyy
+        int timeStartIndex = paymentCodeLength + dateLength;
+        int timeLength = 6;  // HHmmss
+
+        String timeString = orderCodeString.substring(timeStartIndex, timeStartIndex + timeLength);
+        return formatTime(timeString);
+    }
+
+    public static String getDateTimeFromOrderCode(long orderCode) {
+        String orderCodeString = String.valueOf(orderCode);
+
+        int paymentCodeLength = 3;
+        int dateTimeStartIndex = paymentCodeLength;
+        int dateTimeLength = 14;  // ddMMyyyyHHmmss
+
+        String dateTimeString = orderCodeString.substring(dateTimeStartIndex, dateTimeStartIndex + dateTimeLength);
+        return formatDateTime(dateTimeString);
+    }
+
+    private static String formatTime(String timeString) {
+        // Format HHmmss to HH:mm:ss
+        return timeString.substring(0, 2) + ":" +
+                timeString.substring(2, 4) + ":" +
+                timeString.substring(4, 6);
+    }
+
+    private static String formatDateTime(String dateTimeString) {
+        // Format ddMMyyyyHHmmss to dd-MM-yyyy HH:mm:ss
+        return dateTimeString.substring(0, 2) + "-" +
+                dateTimeString.substring(2, 4) + "-" +
+                dateTimeString.substring(4, 8) + " " +
+                dateTimeString.substring(8, 10) + ":" +
+                dateTimeString.substring(10, 12) + ":" +
+                dateTimeString.substring(12, 14);
     }
 
     public static String getPaymentCodeFromOrderCode(long orderCode) {
         String orderCodeString = String.valueOf(orderCode);
         int paymentCodeLength = 3;
-
-        // Ensure the orderCodeString is long enough to extract the payment code
         return orderCodeString.substring(0, paymentCodeLength);
     }
-
 }

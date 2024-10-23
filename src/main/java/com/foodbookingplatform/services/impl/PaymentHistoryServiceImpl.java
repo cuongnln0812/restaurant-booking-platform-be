@@ -198,7 +198,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                         "<p><strong>Chi tiết thanh toán:</strong></p>" +
                         "<ul>" +
                         "<li>Phí cố định hàng tháng: %s</li>" +
-                        "<li>Phí hoa hồng: %s VND</li>" +
+                        "<li>Tổng phí hoa hồng tháng này: %s VND</li>" +
                         "<li>Tổng số lượng đơn hoàn thành: %d</li>" +
                         "</ul>" +
                         "<p><strong>Tổng số tiền cần thanh toán:</strong> %s VND</p>" +
@@ -207,7 +207,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                         "<p><strong>Hạn thanh toán:</strong> %s </p>" + "<br>" +
                         "<p><a href=\"%s\">Nhấp vào đây để chuyển tới trang thanh toán (Đăng nhập nếu có) </a></p>" + // Thêm liên kết thanh toán
                         "<p>Cảm ơn bạn!</p>",
-                month, year, fixedFee, formattedTotalAmount, totalBooking, formatExpiredAt, formattedGrandTotal, paymentLink // Tính tổng số tiền
+                month, year, fixedFee, formattedTotalAmount, totalBooking, formattedGrandTotal, formatExpiredAt, paymentLink // Tính tổng số tiền
         );
 
         // Gọi đến phương thức sendEmail đã có

@@ -21,9 +21,12 @@ public class MonthlyCommissionPayment {
     private Long userId;
     private int month;
     private int year;
+    private int fixedAmount;
     private float totalAmount;
+    private int totalBooking;
     private boolean isPaid;
     private String paidAt;
+    private LocalDateTime expiredAt;
     private Long transactionId;
 }
 

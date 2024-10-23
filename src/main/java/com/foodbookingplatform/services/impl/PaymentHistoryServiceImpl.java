@@ -17,6 +17,7 @@ import com.foodbookingplatform.services.PaymentHistoryService;
 import com.foodbookingplatform.utils.PaymentCodeGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,9 +34,10 @@ import vn.payos.type.WebhookData;
 
 import java.text.NumberFormat;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,6 +51,11 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final ModelMapper mapper;
+
+    @Value("${expired-payment-day}")
+    private String EXPIRED_PAYMENT_DAY;
+    @Value("${fixed-amount}")
+    private String FIXED_AMOUNT;
 
     public PaymentHistoryServiceImpl(PayOS payOS, PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, PayOSTransactionRepository transactionRepository, MonthlyCommissionPaymentRepository commissionPaymentRepository, UserRepository userRepository, EmailService emailService, ModelMapper modelMapper) {
         super(paymentHistoryRepository, modelMapper, PaymentHistory.class, PaymentHistoryRequest.class, PaymentHistoryResponse.class);
@@ -149,24 +156,38 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                 .orElse(new MonthlyCommissionPayment());
     }
 
-    public float calculateMonthlyPayment(User userId, int month, int year) {
+    public Map<String, Object> calculateMonthlyPayment(User userId, int month, int year) {
+        // Lấy tất cả các booking thành công của user
         List<LocationBooking> successfulBookings = locationBookingRepository.findAllByLocationUserAndStatus(
                 userId, LocationBookingStatus.SUCCESSFUL);
 
-        return (float) successfulBookings.stream()
+        // Tạo Map để trả về kết quả
+        Map<String, Object> response = new HashMap<>();
+
+        // Sử dụng stream để tính tổng số lượng booking và tổng tiền commission trong cùng 1 lần
+        DoubleSummaryStatistics stats = successfulBookings.stream()
                 .filter(booking -> {
                     LocalDate bookingDate = booking.getBookingDate(); // Giả sử getBookingDate trả về LocalDate
                     return bookingDate.getMonthValue() == month && bookingDate.getYear() == year;
                 })
-                .mapToDouble(LocationBooking::getCommission)
-                .sum();
+                .collect(Collectors.summarizingDouble(LocationBooking::getCommission));
+
+        // Đưa totalAmount và totalBooking vào response map
+        response.put("totalAmount", (float) stats.getSum());  // Tổng tiền từ commission
+        response.put("totalBooking", Integer.parseInt(String.valueOf(stats.getCount())));       // Tổng số booking
+
+        return response;
     }
 
-    public void sendEmailReminder(User user, int month, int year, int totalAmount) {
+
+    public void sendEmailReminder(User user, int month, int year, int totalAmount, LocalDateTime expiredAt, int totalBooking) {
         String subject = "[SkedEat Admin] Thanh toán phí sử dụng dịch vụ web";
-        String fixedFee = formatCurrency(300000); // Phí cố định hàng tháng
+        String fixedFee = formatCurrency(Integer.parseInt(EXPIRED_PAYMENT_DAY)); // Phí cố định hàng tháng
         String formattedTotalAmount = formatCurrency(totalAmount); // Định dạng tổng số tiền
         String formattedGrandTotal = formatCurrency(300000 + totalAmount); // Tính tổng số tiền
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formatExpiredAt = expiredAt.format(formatter);
+
 
         // Đường dẫn đến trang thanh toán (thay đổi theo cấu trúc URL của bạn)
         String paymentLink = "https://skedeat.site/manage/fees"; // Thay thế bằng đường dẫn thực tế
@@ -178,12 +199,15 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                         "<ul>" +
                         "<li>Phí cố định hàng tháng: %s</li>" +
                         "<li>Phí hoa hồng: %s VND</li>" +
+                        "<li>Tổng số lượng đơn hoàn thành: %d</li>" +
                         "</ul>" +
                         "<p><strong>Tổng số tiền cần thanh toán:</strong> %s VND</p>" +
+                        "<br>" +
                         "<p>Xin vui lòng đảm bảo thanh toán đúng hạn.</p>" +
+                        "<p><strong>Hạn thanh toán:</strong> %s </p>" + "<br>" +
                         "<p><a href=\"%s\">Nhấp vào đây để chuyển tới trang thanh toán (Đăng nhập nếu có) </a></p>" + // Thêm liên kết thanh toán
                         "<p>Cảm ơn bạn!</p>",
-                month, year, fixedFee, formattedTotalAmount, formattedGrandTotal, paymentLink // Tính tổng số tiền
+                month, year, fixedFee, formattedTotalAmount, totalBooking, formatExpiredAt, formattedGrandTotal, paymentLink // Tính tổng số tiền
         );
 
         // Gọi đến phương thức sendEmail đã có
@@ -224,22 +248,33 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             // Nếu đã tồn tại, gửi email nhắc nhở
             MonthlyCommissionPayment payment = existingPaymentOpt.get();
             if (!payment.isPaid()) {
-                sendEmailReminder(user, payment.getMonth(), payment.getYear(), (int) Math.floor(payment.getTotalAmount()));
+                sendEmailReminder(user, payment.getMonth(), payment.getYear(),
+                        (int) Math.floor(payment.getTotalAmount()), payment.getExpiredAt(),
+                        payment.getTotalBooking());
             }
         } else {
             // Nếu chưa tồn tại, tạo mới
-            float totalAmount = calculateMonthlyPayment(user, month, year);
+            Map<String, Object> response = calculateMonthlyPayment(user, month, year);
+            float totalAmount = (float) response.get("totalAmount");
+            int totalBooking = (int) response.get("totalBooking");
             int roundedAmount = (int) Math.floor(totalAmount);
 
+            int presentMonth = LocalDateTime.now().getMonthValue();
+            int presentYear = LocalDateTime.now().getYear();
+            LocalDateTime expiredAt = LocalDateTime.of(presentYear, presentMonth,
+                    Integer.parseInt(EXPIRED_PAYMENT_DAY), 23, 59, 59);
             MonthlyCommissionPayment newPayment = new MonthlyCommissionPayment();
             newPayment.setUserId(user.getId());
             newPayment.setMonth(month);
             newPayment.setYear(year);
             newPayment.setTotalAmount(roundedAmount);
             newPayment.setPaid(false);
+            newPayment.setTotalBooking(totalBooking);
+            newPayment.setExpiredAt(expiredAt);
+            newPayment.setFixedAmount(Integer.parseInt(FIXED_AMOUNT));
 
             commissionPaymentRepository.save(newPayment);
-            sendEmailReminder(user, month, year, roundedAmount); // Gửi email nhắc nhở khi tạo mới
+            sendEmailReminder(user, month, year, roundedAmount, expiredAt, totalBooking); // Gửi email nhắc nhở khi tạo mới
             log.info("Created new commission payment for userId: {}, month: {}, year: {}, amount: {}",
                     user.getId(), month, year, roundedAmount);
         }

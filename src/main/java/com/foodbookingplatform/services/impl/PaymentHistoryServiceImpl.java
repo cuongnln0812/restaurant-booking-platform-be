@@ -10,8 +10,10 @@ import com.foodbookingplatform.models.enums.PaymentStatus;
 
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.MonthlyRevenueResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.RecentPaymentResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.EmailService;
 import com.foodbookingplatform.services.LocationBookingService;
@@ -40,6 +42,7 @@ import vn.payos.PayOS;
 import vn.payos.type.Webhook;
 import vn.payos.type.WebhookData;
 
+import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -361,6 +364,12 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
 
         double totalRevenueOfSystem;
 
+        // only calculate the revenue after the released date of skedeat application
+        if (month < 10 && year <= 2024) return 0;
+
+        // not calculate the future date compare to the day this api is called
+        if (month > LocalDate.now().getMonthValue() && year >= LocalDate.now().getYear()) return 0;
+
         // revenue from locations
         int numberOfSuccessfulBookings = locationBookingService.countAllBookingsInSystem(LocationBookingStatus.SUCCESSFUL, month, year);
         int numberOfActiveLocations = locationService.getNumberOfActiveLocationsInSystem();
@@ -374,5 +383,32 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         totalRevenueOfSystem = revenueFromBooking + revenueFromLocationMonthlySubscriptionFee;
 
         return totalRevenueOfSystem;
+    }
+
+    @Override
+    public List<MonthlyRevenueResponse> getTotalRevenueOfSystemForYear(int year) {
+        List<MonthlyRevenueResponse> annualRevenue = new ArrayList<>();
+
+        // Get month names
+        String[] months = new DateFormatSymbols().getShortMonths();
+
+        for (int month = 1; month <= 12; month++) {
+            double revenue = getTotalRevenueOfSystem(month, year);
+            String monthName = months[month - 1]; // 0-based index
+
+            annualRevenue.add(new MonthlyRevenueResponse(monthName, revenue));
+        }
+
+        return annualRevenue;
+    }
+
+    @Override
+    public List<RecentPaymentResponse> getRecentPaymentHistories(PaymentStatus status, int top) {
+        List<RecentPaymentResponse> result = new ArrayList<>();
+        List<PaymentHistory> recentPaymentHistories = paymentHistoryRepository.findPaymentHistoriesByStatusOrderByCreatedDateDesc(status, PageRequest.of(0, top));
+        recentPaymentHistories.forEach(p -> {
+            result.add(new RecentPaymentResponse(p.getLocationBooking().getUser().getFullName(), p.getLocationBooking().getUser().getEmail(), p.getTotalAmount()));
+        });
+        return result;
     }
 }

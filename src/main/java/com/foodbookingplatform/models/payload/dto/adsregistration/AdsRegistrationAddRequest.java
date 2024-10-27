@@ -16,4 +16,6 @@ public class AdsRegistrationAddRequest {
 
     @NotNull(message = "AdsId cannot be null")
     private Long adsId;
+
+    private String bannerImage;
 }

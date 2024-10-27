@@ -65,6 +65,9 @@ public class Location extends BaseEntity{
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
+    @Column(name = "banner_image")
+    private String bannerImage;
+
     @ManyToOne
     @JoinColumn(name = "user_Id", nullable = false)
     private User user;

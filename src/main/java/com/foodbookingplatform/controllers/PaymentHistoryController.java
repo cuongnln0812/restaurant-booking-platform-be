@@ -1,11 +1,16 @@
 package com.foodbookingplatform.controllers;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
+import com.foodbookingplatform.models.enums.PaymentStatus;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.MonthlyRevenueResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.RecentPaymentResponse;
 import com.foodbookingplatform.services.PaymentHistoryService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -110,5 +115,26 @@ public class PaymentHistoryController {
             @RequestParam int year
     ) {
         return ResponseEntity.ok(paymentHistoryService.getTotalRevenueOfSystem(month, year));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN')")
+    @GetMapping("get-revenue-of-each-month")
+    public ResponseEntity<List<MonthlyRevenueResponse>> getTotalRevenueOfSystemForYear(
+            @RequestParam int year
+    ) {
+        return ResponseEntity.ok(paymentHistoryService.getTotalRevenueOfSystemForYear(year));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN')")
+    @GetMapping("get-recent-payment-histories")
+    public ResponseEntity<List<RecentPaymentResponse>> getRecentPaymentHistories(
+            @RequestParam PaymentStatus status,
+            @RequestParam int top
+    ) {
+        return ResponseEntity.ok(paymentHistoryService.getRecentPaymentHistories(status, top));
     }
 }

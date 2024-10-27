@@ -61,14 +61,14 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
         }else{
             adsRegistration = new AdsRegistration();
             adsRegistration.setRegistrationDate(LocalDateTime.now());
-            adsRegistration.setExpireDate(LocalDateTime.now().plusDays(ads.getDuration()));
+            adsRegistration.setExpireDate(LocalDateTime.now().plusMinutes(ads.getDuration()));
             adsRegistration.setAds(ads);
             adsRegistration.setLocation(location);
 
             //handle Ads Type
             switch (ads.getType()){
                 case AREA -> handleAreaAd(location, ads);
-                case BANNER -> handleBannerAd(location, ads);
+                case BANNER -> handleBannerAd(location, ads, adsRegistrationRequest.getBannerImage());
                 case FLASH_SALE -> handleFlashSaleAd(location, ads);
             }
         }
@@ -148,7 +148,7 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
 
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 10000)
     public void handleAdsRegistrationExpire() {
         List<AdsRegistration> adsRegistrationActive = adsRegistrationRepository.findByExpireDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
         adsRegistrationActive.forEach(adsRegistration -> {
@@ -181,12 +181,24 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
     }
 
     // Handle Ads BANNER
-    private void handleBannerAd(Location location, Ads ads) {
+    private void handleBannerAd(Location location, Ads ads, String bannerImage) {
         int currentBannerCount = location.getOnBanner();
+        if(bannerImage == null){
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You do not upload BANNER's image");
+        }
         switch (ads.getLevel()) {
-            case 1 -> location.setOnBanner(currentBannerCount + 1);
-            case 2 -> location.setOnBanner(currentBannerCount + 2);
-            case 3 -> location.setOnBanner(currentBannerCount + 3);
+            case 1 -> {
+                location.setOnBanner(currentBannerCount + 1);
+                location.setBannerImage(bannerImage);
+            }
+            case 2 -> {
+                location.setOnBanner(currentBannerCount + 2);
+                location.setBannerImage(bannerImage);
+            }
+            case 3 -> {
+                location.setOnBanner(currentBannerCount + 3);
+                location.setBannerImage(bannerImage);
+            }
             default -> throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Invalid ad level for BANNER.");
         }
     }
@@ -212,10 +224,13 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
                 }
             }
             case INACTIVE, EXPIRE, DISABLED -> {
-                switch (adsType){
+                switch (adsType) {
                     case AREA -> adsRegistration.getLocation().setOnSuggest(0);
                     case FLASH_SALE -> adsRegistration.getLocation().setOnSale(0);
-                    case BANNER -> adsRegistration.getLocation().setOnBanner(0);
+                    case BANNER -> {
+                        adsRegistration.getLocation().setOnBanner(0);
+                        adsRegistration.getLocation().setBannerImage(null);
+                    }
                 }
             }
         }

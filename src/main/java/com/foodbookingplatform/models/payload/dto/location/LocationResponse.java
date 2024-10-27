@@ -48,6 +48,8 @@ public class LocationResponse {
 
     private String image;
 
+    private String bannerImage;
+
     private UserResponse user;
 
     private BrandResponse brand;

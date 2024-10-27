@@ -43,6 +43,8 @@ public class LocationResponseLazy {
 
     private String image;
 
+    private String bannerImage;
+
     private List<String> categoryName;
 
     private List<String> tagName;

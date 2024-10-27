@@ -17,7 +17,9 @@ import com.foodbookingplatform.services.*;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.QRCodeGenerator;
 import com.foodbookingplatform.utils.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -60,10 +62,10 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<LocationBooking> bookings;
 
-        if(!keyword.isEmpty()) {
+        if (!keyword.isEmpty()) {
             Specification<LocationBooking> specification = specification(keyword);
             bookings = locationBookingRepository.findAll(specification, pageable);
-        }else {
+        } else {
             bookings = locationBookingRepository.findAll(pageable);
         }
 
@@ -77,17 +79,17 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<LocationBooking> bookings;
 
-        if(!SecurityUtils.isAuthorizeLocation(locationId, userRepository))
+        if (!SecurityUtils.isAuthorizeLocation(locationId, userRepository))
             throw new RestaurantBookingException(HttpStatus.NOT_FOUND, "You dont have this location with id: " + locationId);
         Location location = locationRepository.findById(locationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Location", "locationId", locationId));
 
-        if(!keyword.isEmpty()) {
+        if (!keyword.isEmpty()) {
             Specification<LocationBooking> locationSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("location"), location);
             Specification<LocationBooking> keywordSpec = specification(keyword);
             Specification<LocationBooking> combinedSpec = Specification.where(locationSpec).and(keywordSpec);
             bookings = locationBookingRepository.findAll(combinedSpec, pageable);
-        }else {
+        } else {
             bookings = locationBookingRepository.findAllByLocationId(locationId, pageable);
         }
 
@@ -105,12 +107,12 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         User user = userRepository.findByUserName(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-        if(!keyword.isEmpty()) {
+        if (!keyword.isEmpty()) {
             Specification<LocationBooking> userSpec = (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("user"), user);
             Specification<LocationBooking> keywordSpec = specification(keyword);
             Specification<LocationBooking> combinedSpec = Specification.where(userSpec).and(keywordSpec);
             bookings = locationBookingRepository.findAll(combinedSpec, pageable);
-        }else {
+        } else {
             bookings = locationBookingRepository.findAllByUser(user, pageable);
         }
 
@@ -131,17 +133,17 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         Location bookedLocation = locationRepository.findById(request.getLocationId())
                 .orElseThrow(() -> new RestaurantBookingException(HttpStatus.BAD_REQUEST, "No restaurant available!"));
-        if(!bookedLocation.getStatus().equals(EntityStatus.ACTIVE))
+        if (!bookedLocation.getStatus().equals(EntityStatus.ACTIVE))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Restaurant is not available for booking!");
 
         String dayInWeek = String.valueOf(request.getBookingDate().getDayOfWeek());
         WorkingHour workingHour = workingHourRepository.findByLocation_IdAndDay(bookedLocation.getId(), DayInWeek.valueOf(dayInWeek));
-        if(request.getBookingTime().isBefore(workingHour.getStartTime()) || request.getBookingTime().isAfter(workingHour.getEndTime()))
+        if (request.getBookingTime().isBefore(workingHour.getStartTime()) || request.getBookingTime().isAfter(workingHour.getEndTime()))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Please book another time!");
 
-        if(request.getBookingDate().isBefore(LocalDate.now())) {
+        if (request.getBookingDate().isBefore(LocalDate.now())) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book in the past!");
-        } else if(request.getBookingDate().isEqual(LocalDate.now()) && request.getBookingTime().isBefore(LocalTime.now())) {
+        } else if (request.getBookingDate().isEqual(LocalDate.now()) && request.getBookingTime().isBefore(LocalTime.now())) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot book in the past!");
         }
 
@@ -158,7 +160,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         newBooking.setStatus(LocationBookingStatus.PENDING);
         newBooking = locationBookingRepository.save(newBooking);
 
-        if(!request.getFoodBookings().isEmpty()) {
+        if (!request.getFoodBookings().isEmpty()) {
             for (int i = 0; i < request.getFoodBookings().size(); i++) {
                 FoodBookingRequest foodBookingRequest = request.getFoodBookings().get(i);
                 Food orderedFood = foodRepository.findById(foodBookingRequest.getFoodId())
@@ -175,7 +177,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
         List<FoodBooking> bookedFoods = foodBookingService.createFoodBooking(orderedFoods, foodQuantity, newBooking);
 
-        if(request.getPromotionId() != null && request.getPromotionId() != 0 ){
+        if (request.getPromotionId() != null && request.getPromotionId() != 0) {
             Promotion promotion = promotionRepository.findById(request.getPromotionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", request.getPromotionId()));
             CheckPromotionResponse checkPromotionResponse = promotionService.applyPromotion(request.getPromotionId(), totalPrice,
@@ -186,7 +188,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
             promotionRepository.save(promotion);
         }
 
-        if(request.getVoucherId() != null && request.getVoucherId() != 0){
+        if (request.getVoucherId() != null && request.getVoucherId() != 0) {
             UserVoucher userVoucher = userVoucherRepository.findByVoucher_IdAndUserUserName(request.getVoucherId(), username)
                     .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", request.getVoucherId()));
             Voucher voucher = userVoucher.getVoucher();
@@ -210,11 +212,11 @@ public class LocationBookingServiceImpl implements LocationBookingService {
     public LocationBookingResponse cancelLocationBooking(Long bookingId) {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
-        if(locationBooking.getStatus().equals(LocationBookingStatus.PENDING) ||
-                locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)){
+        if (locationBooking.getStatus().equals(LocationBookingStatus.PENDING) ||
+                locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)) {
             locationBooking.setStatus(LocationBookingStatus.CANCELLED);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
-        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This booking cannot be cancelled!");
+        } else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This booking cannot be cancelled!");
     }
 
     @Override
@@ -222,12 +224,13 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
 
-        if(locationBooking.getStatus().equals(LocationBookingStatus.PENDING)){
+        if (locationBooking.getStatus().equals(LocationBookingStatus.PENDING)) {
             locationBooking.setStatus(LocationBookingStatus.CONFIRMED);
             locationBooking = locationBookingRepository.save(locationBooking);
             sendMailApproveBooking(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
-        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only pending bookings are able to be approved");
+        } else
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only pending bookings are able to be approved");
     }
 
     @Override
@@ -235,12 +238,13 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         LocationBooking locationBooking = locationBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
 
-        if(locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)){
+        if (locationBooking.getStatus().equals(LocationBookingStatus.CONFIRMED)) {
             locationBooking.setStatus(LocationBookingStatus.SUCCESSFUL);
             locationBooking.setCommission(Float.parseFloat(commisionAmount));
             locationBooking = locationBookingRepository.save(locationBooking);
             return mapLocationBookingResponse(locationBookingRepository.save(locationBooking));
-        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only confirmed bookings are able to be success");
+        } else
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Only confirmed bookings are able to be success");
     }
 
     @Override
@@ -250,7 +254,7 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         return mapLocationBookingResponse(locationBooking);
     }
 
-    private Specification<LocationBooking> specification(Map<String, Object> searchParams){
+    private Specification<LocationBooking> specification(Map<String, Object> searchParams) {
         List<Specification<LocationBooking>> specs = new ArrayList<>();
 
         searchParams.forEach((key, value) -> {
@@ -346,13 +350,12 @@ public class LocationBookingServiceImpl implements LocationBookingService {
                     "</body>" +
                     "</html>";
             emailService.sendEmailWithQR(locationBooking.getUser().getEmail(), subject, content, qrCodeImage);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-
-    private void sendMailCreateBooking(LocationBooking locationBooking){
+    private void sendMailCreateBooking(LocationBooking locationBooking) {
         String subject = "[SkedEat Thông Báo Đặt Chỗ]: Đơn Đặt Chỗ Của Bạn Đang Chờ Xác Nhận!";
         String content = "<html>" +
                 "<head>" +
@@ -395,21 +398,21 @@ public class LocationBookingServiceImpl implements LocationBookingService {
 
     }
 
-    private LocationBookingResponse mapLocationBookingResponse(LocationBooking booking){
+    private LocationBookingResponse mapLocationBookingResponse(LocationBooking booking) {
         LocationBookingResponse response = new LocationBookingResponse();
         List<FoodBookingResponse> foodBookingResponses = new ArrayList<>();
         Set<FoodBooking> foodBookings = booking.getFoodBookings();
 
         mapper.map(booking, response);
-        if(booking.getPromotion() != null) response.setFreeItem(booking.getPromotion().getFreeItem());
-        if(!foodBookings.isEmpty()){
+        if (booking.getPromotion() != null) response.setFreeItem(booking.getPromotion().getFreeItem());
+        if (!foodBookings.isEmpty()) {
             foodBookings.forEach(foodBooking -> foodBookingResponses.add(mapFoodBookingResponse(foodBooking)));
         }
         response.setFoodBookings(foodBookingResponses);
         return response;
     }
 
-    private FoodBookingResponse mapFoodBookingResponse(FoodBooking booking){
+    private FoodBookingResponse mapFoodBookingResponse(FoodBooking booking) {
         FoodBookingResponse response = new FoodBookingResponse();
         response.setFoodId(booking.getFood().getId());
         response.setFoodName(booking.getFood().getName());
@@ -417,4 +420,10 @@ public class LocationBookingServiceImpl implements LocationBookingService {
         response.setAmount(booking.getAmount());
         return response;
     }
+
+    @Override
+    public int countAllBookingsInSystem(LocationBookingStatus status, int month, int year) {
+        return locationBookingRepository.countSuccessfulBookingsInSystem(LocationBookingStatus.SUCCESSFUL, month, year);
+    }
+
 }

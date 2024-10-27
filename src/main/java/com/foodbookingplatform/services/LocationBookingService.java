@@ -1,5 +1,6 @@
 package com.foodbookingplatform.services;
 
+import com.foodbookingplatform.models.enums.LocationBookingStatus;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingRequest;
 import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingResponse;
 import org.springframework.data.domain.Page;
@@ -17,4 +18,5 @@ public interface LocationBookingService {
     LocationBookingResponse approveLocationBooking(Long bookingId);
     LocationBookingResponse successLocationBooking(Long bookingId);
     LocationBookingResponse getLocationBookingDetail(Long bookingId);
+    int countAllBookingsInSystem(LocationBookingStatus status, int month, int year);
 }

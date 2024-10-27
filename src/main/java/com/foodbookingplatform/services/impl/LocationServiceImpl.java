@@ -124,6 +124,11 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
+    public int getNumberOfActiveLocationsInSystem() {
+        return locationRepository.countLocationsByStatusEquals(EntityStatus.ACTIVE);
+    }
+
+    @Override
     public Page<LocationResponseLazy> getLocationsWithBannerAds(int pageNo, int pageSize, AdsType adsType) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         List<Location> locationList = locationRepository.findAll();

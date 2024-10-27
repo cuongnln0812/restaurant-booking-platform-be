@@ -1,6 +1,8 @@
 package com.foodbookingplatform.repositories;
 
 import com.foodbookingplatform.models.entities.User;
+import com.foodbookingplatform.models.enums.EntityStatus;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
     Optional<User> findByUserName(String username);
     List<User> findAllByRoleName(String roleName);
+    int countUsersByStatusEqualsAndRoleNameEquals(EntityStatus status, String roleName);
 }

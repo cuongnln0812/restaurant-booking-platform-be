@@ -12,4 +12,5 @@ public interface UserService {
     UserResponse getInfoById(Long id);
     UserResponse updateInfo(UserRequest request);
     UserResponse deleteUser(Long id);
+    int getNumberOfActiveUsersInSystem();
 }

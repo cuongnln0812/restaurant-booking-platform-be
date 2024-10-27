@@ -7,10 +7,12 @@ import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
 import com.foodbookingplatform.services.PaymentHistoryService;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -97,5 +99,16 @@ public class PaymentHistoryController {
     public ResponseEntity<ObjectNode> payOsTransferHandler(@RequestBody ObjectNode body) throws JsonProcessingException {
         ObjectNode node = paymentHistoryService.payOsTransferHandler(body);
         return ResponseEntity.ok(node);
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN')")
+    @GetMapping("get-total-revenue-of-system")
+    public ResponseEntity<Double> getTotalRevenueOfSystem(
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        return ResponseEntity.ok(paymentHistoryService.getTotalRevenueOfSystem(month, year));
     }
 }

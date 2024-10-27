@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -50,5 +48,12 @@ public class UserControllers {
     @DeleteMapping("{id}")
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.deleteUser(id));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @GetMapping("count-active-users")
+    public ResponseEntity<Integer> getNumberOfCustomersInSystem() {
+        return ResponseEntity.ok(userService.getNumberOfActiveUsersInSystem());
     }
 }

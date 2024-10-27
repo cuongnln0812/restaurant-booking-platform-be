@@ -15,6 +15,7 @@ public interface LocationService {
     Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean searchNearBy);
     LocationResponse updateLocation(LocationRequest locationRequest);
     void deleteLocation(long id);
+    int getNumberOfActiveLocationsInSystem();
 
     //Ads Registration
     Page<LocationResponseLazy> getLocationsWithBannerAds(int pageNo, int pageSize, AdsType adsType);

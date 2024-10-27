@@ -67,4 +67,9 @@ public class UserServiceImpl implements UserService {
         existed.setStatus(EntityStatus.DISABLED);
         return mapper.map(userRepository.save(existed), UserResponse.class);
     }
+
+    @Override
+    public int getNumberOfActiveUsersInSystem() {
+        return userRepository.countUsersByStatusEqualsAndRoleNameEquals(EntityStatus.ACTIVE, "USER");
+    }
 }

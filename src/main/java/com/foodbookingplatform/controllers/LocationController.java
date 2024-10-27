@@ -127,4 +127,12 @@ public class LocationController {
         locationService.deleteLocation(id);
         return ResponseEntity.ok("Location deleted successfully");
     }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @GetMapping("count-active-locations")
+    public ResponseEntity<Integer> getNumberOfActiveLocationsInSystem() {
+        return ResponseEntity.ok(locationService.getNumberOfActiveLocationsInSystem());
+    }
 }

@@ -15,4 +15,5 @@ public interface PaymentHistoryService extends BaseService<PaymentHistoryRequest
     Page<PaymentHistoryResponse> getAllByLocationId(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir);
     ObjectNode payOsTransferHandler(ObjectNode body) throws JsonProcessingException, IllegalArgumentException;
     MonthlyCommissionPayment getMonthlyPaymentOfLocationAdminByMonthAndYear(int month, int year);
+    double getTotalRevenueOfSystem(int month, int year);
 }

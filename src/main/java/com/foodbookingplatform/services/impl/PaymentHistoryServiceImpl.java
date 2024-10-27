@@ -3,6 +3,7 @@ package com.foodbookingplatform.services.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.LocationBookingStatus;
 import com.foodbookingplatform.models.enums.PaymentStatus;
@@ -13,21 +14,28 @@ import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryR
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.EmailService;
+import com.foodbookingplatform.services.LocationBookingService;
+import com.foodbookingplatform.services.LocationService;
 import com.foodbookingplatform.services.PaymentHistoryService;
 import com.foodbookingplatform.utils.PaymentCodeGenerator;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+
 import vn.payos.PayOS;
 import vn.payos.type.Webhook;
 import vn.payos.type.WebhookData;
@@ -42,6 +50,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, PaymentHistoryRequest, PaymentHistoryResponse> implements PaymentHistoryService {
+
     private final PayOS payOS;
     private final PaymentHistoryRepository paymentHistoryRepository;
     private final PaymentMethodRepository paymentMethodRepository;
@@ -50,6 +59,8 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     private final MonthlyCommissionPaymentRepository commissionPaymentRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final LocationBookingService locationBookingService;
+    private final LocationService locationService;
     private final ModelMapper mapper;
 
     @Value("${expired-payment-day}")
@@ -57,7 +68,19 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     @Value("${fixed-amount}")
     private String FIXED_AMOUNT;
 
-    public PaymentHistoryServiceImpl(PayOS payOS, PaymentHistoryRepository paymentHistoryRepository, PaymentMethodRepository paymentMethodRepository, LocationBookingRepository locationBookingRepository, PayOSTransactionRepository transactionRepository, MonthlyCommissionPaymentRepository commissionPaymentRepository, UserRepository userRepository, EmailService emailService, ModelMapper modelMapper) {
+    public PaymentHistoryServiceImpl(
+            PayOS payOS,
+            PaymentHistoryRepository paymentHistoryRepository,
+            PaymentMethodRepository paymentMethodRepository,
+            LocationBookingRepository locationBookingRepository,
+            PayOSTransactionRepository transactionRepository,
+            MonthlyCommissionPaymentRepository commissionPaymentRepository,
+            UserRepository userRepository,
+            EmailService emailService,
+            ModelMapper modelMapper,
+            LocationBookingService locationBookingService,
+            LocationService locationService
+    ) {
         super(paymentHistoryRepository, modelMapper, PaymentHistory.class, PaymentHistoryRequest.class, PaymentHistoryResponse.class);
         this.payOS = payOS;
         this.paymentHistoryRepository = paymentHistoryRepository;
@@ -68,6 +91,8 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.mapper = modelMapper;
+        this.locationBookingService = locationBookingService;
+        this.locationService = locationService;
     }
 
     @Override
@@ -120,9 +145,9 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             int year = PaymentCodeGenerator.getLastYearFromOrderCode(orderCode);
             String paymentCode = PaymentCodeGenerator.getPaymentCodeFromOrderCode(orderCode);
 
-            if(paymentCode.equals(PaymentCodeGenerator.getCOMMISSION_PAYMENT_CODE())) {
+            if (paymentCode.equals(PaymentCodeGenerator.getCOMMISSION_PAYMENT_CODE())) {
                 Optional<MonthlyCommissionPayment> commissionPaymentOpt = commissionPaymentRepository.findByUserIdAndMonthAndYear(userId, month, year);
-                if(commissionPaymentOpt.isPresent()) {
+                if (commissionPaymentOpt.isPresent()) {
                     MonthlyCommissionPayment commissionPayment = commissionPaymentOpt.get();
                     commissionPayment.setPaid(true);
                     commissionPayment.setPaidAt(data.getTransactionDateTime());
@@ -179,7 +204,6 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         return response;
     }
 
-
     public void sendEmailReminder(User user, int month, int year, int totalAmount, LocalDateTime expiredAt, int totalBooking) {
         String subject = "[SkedEat Admin] Thanh toán phí sử dụng dịch vụ web";
         String fixedFee = formatCurrency(Integer.parseInt(EXPIRED_PAYMENT_DAY)); // Phí cố định hàng tháng
@@ -218,6 +242,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         NumberFormat formatter = NumberFormat.getInstance(new Locale("vi", "VN"));
         return formatter.format(amount);
     }
+
     @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
     @Transactional
     public void calculateAndSendMonthlyBilling() {
@@ -280,7 +305,6 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         }
     }
 
-
     private PaymentHistory mapAndSavePaymentHistory(PaymentHistoryRequest request, boolean createMode) {
         PaymentMethod paymentMethod = findPaymentMethodById(request.getPaymentMethodId());
         LocationBooking locationBooking = findLocationBookingById(request.getLocationBookingId());
@@ -332,4 +356,23 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                 .build();
     }
 
+    @Override
+    public double getTotalRevenueOfSystem(int month, int year) {
+
+        double totalRevenueOfSystem;
+
+        // revenue from locations
+        int numberOfSuccessfulBookings = locationBookingService.countAllBookingsInSystem(LocationBookingStatus.SUCCESSFUL, month, year);
+        int numberOfActiveLocations = locationService.getNumberOfActiveLocationsInSystem();
+
+        double revenueFromBooking = numberOfSuccessfulBookings * AppConstants.CHARGE_FEE_PER_BOOKING;
+        double revenueFromLocationMonthlySubscriptionFee = numberOfActiveLocations * AppConstants.SUBSCRIPTION_FEE_PER_MONTH;
+
+        // revenue from ads registration of locations
+
+
+        totalRevenueOfSystem = revenueFromBooking + revenueFromLocationMonthlySubscriptionFee;
+
+        return totalRevenueOfSystem;
+    }
 }

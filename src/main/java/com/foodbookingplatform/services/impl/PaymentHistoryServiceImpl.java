@@ -10,6 +10,8 @@ import com.foodbookingplatform.models.enums.PaymentStatus;
 
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.LocationRevenueReportPaginationResponse;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.LocationRevenueReportResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.MonthlyRevenueResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
@@ -60,6 +62,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     private final PayOSTransactionRepository transactionRepository;
     private final MonthlyCommissionPaymentRepository commissionPaymentRepository;
     private final UserRepository userRepository;
+    private final LocationRepository locationRepository;
     private final EmailService emailService;
     private final LocationBookingService locationBookingService;
     private final LocationService locationService;
@@ -78,6 +81,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             PayOSTransactionRepository transactionRepository,
             MonthlyCommissionPaymentRepository commissionPaymentRepository,
             UserRepository userRepository,
+            LocationRepository locationRepository,
             EmailService emailService,
             ModelMapper modelMapper,
             LocationBookingService locationBookingService,
@@ -91,6 +95,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         this.transactionRepository = transactionRepository;
         this.commissionPaymentRepository = commissionPaymentRepository;
         this.userRepository = userRepository;
+        this.locationRepository = locationRepository;
         this.emailService = emailService;
         this.mapper = modelMapper;
         this.locationBookingService = locationBookingService;
@@ -405,9 +410,48 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     public List<RecentPaymentResponse> getRecentPaymentHistories(PaymentStatus status, int top) {
         List<RecentPaymentResponse> result = new ArrayList<>();
         List<PaymentHistory> recentPaymentHistories = paymentHistoryRepository.findPaymentHistoriesByStatusOrderByCreatedDateDesc(status, PageRequest.of(0, top));
-        recentPaymentHistories.forEach(p -> {
-            result.add(new RecentPaymentResponse(p.getLocationBooking().getUser().getFullName(), p.getLocationBooking().getUser().getEmail(), p.getTotalAmount()));
-        });
+        recentPaymentHistories.forEach(p -> result.add(new RecentPaymentResponse(p.getLocationBooking().getUser().getFullName(), p.getLocationBooking().getUser().getEmail(), p.getTotalAmount())));
         return result;
     }
+
+    @Override
+    public LocationRevenueReportPaginationResponse getLocationRevenueReports(int pageNo, int pageSize, String sortBy, String sortDir, int month, int year) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Object[]> paginationResponse = locationRepository.getLocationInfoAndNumberOfBookingInMonth(month, year, pageable);
+
+        List<LocationRevenueReportResponse> reportList = new ArrayList<>();
+
+        for (Object[] row : paginationResponse.getContent()) {
+            Long locationId = (Long) row[0];
+            String locationName = (String) row[1];
+            String locationPhoneNumber = (String) row[2];
+            Long bookingCount = (Long) row[3];
+            Double totalBookingAmount = (Double) row[4];
+
+            double revenueBroughtForSystemInMonth = AppConstants.SUBSCRIPTION_FEE_PER_MONTH + (bookingCount * AppConstants.CHARGE_FEE_PER_BOOKING);
+
+            LocationRevenueReportResponse report = LocationRevenueReportResponse.builder()
+                    .id(locationId)
+                    .locationName(locationName)
+                    .locationPhoneNumber(locationPhoneNumber)
+                    .numberOfBookingsInMonth(bookingCount.intValue())
+                    .locationRevenueInMonth(totalBookingAmount != null ? totalBookingAmount : 0.0) // Handle potential nulls
+                    .revenueBroughtForSystemInMonth(revenueBroughtForSystemInMonth)
+                    .build();
+
+            reportList.add(report);
+        }
+
+        return LocationRevenueReportPaginationResponse.builder()
+                .pageNo(paginationResponse.getNumber())
+                .pageSize(paginationResponse.getSize())
+                .totalElements(paginationResponse.getTotalElements())
+                .totalPages(paginationResponse.getTotalPages())
+                .last(paginationResponse.isLast())
+                .content(reportList)
+                .build();
+    }
+
 }

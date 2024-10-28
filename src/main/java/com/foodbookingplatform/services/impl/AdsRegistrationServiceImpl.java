@@ -15,6 +15,7 @@ import com.foodbookingplatform.repositories.AdsRepository;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.AdsRegistrationService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -60,8 +60,8 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "This location has been registration this ads!");
         }else{
             adsRegistration = new AdsRegistration();
-            adsRegistration.setRegistrationDate(LocalDateTime.now());
-            adsRegistration.setExpireDate(LocalDateTime.now().plusMinutes(ads.getDuration()));
+            adsRegistration.setRegistrationDate(DateTimeUtil.nowInVietnam());
+            adsRegistration.setExpireDate(DateTimeUtil.nowInVietnam().plusMinutes(ads.getDuration()));
             adsRegistration.setAds(ads);
             adsRegistration.setLocation(location);
 
@@ -150,7 +150,7 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
 
     @Scheduled(fixedRate = 10000)
     public void handleAdsRegistrationExpire() {
-        List<AdsRegistration> adsRegistrationActive = adsRegistrationRepository.findByExpireDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<AdsRegistration> adsRegistrationActive = adsRegistrationRepository.findByExpireDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.ACTIVE);
         adsRegistrationActive.forEach(adsRegistration -> {
             adsRegistration.setStatus(OfferStatus.EXPIRE);
             handleAdRegistrationUpdateStatus(adsRegistration.getAds().getType(), OfferStatus.EXPIRE, adsRegistration);

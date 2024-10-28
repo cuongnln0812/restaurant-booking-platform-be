@@ -37,7 +37,6 @@ public class PayOSServiceImpl implements PayOSService {
     private final long COMMISSION_PAYMENT_CODE = 200;
     private final long ORDER_PAYMENT_CODE = 100;
 
-
     public PayOSServiceImpl(PayOS payOS, UserRepository userRepository) {
         super();
         this.payOS = payOS;

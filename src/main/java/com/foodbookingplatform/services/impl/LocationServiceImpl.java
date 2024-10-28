@@ -15,6 +15,7 @@ import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
 import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.LocationService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.GeoHashGeneration;
 import lombok.RequiredArgsConstructor;
@@ -168,7 +169,7 @@ public class LocationServiceImpl implements LocationService {
                             return levelComparison;
                         }
 
-                        LocalDateTime now = LocalDateTime.now();
+                        LocalDateTime now = DateTimeUtil.nowInVietnam();
                         long remainingTimeLoc1 = Duration.between(now, loc1.getExpireDate()).toSeconds();
                         long remainingTimeLoc2 = Duration.between(now, loc2.getExpireDate()).toSeconds();
 

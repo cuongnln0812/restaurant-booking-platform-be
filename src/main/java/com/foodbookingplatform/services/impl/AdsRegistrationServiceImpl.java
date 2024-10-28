@@ -160,7 +160,7 @@ public class AdsRegistrationServiceImpl implements AdsRegistrationService {
     }
 
     private AdsRegistrationLocationResponse mapToResponse(Location location){
-        List<AdsRegistration> adsRegistrationList = adsRegistrationRepository.findByLocation_Id(location.getId());
+        List<AdsRegistration> adsRegistrationList = adsRegistrationRepository.findByLocation_IdAndStatus(location.getId(),OfferStatus.ACTIVE);
 
         AdsRegistrationLocationResponse response = new AdsRegistrationLocationResponse();
         response.setLocation(mapper.map(location, LocationResponseLazy.class));

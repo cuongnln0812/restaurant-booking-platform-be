@@ -19,18 +19,17 @@ import com.foodbookingplatform.services.EmailService;
 import com.foodbookingplatform.services.LocationBookingService;
 import com.foodbookingplatform.services.LocationService;
 import com.foodbookingplatform.services.PaymentHistoryService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.PaymentCodeGenerator;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -287,8 +286,8 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             int totalBooking = (int) response.get("totalBooking");
             int roundedAmount = (int) Math.floor(totalAmount);
 
-            int presentMonth = LocalDateTime.now().getMonthValue();
-            int presentYear = LocalDateTime.now().getYear();
+            int presentMonth = DateTimeUtil.nowInVietnam().getMonthValue();
+            int presentYear = DateTimeUtil.nowInVietnam().getYear();
             LocalDateTime expiredAt = LocalDateTime.of(presentYear, presentMonth,
                     Integer.parseInt(EXPIRED_PAYMENT_DAY), 23, 59, 59);
             MonthlyCommissionPayment newPayment = new MonthlyCommissionPayment();

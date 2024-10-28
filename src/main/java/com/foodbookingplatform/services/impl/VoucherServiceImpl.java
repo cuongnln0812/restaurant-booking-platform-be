@@ -13,6 +13,7 @@ import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.repositories.UserVoucherRepository;
 import com.foodbookingplatform.repositories.VoucherRepository;
 import com.foodbookingplatform.services.VoucherService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.GenericSpecification;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -192,14 +193,14 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherActive() {
-        List<Voucher> voucherActive = voucherRepository.findVoucherByStartDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);
+        List<Voucher> voucherActive = voucherRepository.findVoucherByStartDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.INACTIVE);
         voucherActive.forEach(v -> v.setStatus(OfferStatus.ACTIVE));
         voucherRepository.saveAll(voucherActive);
     }
 
     @Scheduled(fixedRate = 10000)
     public void handleVoucherExpire() {
-        List<Voucher> voucherExpire = voucherRepository.findVoucherByEndDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<Voucher> voucherExpire = voucherRepository.findVoucherByEndDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.ACTIVE);
         voucherExpire.forEach(v -> v.setStatus(OfferStatus.EXPIRE));
         voucherRepository.saveAll(voucherExpire);
     }

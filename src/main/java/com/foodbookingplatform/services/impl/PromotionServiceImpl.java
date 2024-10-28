@@ -8,12 +8,11 @@ import com.foodbookingplatform.models.payload.dto.promotion.ApplyPromotionRespon
 import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionRequest;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
-import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
-import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.PromotionRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.PromotionService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static com.foodbookingplatform.models.enums.PromotionType.BILL;
-import static com.foodbookingplatform.models.enums.PromotionType.PEOPLE;
-import static com.foodbookingplatform.models.enums.PromotionType.TIME;
 
 @Service
 @Transactional
@@ -273,14 +267,14 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionActive() {
-        List<Promotion> promotionsActive = promotionRepository.findByStartDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.INACTIVE);
+        List<Promotion> promotionsActive = promotionRepository.findByStartDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.INACTIVE);
         promotionsActive.forEach(promotion -> promotion.setStatus(OfferStatus.ACTIVE));
         promotionRepository.saveAll(promotionsActive);
     }
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionExpire() {
-        List<Promotion> promotionsExpire = promotionRepository.findByEndDateBeforeAndStatus(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<Promotion> promotionsExpire = promotionRepository.findByEndDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.ACTIVE);
         promotionsExpire.forEach(promotion -> promotion.setStatus(OfferStatus.EXPIRE));
         promotionRepository.saveAll(promotionsExpire);
     }

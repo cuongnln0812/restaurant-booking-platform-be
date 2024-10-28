@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.constants.AppConstants;
 import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
 import com.foodbookingplatform.models.enums.PaymentStatus;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.LocationRevenueReportPaginationResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.MonthlyRevenueResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
@@ -136,5 +137,20 @@ public class PaymentHistoryController {
             @RequestParam int top
     ) {
         return ResponseEntity.ok(paymentHistoryService.getRecentPaymentHistories(status, top));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN')")
+    @GetMapping("get-location-revenue-reports")
+    public ResponseEntity<LocationRevenueReportPaginationResponse> getLocationRevenueReports(
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        return ResponseEntity.ok(paymentHistoryService.getLocationRevenueReports(pageNo, pageSize, sortBy, sortDir, month, year));
     }
 }

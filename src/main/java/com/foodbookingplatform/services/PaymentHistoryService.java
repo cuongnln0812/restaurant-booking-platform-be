@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.foodbookingplatform.models.entities.MonthlyCommissionPayment;
 import com.foodbookingplatform.models.enums.PaymentStatus;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.LocationRevenueReportPaginationResponse;
+import com.foodbookingplatform.models.payload.dto.paymenthistory.LocationRevenueReportResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.MonthlyRevenueResponse;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryRequest;
 import com.foodbookingplatform.models.payload.dto.paymenthistory.PaymentHistoryResponse;
@@ -30,4 +32,6 @@ public interface PaymentHistoryService extends BaseService<PaymentHistoryRequest
     List<MonthlyRevenueResponse> getTotalRevenueOfSystemForYear(int year);
 
     List<RecentPaymentResponse> getRecentPaymentHistories(PaymentStatus status, int top);
+
+    LocationRevenueReportPaginationResponse getLocationRevenueReports(int pageNo, int pageSize, String sortBy, String sortDir, int month, int year);
 }

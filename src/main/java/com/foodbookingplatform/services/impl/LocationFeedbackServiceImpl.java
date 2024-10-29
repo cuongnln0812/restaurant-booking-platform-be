@@ -173,6 +173,7 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
         feedback.setContent(request.getContent());
         feedback.setImage(request.getImage());
         feedback.setRating(request.getRating());
+        feedback.setFeedbackDate(LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh")));
         feedback.setEdited(true);
         feedback = feedbackRepository.save(feedback);
         return mapToResponse(feedback);

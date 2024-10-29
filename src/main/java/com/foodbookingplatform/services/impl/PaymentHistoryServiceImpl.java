@@ -251,8 +251,8 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         return formatter.format(amount);
     }
 
-//    @Scheduled(cron = "0 0 9 1,9 * ?")
-    @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
+    @Scheduled(cron = "0 0 9 1,9 * ?")
+//    @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
     public void sendEmail() {
         // Logic gửi email ở đây
         LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));

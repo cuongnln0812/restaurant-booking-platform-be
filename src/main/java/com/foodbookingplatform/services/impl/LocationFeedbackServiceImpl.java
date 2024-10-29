@@ -9,16 +9,13 @@ import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
 import com.foodbookingplatform.models.payload.dto.feedback.LocationFeedbackRequest;
 import com.foodbookingplatform.models.payload.dto.feedback.LocationFeedbackResponse;
-import com.foodbookingplatform.models.payload.dto.locationbooking.LocationBookingResponse;
 import com.foodbookingplatform.repositories.LocationBookingRepository;
 import com.foodbookingplatform.repositories.LocationFeedbackRepository;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.LocationFeedbackService;
 import com.foodbookingplatform.utils.GenericSpecification;
-import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +26,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +39,6 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
     private final LocationBookingRepository bookingRepository;
     private final LocationFeedbackRepository feedbackRepository;
     private final LocationRepository locationRepository;
-    private final ModelMapper mapper;
-
 
     @Override
     @Transactional
@@ -57,6 +50,11 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", request.getLocationBookingId()));
         if(!booking.getStatus().equals(LocationBookingStatus.SUCCESSFUL))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST,  "You are not allowed to rate this booking!");
+
+        LocationFeedback locationFeedback = feedbackRepository.findByLocationBookingIdAndUserId(booking.getId(), user.getId());
+        if(locationFeedback != null){
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST,  "This location booking has been feedback!");
+        }
 
         LocationFeedback feedback = new LocationFeedback();
         feedback.setContent(request.getContent());
@@ -93,7 +91,7 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
     }
 
     @Override
-    public Page<LocationFeedbackResponse> getAllFeedbackOfLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword) throws AccessDeniedException {
+    public Page<LocationFeedbackResponse> getAllFeedbackOfLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword){
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<LocationFeedback> feedbacks;
@@ -144,6 +142,23 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
     }
 
     @Override
+    public LocationFeedbackResponse getFeedbackByLocationBookingId(Long locationBookingId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+
+        LocationFeedback feedback = feedbackRepository.findByLocationBookingId(locationBookingId);
+        if(feedback == null){
+            throw new ResourceNotFoundException("Feedback", "id", locationBookingId);
+        }
+
+        if(user.getRole().getName().equals("USER") && !user.equals(feedback.getUser()))
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You are not allow to delete this feedback");
+        return mapToResponse(feedback);
+    }
+
+    @Override
     public LocationFeedbackResponse updateFeedback(LocationFeedbackRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUserName(username)
@@ -151,11 +166,14 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
 
         LocationFeedback feedback = feedbackRepository.findById(request.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback", "id", request.getId()));
+        if(feedback.isEdited())
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot edit this feedback: Already edited!");
         if(!feedback.getUser().equals(user))
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot edit this feedback: Not the owner of this feedback!");
         feedback.setContent(request.getContent());
         feedback.setImage(request.getImage());
         feedback.setRating(request.getRating());
+        feedback.setEdited(true);
         feedback = feedbackRepository.save(feedback);
         return mapToResponse(feedback);
     }

@@ -1,6 +1,5 @@
 package com.foodbookingplatform.services;
 
-import com.foodbookingplatform.models.entities.LocationFeedback;
 import com.foodbookingplatform.models.payload.dto.feedback.LocationFeedbackRequest;
 import com.foodbookingplatform.models.payload.dto.feedback.LocationFeedbackResponse;
 import org.springframework.data.domain.Page;
@@ -14,6 +13,7 @@ public interface LocationFeedbackService {
     Page<LocationFeedbackResponse> getAllFeedbackOfLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword) throws AccessDeniedException;
     Page<LocationFeedbackResponse> getAllFeedbackOfUser(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword);
     LocationFeedbackResponse getFeedbackById(Long id);
+    LocationFeedbackResponse getFeedbackByLocationBookingId(Long locationBookingId);
     String deleteFeedback(Long id);
 
 }

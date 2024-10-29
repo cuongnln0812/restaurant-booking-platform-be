@@ -47,6 +47,7 @@ import java.text.DateFormatSymbols;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -211,10 +212,10 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         return response;
     }
 
-    public void sendEmailReminder(User user, int month, int year, int totalAmount, LocalDateTime expiredAt, int totalBooking) {
+    public void sendEmailReminder(User user, int month, int year, int fixedFee, int totalAmount, LocalDateTime expiredAt, int totalBooking) {
         String subject = "[SkedEat Admin] Thanh toán phí sử dụng dịch vụ web";
-        String fixedFee = formatCurrency(Integer.parseInt(EXPIRED_PAYMENT_DAY)); // Phí cố định hàng tháng
         String formattedTotalAmount = formatCurrency(totalAmount); // Định dạng tổng số tiền
+        String formattedFixedFee = formatCurrency(fixedFee);
         String formattedGrandTotal = formatCurrency(300000 + totalAmount); // Tính tổng số tiền
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String formatExpiredAt = expiredAt.format(formatter);
@@ -228,7 +229,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                         "<p>Đây là một lời nhắc nhở về thanh toán của bạn cho tháng %d/%d.</p>" +
                         "<p><strong>Chi tiết thanh toán:</strong></p>" +
                         "<ul>" +
-                        "<li>Phí cố định hàng tháng: %s</li>" +
+                        "<li>Phí cố định hàng tháng: %s VND</li>" +
                         "<li>Tổng phí hoa hồng tháng này: %s VND</li>" +
                         "<li>Tổng số lượng đơn hoàn thành: %d</li>" +
                         "</ul>" +
@@ -238,7 +239,7 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
                         "<p><strong>Hạn thanh toán:</strong> %s </p>" + "<br>" +
                         "<p><a href=\"%s\">Nhấp vào đây để chuyển tới trang thanh toán (Đăng nhập nếu có) </a></p>" + // Thêm liên kết thanh toán
                         "<p>Cảm ơn bạn!</p>",
-                month, year, fixedFee, formattedTotalAmount, totalBooking, formattedGrandTotal, formatExpiredAt, paymentLink // Tính tổng số tiền
+                month, year, formattedFixedFee, formattedTotalAmount, totalBooking, formattedGrandTotal, formatExpiredAt, paymentLink // Tính tổng số tiền
         );
 
         // Gọi đến phương thức sendEmail đã có
@@ -250,16 +251,35 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
         return formatter.format(amount);
     }
 
+//    @Scheduled(cron = "0 0 9 1,9 * ?")
+    @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
+    public void sendEmail() {
+        // Logic gửi email ở đây
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        currentDate = currentDate.minusMonths(1);
+        int month = currentDate.getMonthValue();
+        int year = currentDate.getYear();
+
+        List<MonthlyCommissionPayment> unPaidCommission = commissionPaymentRepository.findAllByIsPaidFalseAndMonthAndYear( month, year);
+
+        unPaidCommission.forEach(c -> {
+            Optional<User> user = userRepository.findById(c.getUserId());
+            user.ifPresent(value -> sendEmailReminder(value, c.getMonth(), c.getYear(), c.getFixedAmount(),
+                    (int) Math.floor(c.getTotalAmount()), c.getExpiredAt(), c.getTotalBooking()));
+            log.info("Gửi email thông báo nhắc nhở thanh toán tiền phí cố định và hoa hồng cho userId: {}, month: {}, year: {}",
+                    user.get().getId(), month, year);
+                });
+    }
+
     @Scheduled(cron = "0 * * * * ?")  // Mỗi phút
     @Transactional
     public void calculateAndSendMonthlyBilling() {
         log.info("Starting monthly billing calculation...");
         String roleName = "LOCATION_ADMIN";
         List<User> locationAdmins = userRepository.findAllByRoleName(roleName);
-        LocalDate currentDate = LocalDate.now();
-        LocalDate previousMonthDate = currentDate.minusMonths(1);
-        int month = previousMonthDate.getMonthValue();
-        int year = previousMonthDate.getYear();
+        LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        int month = currentDate.getMonthValue();
+        int year = currentDate.getYear();
 
         for (User user : locationAdmins) {
             try {
@@ -275,22 +295,18 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
     public void processUserCommission(User user, int month, int year) {
         // Kiểm tra xem đã có bản ghi cho tháng này chưa
         Optional<MonthlyCommissionPayment> existingPaymentOpt = commissionPaymentRepository.findByUserIdAndMonthAndYear(user.getId(), month, year);
-
+        Map<String, Object> response = calculateMonthlyPayment(user, month, year);
+        float totalAmount = (float) response.get("totalAmount");
+        int totalBooking = (int) response.get("totalBooking");
+        int roundedAmount = (int) Math.floor(totalAmount);
         if (existingPaymentOpt.isPresent()) {
-            // Nếu đã tồn tại, gửi email nhắc nhở
             MonthlyCommissionPayment payment = existingPaymentOpt.get();
-            if (!payment.isPaid()) {
-                sendEmailReminder(user, payment.getMonth(), payment.getYear(),
-                        (int) Math.floor(payment.getTotalAmount()), payment.getExpiredAt(),
-                        payment.getTotalBooking());
-            }
+            payment.setTotalAmount(roundedAmount);
+            payment.setTotalBooking(totalBooking);
+            commissionPaymentRepository.save(payment);
+            log.info("Updated commission payment for userId: {}, month: {}, year: {}, amount: {}",
+                    user.getId(), month, year, roundedAmount);
         } else {
-            // Nếu chưa tồn tại, tạo mới
-            Map<String, Object> response = calculateMonthlyPayment(user, month, year);
-            float totalAmount = (float) response.get("totalAmount");
-            int totalBooking = (int) response.get("totalBooking");
-            int roundedAmount = (int) Math.floor(totalAmount);
-
             int presentMonth = DateTimeUtil.nowInVietnam().getMonthValue();
             int presentYear = DateTimeUtil.nowInVietnam().getYear();
             LocalDateTime expiredAt = LocalDateTime.of(presentYear, presentMonth,
@@ -306,7 +322,6 @@ public class PaymentHistoryServiceImpl extends BaseServiceImpl<PaymentHistory, P
             newPayment.setFixedAmount(Integer.parseInt(FIXED_AMOUNT));
 
             commissionPaymentRepository.save(newPayment);
-            sendEmailReminder(user, month, year, roundedAmount, expiredAt, totalBooking); // Gửi email nhắc nhở khi tạo mới
             log.info("Created new commission payment for userId: {}, month: {}, year: {}, amount: {}",
                     user.getId(), month, year, roundedAmount);
         }

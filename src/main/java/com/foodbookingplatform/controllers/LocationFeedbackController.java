@@ -138,6 +138,14 @@ public class LocationFeedbackController {
 
     @ApiResponse(responseCode = "201", description = "Http Status 201 OK")
     @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('USER')")
+    @PutMapping()
+    public ResponseEntity<LocationFeedbackResponse> updateFeedback(@RequestBody LocationFeedbackRequest request) {
+        return ResponseEntity.ok(feedbackService.updateFeedback(request));
+    }
+
+    @ApiResponse(responseCode = "201", description = "Http Status 201 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteFeedback(@PathVariable Long id) {

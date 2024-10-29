@@ -144,6 +144,23 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
     }
 
     @Override
+    public LocationFeedbackResponse updateFeedback(LocationFeedbackRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        LocationFeedback feedback = feedbackRepository.findById(request.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback", "id", request.getId()));
+        if(!feedback.getUser().equals(user))
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "You cannot edit this feedback: Not the owner of this feedback!");
+        feedback.setContent(request.getContent());
+        feedback.setImage(request.getImage());
+        feedback.setRating(request.getRating());
+        feedback = feedbackRepository.save(feedback);
+        return mapToResponse(feedback);
+    }
+
+    @Override
     @Transactional
     public String deleteFeedback(Long id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();

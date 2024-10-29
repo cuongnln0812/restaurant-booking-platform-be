@@ -14,6 +14,7 @@ public interface LocationFeedbackService {
     Page<LocationFeedbackResponse> getAllFeedbackOfLocation(Long locationId, int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword) throws AccessDeniedException;
     Page<LocationFeedbackResponse> getAllFeedbackOfUser(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> keyword);
     LocationFeedbackResponse getFeedbackById(Long id);
+    LocationFeedbackResponse updateFeedback(LocationFeedbackRequest request);
     String deleteFeedback(Long id);
 
 }

@@ -237,6 +237,7 @@ public class LocationFeedbackServiceImpl implements LocationFeedbackService {
         response.setNumberOfGuest(feedback.getNumberOfGuest());
         response.setLocationName(feedback.getLocationBooking().getLocation().getName());
         response.setUserName(feedback.getUser().getFullName());
+        response.setLocationBookingId(feedback.getLocationBooking().getId());
         return response;
     }
 }

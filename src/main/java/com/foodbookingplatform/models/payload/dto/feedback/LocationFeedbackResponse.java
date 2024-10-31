@@ -26,5 +26,7 @@ public class LocationFeedbackResponse {
 
     private String locationName;
 
+    private Long locationBookingId;
+
     private String userName;
 }

@@ -138,7 +138,7 @@ public class LocationFeedbackController {
 
     @ApiResponse(responseCode = "201", description = "Http Status 201 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'LOCATION_ADMIN', 'SYSTEM_ADMIN')")
     @GetMapping("/location-booking/{locationBookingId}")
     public ResponseEntity<LocationFeedbackResponse> getFeedbackByLocationBookingId(@PathVariable Long locationBookingId) {
         return ResponseEntity.ok(feedbackService.getFeedbackByLocationBookingId(locationBookingId));

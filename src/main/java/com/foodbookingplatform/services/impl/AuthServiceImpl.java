@@ -1,6 +1,7 @@
 package com.foodbookingplatform.services.impl;
 
 import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.entities.Location;
 import com.foodbookingplatform.models.entities.Role;
 import com.foodbookingplatform.models.entities.Token;
 import com.foodbookingplatform.models.entities.User;
@@ -11,6 +12,7 @@ import com.foodbookingplatform.models.payload.dto.auth.JWTAuthResponse;
 import com.foodbookingplatform.models.payload.dto.auth.LoginDto;
 import com.foodbookingplatform.models.payload.dto.auth.SignupDto;
 import com.foodbookingplatform.models.payload.dto.user.UserResponse;
+import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.RoleRepository;
 import com.foodbookingplatform.repositories.TokenRepository;
 import com.foodbookingplatform.repositories.UserRepository;
@@ -34,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RoleRepository roleRepository;
     private final TokenRepository tokenRepository;
+    private final LocationRepository locationRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper mapper;
     private final EmailService emailService;
@@ -131,9 +133,10 @@ public class AuthServiceImpl implements AuthService {
     public UserResponse getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
-        Optional<User> user = Optional.ofNullable(userRepository.findByUserNameOrEmailOrPhone(userName, userName, userName)
-                .orElseThrow(() -> new ResourceNotFoundException("User")));
-        return mapToResponse(user);
+        User user = userRepository.findByUserNameOrEmailOrPhone(userName, userName, userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
+        List<Location> location = locationRepository.getLocationsByUserId(user.getId());
+        return mapToResponse(user , location.size() == 0 ? 0 : location.get(0).getId());
     }
 
     @Override
@@ -187,11 +190,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private User setUpUser(SignupDto signupDto) {
-        // add check if username already exists
-        if (userRepository.existsByUserName(signupDto.getUsername())) {
-            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Username is already exist!");
-        }
-
         // add check if email already exists
         if (userRepository.existsByEmail(signupDto.getEmail())) {
             throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Email is already exist!");
@@ -231,7 +229,10 @@ public class AuthServiceImpl implements AuthService {
         tokenRepository.saveAll(validTokens);
     }
 
-    private UserResponse mapToResponse(Optional<User> user){
-        return mapper.map(user, UserResponse.class);
+    private UserResponse mapToResponse(User user, Long locationId){
+        UserResponse userResponse = mapper.map(user, UserResponse.class);
+        userResponse.setLocationId(locationId);
+
+        return userResponse;
     }
 }

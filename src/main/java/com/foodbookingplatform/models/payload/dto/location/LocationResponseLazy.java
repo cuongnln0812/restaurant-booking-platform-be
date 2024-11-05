@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,13 +31,21 @@ public class LocationResponseLazy {
 
     private int rating;
 
-    private String latitude;
+    private double latitude;
 
-    private String longitude;
+    private double longitude;
+
+    private String distance;
 
     private String description;
 
     private EntityStatus status;
 
     private String image;
+
+    private String bannerImage;
+
+    private List<String> categoryName;
+
+    private List<String> tagName;
 }

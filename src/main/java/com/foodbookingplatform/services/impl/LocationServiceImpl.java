@@ -15,7 +15,9 @@ import com.foodbookingplatform.models.payload.dto.tag.TagResponse;
 import com.foodbookingplatform.models.payload.dto.workinghour.WorkingHourResponse;
 import com.foodbookingplatform.repositories.*;
 import com.foodbookingplatform.services.LocationService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.GenericSpecification;
+import com.foodbookingplatform.utils.GeoHashGeneration;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -57,23 +59,56 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponse> getAllLocations(int pageNo, int pageSize, String sortBy, String sortDir) {
+    public Page<LocationResponseLazy> getAllLocations(int pageNo, int pageSize, String sortBy, String sortDir) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 
         Page<Location> locationPage = locationRepository.findAll(pageable);
-        return locationPage.map(this::mapToResponse);
+        return locationPage.map(this::mapToResponseLazy);
     }
 
     @Override
-    public Page<LocationResponse> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams) {
+    public Page<LocationResponseLazy> searchAllLocations(int pageNo, int pageSize, String sortBy, String sortDir, Map<String, Object> searchParams, double latitude, double longitude, boolean searchNearBy) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Specification<Location> specification = specification(searchParams);
 
-        Page<Location> locationPage = locationRepository.findAll(specification, pageable);
+        List<Location> locationList = locationRepository.findAll(specification);
+        if(searchNearBy){
+            String geoHashCode = GeoHashGeneration.getGeoHashCode(latitude, longitude, 4);
+            List<LocationResponseLazy> locationNearSorted = locationList.stream()
+                    .filter(location -> location.getGeoHashCode().startsWith(geoHashCode))
+                    .sorted((location1, location2) -> {
+                        int levelComparison = Integer.compare(location2.getOnSuggest(), location1.getOnSuggest());
+                        if (levelComparison != 0) {
+                            return levelComparison;
+                        }else {
+                            double distance1 = calculateDistance(location1.getLatitude(), location1.getLongitude(), latitude, longitude);
+                            double distance2 = calculateDistance(location2.getLatitude(), location2.getLongitude(), latitude, longitude);
 
-        return locationPage.map(this::mapToResponse);
+                            return Double.compare(distance1, distance2);
+                        }
+                    })
+                    .map(location -> {
+                        LocationResponseLazy response = mapToResponseLazy(location);
+                        double distance = calculateDistance(response.getLatitude(), response.getLongitude(), latitude, longitude);
+                        response.setDistance(formatDistance(distance));
+                        return response;
+                    })
+                    .toList();
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationNearSorted.size());
+            List<LocationResponseLazy> pagedLocationNearSorted = locationNearSorted.subList(start, end);
+
+            return new PageImpl<>(pagedLocationNearSorted, pageable, locationNearSorted.size());
+        }
+        List<LocationResponseLazy> locationResponseLazyList = locationList.stream().map(this::mapToResponseLazy).toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), locationResponseLazyList.size());
+        List<LocationResponseLazy> pagedLocationNearSorted = locationResponseLazyList.subList(start, end);
+
+        return new PageImpl<>(pagedLocationNearSorted, pageable, locationResponseLazyList.size());
     }
 
     @Override
@@ -90,94 +125,140 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public Page<LocationResponseLazy> getLocationsWithBannerAds(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<AdsRegistration> adsRegistrations = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.BANNER, OfferStatus.ACTIVE, pageable);
-
-        // Không có Location đăng kí Ads BANNER
-        if (adsRegistrations.isEmpty()) {
-            return getRandomLocations(pageable).map(location -> mapper.map(location, LocationResponseLazy.class));
-        }
-
-        // Sắp xếp danh sách theo level của Ads, nếu cùng level thì sắp xếp theo thời gian quảng cáo còn lại của location
-        List<LocationResponseLazy> sortedLocation = adsRegistrations.getContent().stream()
-                .sorted((ad1, ad2) -> {
-                    int levelComparison = Integer.compare(ad2.getLocation().getOnBanner(), ad1.getLocation().getOnBanner());
-                    if (levelComparison != 0) {
-                        return levelComparison;
-                    }
-
-                    LocalDateTime now = LocalDateTime.now();
-                    long remainingTimeAd1 = Duration.between(now, ad1.getExpireDate()).getSeconds();
-                    long remainingTimeAd2 = Duration.between(now, ad2.getExpireDate()).getSeconds();
-
-                    return Long.compare(remainingTimeAd2, remainingTimeAd1);
-                })
-                .map(adsRegistration -> mapper.map(adsRegistration.getLocation(), LocationResponseLazy.class))
-                .toList();
-
-//        List<LocationResponseLazy> sortedLocations = sortedLocation.stream()
-//                .map(adsRegistration -> mapper.map(adsRegistration.getLocation(), LocationResponseLazy.class))
-//                .toList();
-
-        return new PageImpl<>(sortedLocation, pageable, adsRegistrations.getTotalElements());
+    public int getNumberOfActiveLocationsInSystem() {
+        return locationRepository.countLocationsByStatusEquals(EntityStatus.ACTIVE);
     }
 
-    private Specification<Location> specification(Map<String, Object> searchParams){
+    @Override
+    public Page<LocationResponseLazy> getLocationsWithBannerAds(int pageNo, int pageSize, AdsType adsType) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        List<Location> locationList = locationRepository.findAll();
+        List<AdsRegistration> adsRegistrationList;
+
+        if(adsType.equals(AdsType.BANNER)){
+            adsRegistrationList = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.BANNER, OfferStatus.ACTIVE);
+        }else{
+            adsRegistrationList = adsRegistrationRepository.findByAds_TypeAndStatus(AdsType.FLASH_SALE, OfferStatus.ACTIVE);
+        }
+
+        List<Location> locationsWithAds;
+        List<Location> locationsWithoutAds = new ArrayList<>(locationList);
+
+        if(adsRegistrationList == null){
+            List<LocationResponseLazy> locationRandomList = getRandomLocations(locationsWithoutAds)
+                    .stream().map(this::mapToResponseLazy).toList();
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationRandomList.size());
+            List<LocationResponseLazy> pagedLocationRandomSorted = locationRandomList.subList(start, end);
+
+            return new PageImpl<>(pagedLocationRandomSorted, pageable, locationRandomList.size());
+        }else {
+            adsRegistrationList.forEach(adsRegistration -> locationsWithoutAds.removeIf(location -> location.getId().equals(adsRegistration.getLocation().getId())));
+
+            locationsWithAds = adsRegistrationList.stream()
+                    .sorted((loc1, loc2) -> {
+                        int levelComparison;
+                        if (adsType.equals(AdsType.BANNER)){
+                            levelComparison = Integer.compare(loc2.getLocation().getOnBanner(), loc1.getLocation().getOnBanner());
+                        } else {
+                            levelComparison = Integer.compare(loc2.getLocation().getOnSale(), loc1.getLocation().getOnSale());
+                        }
+
+                        if (levelComparison != 0) {
+                            return levelComparison;
+                        }
+
+                        LocalDateTime now = DateTimeUtil.nowInVietnam();
+                        long remainingTimeLoc1 = Duration.between(now, loc1.getExpireDate()).toSeconds();
+                        long remainingTimeLoc2 = Duration.between(now, loc2.getExpireDate()).toSeconds();
+
+                        return Long.compare(remainingTimeLoc2, remainingTimeLoc1);
+                    })
+                    .map(AdsRegistration::getLocation)
+                    .toList();
+
+            List<Location> locationRandomList = getRandomLocations(locationsWithoutAds);
+            List<Location> combinedLocations = new ArrayList<>(locationsWithAds);
+            combinedLocations.addAll(locationRandomList);
+
+            List<LocationResponseLazy> locationResponseLazyList = combinedLocations.stream()
+                    .map(this::mapToResponseLazy)
+                    .toList();
+
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), locationResponseLazyList.size());
+            List<LocationResponseLazy> pagedLocationResponseLazySorted = locationResponseLazyList.subList(start, end);
+
+            return new PageImpl<>(pagedLocationResponseLazySorted, pageable, locationResponseLazyList.size());
+        }
+    }
+
+    @Override
+    public Page<LocationResponseLazy> getLocationsRecommend(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        List<Location> locationList = locationRepository.findAll();
+
+        List<LocationResponseLazy> locationsRecommend = locationList.stream()
+                    .sorted((loc1, loc2) -> {
+                        int ratingComparison;
+                        ratingComparison = Integer.compare(loc2.getRating(), loc1.getRating());
+
+                        if (ratingComparison != 0) {
+                            return ratingComparison;
+                        }
+
+                        return Long.compare(loc2.getView(), loc1.getView());
+                    })
+                    .map(this::mapToResponseLazy)
+                    .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), locationsRecommend.size());
+        List<LocationResponseLazy> pagedLocationRecommendSorted = locationsRecommend.subList(start, end);
+
+        return new PageImpl<>(pagedLocationRecommendSorted, pageable, locationsRecommend.size());
+    }
+
+    @Override
+    public Page<LocationResponseLazy> getLocationsWithTag(int pageNo, int pageSize, String sortBy, String sortDir, String tagName) {
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+        Specification<Location> specification = GenericSpecification.rightJoinFieldContains("locationTags", "tag", "name", tagName);
+
+        Page<Location> locationList = locationRepository.findAll(specification, pageable);
+
+        return locationList.map(this::mapToResponseLazy);
+    }
+
+    private Specification<Location> specification(Map<String, Object> searchParams) {
         List<Specification<Location>> specs = new ArrayList<>();
 
         searchParams.forEach((key, value) -> {
             switch (key) {
-                case "status":
-                    specs.add(GenericSpecification.fieldIn(key, (Collection<?>) value));
-                    break;
-                case "suggest":
-                case "sale":
-                    specs.add(GenericSpecification.fieldIsBoolean(key, (boolean) value));
-                    break;
-                case "openingHours":
-                    if (searchParams.containsKey("closingHours")) {
-                        specs.add(GenericSpecification.fieldBetween("closingHours", (LocalDateTime) searchParams.get("openingHours"), (LocalDateTime) searchParams.get("closingHours")));
-                    } else {
-                        specs.add(GenericSpecification.fieldGreaterThan("openingHours", (LocalDateTime) value));
-                    }
-                    break;
-                case "closingHours":
-                    if (!searchParams.containsKey("openingHours")) {
-                        specs.add(GenericSpecification.fieldLessThan("closingHours", (LocalDateTime) value));
-                    }
-                    break;
-                case "name":
-                case "address":
-                case "phone":
-                    specs.add(GenericSpecification.fieldContains(key, (String) value));
-                    break;
-                case "fullName":
-                    specs.add(GenericSpecification.joinFieldContains("user", key, (String) value));
-                    break;
-                case "brandName":
-                    specs.add(GenericSpecification.joinFieldContains("brand", "name", (String) value));
-                    break;
-                case "categoryName":
-                    specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationCategories", "category", "name", (Collection<?>) value));
-                    break;
-                case "tagName":
-                    specs.add(GenericSpecification.joinFieldInThroughMultipleJoins("locationTags", "tag", "name", (Collection<?>) value));
-                    break;
+                case "status" -> specs.add(GenericSpecification.fieldIn(key, (Collection<?>) value));
+                case "searchText" ->
+                        specs.add(Specification.where(GenericSpecification.<Location>fieldContains("name", (String) value))
+                                .or(GenericSpecification.joinFieldContains("brand", "name", (String) value))
+                                .or(GenericSpecification.leftJoinFieldContains("locationCategories", "category", "name", (String) value))
+                                .or(GenericSpecification.rightJoinFieldContains("locationCategories", "category", "name", (String) value))
+                                .or(GenericSpecification.leftJoinFieldContains("locationTags", "tag", "name", (String) value))
+                                .or(GenericSpecification.rightJoinFieldContains("locationTags", "tag", "name", (String) value)));
             }
         });
 
         return specs.stream().reduce(Specification.where(null), Specification::and);
     }
 
+
     public Location validate(LocationRequest locationRequest) {
         Location location;
+        String geoHashCode = GeoHashGeneration.getGeoHashCode(locationRequest.getLatitude(), locationRequest.getLongitude(), 9);
 
         if (locationRequest.getId() != 0) {
             location = locationRepository.findById(locationRequest.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Location", "id", locationRequest.getId()));
             BeanUtils.copyProperties(locationRequest, location, "user", "brand");
-
         } else {
             location = mapper.map(locationRequest, Location.class);
         }
@@ -191,6 +272,7 @@ public class LocationServiceImpl implements LocationService {
         Brand brand = brandRepository.findById(locationRequest.getBrandId())
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", locationRequest.getBrandId()));
 
+        location.setGeoHashCode(geoHashCode);
         location.setUser(user);
         location.setBrand(brand);
         Location savedLocation = locationRepository.save(location);
@@ -259,28 +341,46 @@ public class LocationServiceImpl implements LocationService {
         return savedLocation;
     }
 
-    //
-    private Page<Location> getRandomLocations(Pageable pageable) {
-        Page<Location> locationsPage = locationRepository.findAll(pageable);
+    private List<Location> getRandomLocations(List<Location> locationRandomList) {
 
-        if (!locationsPage.hasContent()) {
+        if (locationRandomList.isEmpty()) {
             throw new ResourceNotFoundException("Location", "any", "No locations found.");
         }
 
-        List<Location> allLocations = new ArrayList<>(locationsPage.getContent());
-        Collections.shuffle(allLocations);
+        Collections.shuffle(locationRandomList);
 
-        return new PageImpl<>(allLocations, pageable, locationsPage.getTotalElements());
+        return locationRandomList;
+    }
+
+    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        return Math.sqrt(Math.pow((lat1 - lat2), 2) + Math.pow((lon1 - lon2), 2)) * 100;
+    }
+
+    private String formatDistance(double distanceInKm) {
+        if (distanceInKm < 1) {
+            return String.format("%.0f m", distanceInKm * 1000);
+        }
+        return String.format("%.2f km", distanceInKm);
     }
 
     private LocationResponse mapToResponse(Location location){
         List<Category> categories = locationCategoryRepository.findCategoriesByLocationId(location.getId());
         List<Tag> tags = locationTagRepository.findTagsByLocationId(location.getId());
         List<WorkingHour> workingHours = workingHourRepository.findByLocation_Id(location.getId());
+
         LocationResponse locationResponse = mapper.map(location, LocationResponse.class);
         locationResponse.setCategory(categories.stream().map(category -> mapper.map(category, CategoryResponse.class)).toList());
         locationResponse.setTag(tags.stream().map(tag -> mapper.map(tag, TagResponse.class)).toList());
         locationResponse.setWorkingHour(workingHours.stream().map(workingHour -> mapper.map(workingHour, WorkingHourResponse.class)).toList());
+        return locationResponse;
+    }
+
+    private LocationResponseLazy mapToResponseLazy(Location location){
+        List<Category> categories = locationCategoryRepository.findCategoriesByLocationId(location.getId());
+        List<Tag> tags = locationTagRepository.findTagsByLocationId(location.getId());
+        LocationResponseLazy locationResponse = mapper.map(location, LocationResponseLazy.class);
+        locationResponse.setCategoryName(categories.stream().map(Category::getName).toList());
+        locationResponse.setTagName(tags.stream().map(Tag::getName).toList());
         return locationResponse;
     }
 }

@@ -7,6 +7,7 @@ import org.hibernate.Length;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Getter
@@ -64,10 +65,10 @@ public class Promotion extends BaseEntity{
 
     // Fields specific to TIME promotion
     @Column(name = "start_hour_time")
-    private LocalDateTime startHourTime;
+    private LocalTime startHourTime;
 
     @Column(name = "end_hour_time")
-    private LocalDateTime endHourTime;
+    private LocalTime endHourTime;
 
     @ManyToOne
     @JoinColumn(name = "location_Id", nullable = false)

@@ -1,0 +1,2335 @@
+{
+	"info": {
+		"_postman_id": "b9d06573-a082-4fae-bf0c-6ff0065b7613",
+		"name": "restaurant-booking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29956265",
+		"_collection_link": "https://martian-capsule-948520.postman.co/workspace/My-Workspace~cedbe8b2-557f-40cb-892b-a176a21815c7/collection/29956265-b9d06573-a082-4fae-bf0c-6ff0065b7613?action=share&source=collection_link&creator=29956265"
+	},
+	"item": [
+		{
+			"name": "brand",
+			"item": [
+				{
+					"name": "get-brand-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageNo",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-brands",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/search?keyword=i",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "i"
+								},
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-brand",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"brandName\": \"Dooki\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"uuu\",\r\n    \"createdBy\": \"Long\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/brands/add",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"brands",
+								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "category",
+			"item": [
+				{
+					"name": "get-category-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageNo",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/search?keyword=e",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "keyword",
+									"value": "e"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"brandName\": \"Kiko\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"uuu\",\r\n    \"createdBy\": \"Long\",\r\n    \"createdDate\": \"2015-09-01 00:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/categories/add",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"categories",
+								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "authen",
+			"item": [
+				{
+					"name": "log-out",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzA5MDIsImV4cCI6MTcyNjIxNzMwMn0.nDEjVpuQ5mmm1uPZQKFCnMeL6QXzURtcnVsEpMw1J8oeVyUoaRJIo-Og4I_dKTOb",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"logout"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "get-info",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3Mjg3MjM0OTMsImV4cCI6MTcyODgwOTg5M30.F9eijxSlGj-sBGcw2_FVXNenzpz9d8g5-TropbkdOvHv62-NMRJ3P60LRG0wzdai",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://restaurant-booking-api-f979.onrender.com/api/v1/auth/info",
+							"protocol": "https",
+							"host": [
+								"restaurant-booking-api-f979",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"info"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// {\r\n//   \"userNameOrEmailOrPhone\": \"nguyentiendung\",\r\n//   \"password\": \"ntiendung@ntiendung\"\r\n// }\r\n{\r\n  \"userNameOrEmailOrPhone\": \"admin@admin\",\r\n  \"password\": \"admin@admin\"\r\n}\r\n// {\r\n//   \"userNameOrEmailOrPhone\": \"nguyenducson2915@gmail.com\",\r\n//   \"password\": \"P#zIeMxc5r\"\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/auth/login",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "sign-up-user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"nguyenducson321\",\r\n  \"email\": \"nguyenducson29@gmail.com\",\r\n  \"password\": \"Nguyenducson@321\",\r\n  \"fullName\": \"string\",\r\n  \"phone\": \"8455083580\",\r\n  \"gender\": \"Female\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register",
+								"user"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "sign-up-location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5MTI4NCwiZXhwIjoxNzI4Mjc3Njg0fQ.c7xQurzoku8aHtIkp_bfg6UkRHBSmEFix8IXiMhEJwLA-PmbrbqDMVT9UE57ywyS",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"nducson11111\",\r\n  \"email\": \"nguyenducson2915@gmail.com\",\r\n  \"password\": \"Nguyenducson321@\",\r\n  \"fullName\": \"string\",\r\n  \"phone\": \"0800433475\",\r\n  \"gender\": \"Female\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/register/location",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register",
+								"location"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "refresh-token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW5kdWNzb24iLCJpYXQiOjE3MjYxMzAzODUsImV4cCI6MTcyNjczNTE4NX0.bgpYmQHBdZtI4HQYktdfuqJ-N3GxkvK3V67OVTWH_XPkv7gBHGSf75AiKJe8-m24",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/refresh_token",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh_token"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				},
+				{
+					"name": "change-password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjYxMjYwMTUsImV4cCI6MTcyNjIxMjQxNX0.iTEKRrcePREGOHvxj9vxnW8_BeevaRFhnu_VRc3XxWiBSFBuHDlyOjoJEvD0HV_b",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"oldPassword\": \"8X76gwG%mL\",\r\n  \"newPassword\": \"Nguyenducson321@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/auth/change-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"change-password"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notification",
+			"item": [
+				{
+					"name": "get-all-notifications",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU5NDI1NCwiZXhwIjoxNzI2NjgwNjU0fQ.dAsm_25VM7I8Swv84eZuldniwgP4kfOLERBKB2RXQIx_VyWr2wmLuLqv2dhbrGwc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications?pageNo=0&pageSize=19&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "19"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-notifications-of-user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications?pageNo=0&pageSize=1&sortBy=id&sortDir=asc%id=1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "1"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc%id=1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjY1MDgyMiwiZXhwIjoxNzI2NzM3MjIyfQ.e9nMUcV1GoaZS8HgFoieMByEYSKzwuAofcUCEfwaSB_KcaQ3tT5k8svhX_OVkycv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&fullName=Sơn",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "fullName",
+									"value": "Sơn"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-notification-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU5NDI1NCwiZXhwIjoxNzI2NjgwNjU0fQ.dAsm_25VM7I8Swv84eZuldniwgP4kfOLERBKB2RXQIx_VyWr2wmLuLqv2dhbrGwc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications/3",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjY1MDgyMiwiZXhwIjoxNzI2NzM3MjIyfQ.e9nMUcV1GoaZS8HgFoieMByEYSKzwuAofcUCEfwaSB_KcaQ3tT5k8svhX_OVkycv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"recipientType\": \"LOCATION\",\r\n  \"notificationType\": \"ORDER\",\r\n  \"title\": \"string\",\r\n  \"summary\": \"string\",\r\n  \"content\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjU3OTY4NywiZXhwIjoxNzI2NjY2MDg3fQ.EM_dcYJUH6BEzmBTn6TJqOw1uA0GQ8jaSWswcfihSU1B8iN6f9QwkFT_4l3YrW4p",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"recipientType\": \"USER\",\r\n    \"notificationType\": \"ORDER\",\r\n    \"title\": \"nguyenducsonnnnnnnn\",\r\n    \"summary\": \"string\",\r\n    \"content\": \"string\",\r\n    \"image\": \"string\",\r\n    \"status\": \"INACTIVE\",\r\n    \"user_id\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/notifications",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-notification",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjIwMzAzMSwiZXhwIjoxNzI2Mjg5NDMxfQ.nEjPIQq5-5p5fuvnjfX5oNFmQCtGfCG4X_JQkpPsf-yvF4CKVYvX5vp98hZ3nl5q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/notification/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"notification",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "location",
+			"item": [
+				{
+					"name": "get-all-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODA1NTcyMSwiZXhwIjoxNzI4MTQyMTIxfQ.nnJ4Nq-u7pu1_Oi3z7CfzlIxgIGgXmFuIMZ7mbp_7wzQ9jFdK2w-oNx4nxQF2t3o",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-ads-banner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/ads-type?pageNo=0&pageSize=10&adsType=BANNER",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"ads-type"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "adsType",
+									"value": "BANNER"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-ads-flash-sale",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/ads-type?pageNo=0&pageSize=10&adsType=FLASH_SALE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"ads-type"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "adsType",
+									"value": "FLASH_SALE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-recommend",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/recommend?pageNo=0&pageSize=10",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"recommend"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-location-with-tag",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/tag?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&tagName=%C4%83n%20s%C3%A1ng",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"tag"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "tagName",
+									"value": "%C4%83n%20s%C3%A1ng"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&name=a&status=ACTIVE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "name",
+									"value": "a"
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-location-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/locations/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODM3MzE5MiwiZXhwIjoxNzI4NDU5NTkyfQ.E5zzoRbnWvV9IkCwtXl4A6-Q4w6ytDFIfUsr2KTCxviHco05geE4UAeeEyOqhdz0",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"address\": \"string\",\r\n  \"phone\": \"0514419520\",\r\n  \"suggest\": true,\r\n  \"sale\": true,\r\n  \"latitude\": \"string\",\r\n  \"longitude\": \"string\",\r\n  \"openingHours\": \"09:00:00\",\r\n  \"closingHours\": \"15:00:00\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"userId\": 1,\r\n  \"brandId\": 1,\r\n  \"categoryId\": [\r\n    1,2\r\n  ],\r\n  \"tagId\": [\r\n    2\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/locations",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"title\": \"string\",\r\n    \"discountAmount\": 10.0,\r\n    \"condition\": \"string\",\r\n    \"description\": \"string\",\r\n    \"image\": \"string\",\r\n    \"startDate\": \"2024-09-20T16:03:16.019\",\r\n    \"endDate\": \"2024-09-21T08:45:16.019\",\r\n    \"locationId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/locations",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/location/2",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"location",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "promotion",
+			"item": [
+				{
+					"name": "get-all-promotions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-promotions-of-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgxOTEzNDksImV4cCI6MTcyODI3Nzc0OX0.b8H9Hmga2FVcIm88DOjVCpLV750_0CvMBEtyr2O4Gkt7HNMfb-vtgMPOKfbpdQZl",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/location/2?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"location",
+								"2"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-promotions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-promotion-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE4NTY1NCwiZXhwIjoxNzI4MjcyMDU0fQ.MENAPooTzNDiF2VLjwn1P3npHAbSSSr7zX9r4yTBnVK0kdJ8-igG26eVJcO4AjDw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE4NTY1NCwiZXhwIjoxNzI4MjcyMDU0fQ.MENAPooTzNDiF2VLjwn1P3npHAbSSSr7zX9r4yTBnVK0kdJ8-igG26eVJcO4AjDw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"title\": \"string\",\r\n  \"description\": \"string\",\r\n  \"image\": \"string\",\r\n  \"startDate\": \"2024-10-20T15:30:08.182Z\",\r\n  \"endDate\": \"2024-10-29T15:30:08.182Z\",\r\n  \"promotionType\": \"PEOPLE\",\r\n  \"discountValue\": 10000,\r\n  \"freeItem\": \"string\",\r\n  \"minPeople\": 1,\r\n  \"startHourTime\": \"2024-10-01T15:30:08.182Z\",\r\n  \"endHourTime\": \"2024-10-01T15:30:08.182Z\",\r\n  \"locationId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNTcyMCwiZXhwIjoxNzI2ODIyMTIwfQ.ZwCeVb5JooDZTQ7DgI4Aox7G056l09-Z3BQzZxQaJAir_s-JAxiOwUcFK1VWVef3",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"title\": \"string\",\r\n    \"discountAmount\": 10.0,\r\n    \"condition\": \"string\",\r\n    \"description\": \"string\",\r\n    \"image\": \"string\",\r\n    \"startDate\": \"2024-09-20T16:03:16.019\",\r\n    \"endDate\": \"2024-09-21T08:45:16.019\",\r\n    \"locationId\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-promotion",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjczNzQ2OSwiZXhwIjoxNzI2ODIzODY5fQ.Vh9nvo2JH4MufeoHAW-BilKkVoe0cHfuKlV9bBPjBQg5XfaHQFXDf9d0V9z87fXZ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/promotions/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"promotions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ads",
+			"item": [
+				{
+					"name": "get-all-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/search?pageNo=0&pageSize=10&sortBy=id&sortDir=asc&keyword=stringgggg",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"search"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								},
+								{
+									"key": "keyword",
+									"value": "stringgggg"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5NTkzMiwiZXhwIjoxNzI4MjgyMzMyfQ.lPxZLurHO6nmtKKI_rtE__DQW7JLNM-YOzdEKWfM8903ydNmxjapOzUHE84SeNLf",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODQzNzI1NiwiZXhwIjoxNzI4NTIzNjU2fQ.dq1MkGELwCED70vIxxztzbsr-GJgnl-IIynkTbPjSgePkrJxBktjkbyNIcuaY6ki",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"price\": 10000,\r\n  \"description\": \"string\",\r\n  \"type\": \"BANNER\",\r\n  \"level\": 3,\r\n  \"image\": \"string\",\r\n  \"duration\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODE5NTkzMiwiZXhwIjoxNzI4MjgyMzMyfQ.lPxZLurHO6nmtKKI_rtE__DQW7JLNM-YOzdEKWfM8903ydNmxjapOzUHE84SeNLf",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"string\",\r\n    \"price\": 10000.0,\r\n    \"description\": \"string\",\r\n    \"type\": \"FLASH_SALE\",\r\n    \"status\": \"ACTIVE\",\r\n    \"image\": \"string\",\r\n    \"duration\": 100\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-ads",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNzc5Njc0NCwiZXhwIjoxNzI3ODgzMTQ0fQ.hmq33MyVOd3tH0ViWzUdW6Gc_gu-psORGwl0kBo73XTqJXEiNKm0jlYcWiB1aAXL",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ads-registration",
+			"item": [
+				{
+					"name": "get-all-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgyMDc5MzMsImV4cCI6MTcyODI5NDMzM30.DUoB-M3gmtYXAcKwSGqdXIxCszUGQ5gulj_zwNyibGPMVRLXQFkR_wCzR35CFAdM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-registration-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZHVjc29uMTExMTEiLCJpYXQiOjE3MjgyMDc5MzMsImV4cCI6MTcyODI5NDMzM30.DUoB-M3gmtYXAcKwSGqdXIxCszUGQ5gulj_zwNyibGPMVRLXQFkR_wCzR35CFAdM",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations/6",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-ads-registration-of-location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations/location/1?pageNo=0&pageSize=10&sortBy=id&sortDir=asc",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations",
+								"location",
+								"1"
+							],
+							"query": [
+								{
+									"key": "pageNo",
+									"value": "0"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								},
+								{
+									"key": "sortBy",
+									"value": "id"
+								},
+								{
+									"key": "sortDir",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations?id=1&offerStatus=ACTIVE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "offerStatus",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-ads-registration",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJuZ3V5ZW50aWVuZHVuZyIsImlhdCI6MTcyODQzNzMwOSwiZXhwIjoxNzI4NTIzNzA5fQ.GcWtNzxLaqAB7HHKAATR5ORyRGOpeIvAKxD0df2K04GtQTvFpZg-3SA0Fy1mUqQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"locationId\": 1,\r\n  \"adsId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/ads-registrations?id=1&offerStatus=ACTIVE",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"ads-registrations"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								},
+								{
+									"key": "offerStatus",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "payment-history",
+			"item": [
+				{
+					"name": "create-payment-history",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODYxNzg4NCwiZXhwIjoxNzI4NzA0Mjg0fQ.Bz4sThomaItJ04B5kySyhIshcj7ISMcqa0DEl47ryLjVLu3O6kNP9gKYmuczP0U5",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"totalAmount\": 320000,\r\n    \"locationBookingId\": 4,\r\n    \"paymentMethodId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/payment-histories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"payment-histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-payment-history",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODYxNzg4NCwiZXhwIjoxNzI4NzA0Mjg0fQ.Bz4sThomaItJ04B5kySyhIshcj7ISMcqa0DEl47ryLjVLu3O6kNP9gKYmuczP0U5",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 15,\r\n    \"totalAmount\": 400000,\r\n    \"locationBookingId\": 4,\r\n    \"paymentMethodId\": 1,\r\n    \"status\": \"UNPAID\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/payment-histories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"payment-histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-payment-histories",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODYxMzE3MSwiZXhwIjoxNzI4Njk5NTcxfQ.bFeRBU3mgNJpBg8w9QRMOEKN2k6NVBwRIO1wj1yIIT5XWgHzwItWG0uKYHmVxsL6",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/payment-histories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"payment-histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-payment-history",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODYxNzg4NCwiZXhwIjoxNzI4NzA0Mjg0fQ.Bz4sThomaItJ04B5kySyhIshcj7ISMcqa0DEl47ryLjVLu3O6kNP9gKYmuczP0U5",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/payment-histories/14",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"payment-histories",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-payment-history-by-id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyODYxNzg4NCwiZXhwIjoxNzI4NzA0Mjg0fQ.Bz4sThomaItJ04B5kySyhIshcj7ISMcqa0DEl47ryLjVLu3O6kNP9gKYmuczP0U5",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/payment-histories/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"payment-histories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "food-category",
+			"item": [
+				{
+					"name": "get-food-category-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories/1",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-food-category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Kao\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-all-food-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search-categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories/search?keyword=un",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories",
+								"search"
+							],
+							"query": [
+								{
+									"key": "keyword",
+									"value": "un"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-food-category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbkBhZG1pbiIsImlhdCI6MTcyNjYxNDQ3NiwiZXhwIjoxNzI2NzAwODc2fQ.1ZGMs6GVhtZoCBQT7abr0hLZowRTUK0fhDPsH91rk65s2CZJ6h7u6gjaqyOZKTHv",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"image\": \"qqq\",\r\n    \"name\": \"Miến\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{API_LOCAL}}/food-categories",
+							"host": [
+								"{{API_LOCAL}}"
+							],
+							"path": [
+								"food-categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

@@ -28,6 +28,8 @@ public class LocationBookingResponse {
 
     private String phone;
 
+    private Float amount;
+
     private LocalDate bookingDate;
 
     private LocalTime bookingTime;
@@ -35,6 +37,8 @@ public class LocationBookingResponse {
     private Integer numberOfAdult;
 
     private Integer numberOfChildren;
+
+    private String freeItem;
 
     private LocationBookingStatus status;
 

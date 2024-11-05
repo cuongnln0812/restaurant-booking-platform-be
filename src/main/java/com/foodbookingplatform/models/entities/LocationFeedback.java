@@ -37,6 +37,9 @@ public class LocationFeedback extends BaseEntity{
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
 
+    @Column(nullable = false)
+    private boolean isEdited = false;
+
     @ManyToOne
     @JoinColumn(name = "booking_Id", referencedColumnName = "Id", nullable = false)
     private LocationBooking locationBooking;

@@ -1,8 +1,8 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryRequest;
-import com.foodbookingplatform.models.payload.dto.foodCategory.FoodCategoryResponse;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryRequest;
+import com.foodbookingplatform.models.payload.dto.foodcategory.FoodCategoryResponse;
 import com.foodbookingplatform.services.FoodCategoryService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

@@ -24,7 +24,6 @@ public class NotificationRequest {
 
     @NotEmpty(message = "Notification's notification type cannot be blank")
     @Pattern(regexp = AppConstants.NOTIFICATION_TYPE_REGEX, message = "NotificationType include: ORDER, PROMOTION, OTHER")
-    @Size(min = 2, message = "NotificationType's notification type must have at least 2 characters")
     private String notificationType;
 
     @NotEmpty(message = "Notification's title cannot be blank")

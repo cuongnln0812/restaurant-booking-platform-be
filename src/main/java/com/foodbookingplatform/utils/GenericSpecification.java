@@ -1,5 +1,6 @@
 package com.foodbookingplatform.utils;
 
+import jakarta.persistence.criteria.JoinType;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -11,7 +12,7 @@ import java.util.Collection;
 @NoArgsConstructor
 public class GenericSpecification{
     public static <T> Specification<T> fieldContains(String fieldName, String keyword) {
-        return (root, query, builder) -> builder.like(builder.lower(root.get(fieldName)), "%" + keyword.toLowerCase() + "%");
+        return (root, query, builder) -> builder.like(builder.lower(root.get(fieldName)), "%" + keyword.toLowerCase().trim() + "%");
     }
 
     public static <T, U extends Comparable<? super U>> Specification<T> fieldBetween(String fieldName, U minValue, U maxValue) {
@@ -27,7 +28,7 @@ public class GenericSpecification{
     }
 
     public static <T> Specification<T> joinFieldContains(String joinField, String fieldName, String keyword) {
-        return (root, query, builder) -> builder.like(builder.lower(root.join(joinField).get(fieldName)), "%" + keyword.toLowerCase() + "%");
+        return (root, query, builder) -> builder.like(builder.lower(root.join(joinField).get(fieldName)), "%" + keyword.toLowerCase().trim() + "%");
     }
 
     public static <T> Specification<T> joinFieldIn(String joinField, String fieldName, Collection<?> values) {
@@ -47,7 +48,25 @@ public class GenericSpecification{
         return (root, query, builder) -> root.join(firstJoinField).join(secondJoinField).get(fieldName).in(values);
     }
 
-    public static <T> Specification<T> joinFieldContainsInThroughMultipleJoins(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
-        return (root, query, builder) -> builder.like(builder.lower(root.join(firstJoinField).join(secondJoinField).get(fieldName)), "%" + keyword.toLowerCase() + "%");
+    public static <T> Specification<T> leftJoinFieldContains(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
+        return (root, query, builder) -> {
+            var leftJoin = root.join(firstJoinField, JoinType.LEFT).join(secondJoinField, JoinType.LEFT);
+            return builder.like(
+                    builder.lower(leftJoin.get(fieldName)),
+                    "%" + keyword.toLowerCase().trim() + "%"
+            );
+        };
     }
+
+    public static <T> Specification<T> rightJoinFieldContains(String firstJoinField, String secondJoinField, String fieldName, String keyword) {
+        return (root, query, builder) -> {
+            var rightJoin = root.join(firstJoinField, JoinType.LEFT).join(secondJoinField, JoinType.LEFT);
+            return builder.like(
+                    builder.lower(rightJoin.get(fieldName)),
+                    "%" + keyword.toLowerCase().trim() + "%"
+            );
+        };
+    }
+
+
 }

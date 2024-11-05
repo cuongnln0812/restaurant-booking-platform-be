@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +36,19 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<Page<FoodResponse>> getAllFoodsByLocation(
+            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @PathVariable Long locationId
+    ) {
+        return ResponseEntity.ok(foodService.getAllFoodsByLocation(pageNo, pageSize, sortBy, sortDir, locationId));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/search")
     public ResponseEntity<List<FoodResponse>> searchFoods(
             @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
@@ -55,7 +69,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteFood(@PathVariable Long id) {
         foodService.deleteFood(id);
@@ -64,7 +78,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @PostMapping
     public ResponseEntity<FoodResponse> addFood(@RequestBody @Valid FoodRequest request) {
         FoodResponse response = foodService.addFood(request);
@@ -73,7 +87,7 @@ public class FoodController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasRole('LOCATION_ADMIN') or hasRole('SYSTEM_ADMIN')")
     @PutMapping
     public ResponseEntity<FoodResponse> updateFood(@RequestBody @Valid FoodRequest request) {
         return ResponseEntity.ok(foodService.updateFood(request));

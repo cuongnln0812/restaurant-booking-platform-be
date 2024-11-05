@@ -36,15 +36,19 @@ public class LocationResponse {
 
     private int rating;
 
-    private String latitude;
+    private double latitude;
 
-    private String longitude;
+    private double longitude;
+
+    private String distance;
 
     private String description;
 
     private EntityStatus status;
 
     private String image;
+
+    private String bannerImage;
 
     private UserResponse user;
 

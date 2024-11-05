@@ -1,6 +1,6 @@
 package com.foodbookingplatform.models.payload.dto.uservoucher;
 
-import jakarta.persistence.Column;
+import com.foodbookingplatform.models.enums.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +30,6 @@ public class UserVoucherResponse {
     private LocalDateTime startDate;
 
     private LocalDateTime endDate;
+
+    private OfferStatus status;
 }

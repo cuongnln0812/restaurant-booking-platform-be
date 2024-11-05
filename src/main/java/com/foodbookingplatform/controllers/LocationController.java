@@ -1,6 +1,7 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
+import com.foodbookingplatform.models.enums.AdsType;
 import com.foodbookingplatform.models.enums.EntityStatus;
 import com.foodbookingplatform.models.payload.dto.location.LocationRequest;
 import com.foodbookingplatform.models.payload.dto.location.LocationResponse;
@@ -11,13 +12,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,63 +31,68 @@ public class LocationController {
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<LocationResponse>> getAllLocations(
-            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
+    public ResponseEntity<Page<LocationResponseLazy>> getAllLocations(
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir
     ) {
         return ResponseEntity.ok(locationService.getAllLocations(pageNo, pageSize, sortBy, sortDir));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @GetMapping("/banner")
-    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithBannerAds(
-            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize
+    @GetMapping("/ads-type")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithAdsType(@Valid
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam AdsType adsType
+            ) {
+        return ResponseEntity.ok(locationService.getLocationsWithBannerAds(pageNo, pageSize, adsType));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/recommend")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsRecommend(@RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                                                            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize
     ) {
-        return ResponseEntity.ok(locationService.getLocationsWithBannerAds(pageNo, pageSize));
+        return ResponseEntity.ok(locationService.getLocationsRecommend(pageNo, pageSize));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @GetMapping("/tag")
+    public ResponseEntity<Page<LocationResponseLazy>> getLocationsWithTag(@RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+                                                                          @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+                                                                          @RequestParam String tagName
+    ) {
+        return ResponseEntity.ok(locationService.getLocationsWithTag(pageNo, pageSize, sortBy, sortDir, tagName));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @GetMapping("/search")
-    public ResponseEntity<Page<LocationResponse>> searchLocations(
-            @RequestParam(name = "pageNo", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
-            @RequestParam(name = "pageSize", defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
-            @RequestParam(name = "sortBy", defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
-            @RequestParam(name = "sortDir", defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
-            @RequestParam(value = "openingHours", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime openingHours,
-            @RequestParam(value = "closingHours", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime closingHours,
-            @RequestParam(value = "status", required = false) List<EntityStatus> status,
-            @RequestParam(value = "suggest", required = false) Boolean suggest,
-            @RequestParam(value = "sale", required = false) Boolean sale,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "address", required = false) String address,
-            @RequestParam(value = "phone", required = false) Long phone,
-            @RequestParam(value = "fullName", required = false) String fullName,
-            @RequestParam(value = "brandName", required = false) String brandName,
-            @RequestParam(value = "categoryName", required = false) List<String> categoryName,
-            @RequestParam(value = "tagName", required = false) List<String> tagName
-            ) {
+    public ResponseEntity<Page<LocationResponseLazy>> searchLocations(
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) int pageNo,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_BY, required = false) String sortBy,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_SORT_DIRECTION, required = false) String sortDir,
+            @RequestParam(required = false) List<EntityStatus> status,
+            @RequestParam(required = false) String searchText,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) double latitude,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER, required = false) double longitude,
+            @RequestParam boolean searchNearBy
+    ) {
 
         Map<String, Object> searchParams = new HashMap<>();
 
         if (status != null && !status.isEmpty()) searchParams.put("status", status);
-        if (openingHours != null) searchParams.put("openingHours", openingHours);
-        if (closingHours != null) searchParams.put("closingHours", closingHours);
-        if (name != null) searchParams.put("name", name);
-        if (address != null) searchParams.put("address", address);
-        if (phone != null) searchParams.put("phone", phone);
-        if (fullName != null) searchParams.put("fullName", fullName);
-        if (brandName != null) searchParams.put("brandName", brandName);
-        if (suggest != null) searchParams.put("suggest", suggest);
-        if (sale != null) searchParams.put("sale", sale);
-        if (categoryName != null && !categoryName.isEmpty()) searchParams.put("categoryName", categoryName);
-        if (tagName != null && !tagName.isEmpty()) searchParams.put("tagName", tagName);
+        if (searchText != null) searchParams.put("searchText", searchText);
 
-        return ResponseEntity.ok(locationService.searchAllLocations(pageNo, pageSize, sortBy, sortDir, searchParams));
+        return ResponseEntity.ok(locationService.searchAllLocations(pageNo, pageSize, sortBy, sortDir, searchParams, latitude, longitude, searchNearBy));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
@@ -109,7 +113,7 @@ public class LocationController {
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
     @PutMapping
     public ResponseEntity<LocationResponse> updateLocation(@Valid @RequestBody LocationRequest request) {
         return ResponseEntity.ok(locationService.updateLocation(request));
@@ -122,5 +126,13 @@ public class LocationController {
     public ResponseEntity<String> deleteLocation(@PathVariable Long id) {
         locationService.deleteLocation(id);
         return ResponseEntity.ok("Location deleted successfully");
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
+    @GetMapping("count-active-locations")
+    public ResponseEntity<Integer> getNumberOfActiveLocationsInSystem() {
+        return ResponseEntity.ok(locationService.getNumberOfActiveLocationsInSystem());
     }
 }

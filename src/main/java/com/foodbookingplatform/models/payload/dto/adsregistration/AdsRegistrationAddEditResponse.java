@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdsRegistrationAddResponse {
+public class AdsRegistrationAddEditResponse {
     private Long id;
 
     private LocalDateTime registrationDate;

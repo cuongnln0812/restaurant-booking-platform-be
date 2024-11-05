@@ -4,12 +4,15 @@ import com.foodbookingplatform.models.entities.*;
 import com.foodbookingplatform.models.enums.OfferStatus;
 import com.foodbookingplatform.models.exception.ResourceNotFoundException;
 import com.foodbookingplatform.models.exception.RestaurantBookingException;
+import com.foodbookingplatform.models.payload.dto.promotion.ApplyPromotionResponse;
+import com.foodbookingplatform.models.payload.dto.promotion.CheckPromotionResponse;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionRequest;
 import com.foodbookingplatform.models.payload.dto.promotion.PromotionResponse;
 import com.foodbookingplatform.repositories.LocationRepository;
 import com.foodbookingplatform.repositories.PromotionRepository;
 import com.foodbookingplatform.repositories.UserRepository;
 import com.foodbookingplatform.services.PromotionService;
+import com.foodbookingplatform.utils.DateTimeUtil;
 import com.foodbookingplatform.utils.GenericSpecification;
 import com.foodbookingplatform.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +29,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -106,6 +114,120 @@ public class PromotionServiceImpl implements PromotionService {
         promotionRepository.save(promotion);
     }
 
+    @Override
+    public List<ApplyPromotionResponse> getUsablePromotionListOfLocation(Long locationId, Float totalPrice, Integer numberOfPeople,
+                                                                         LocalDate bookingDate, LocalTime bookingTime) {
+        List<Promotion> promotionResponses = promotionRepository.findAllByLocationIdAndStatus(locationId, OfferStatus.ACTIVE);
+        return promotionResponses.stream()
+                .map(promotion -> {
+                    ApplyPromotionResponse response = mapper.map(promotion, ApplyPromotionResponse.class);
+                    boolean isUsable = false;
+
+                    switch (promotion.getType()) {
+                        case "BILL" -> {
+                            // Nếu totalPrice không được truyền, bỏ qua phần kiểm tra
+                            if (totalPrice != null && promotion.getMinBill() <= totalPrice) {
+                                isUsable = true;
+                            }
+                        }
+                        case "PEOPLE" -> {
+                            // Nếu numberOfPeople không được truyền, bỏ qua phần kiểm tra
+                            if (numberOfPeople != null && promotion.getMinPeople() <= numberOfPeople) {
+                                isUsable = true;
+                            }
+                        }
+                        case "TIME" -> {
+                            // Nếu bookingDate hoặc bookingTime không được truyền, bỏ qua phần kiểm tra
+                            if (bookingDate != null && bookingTime != null &&
+                                    isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(),
+                                            promotion.getStartHourTime(), promotion.getEndDate(),
+                                            promotion.getEndHourTime())) {
+                                isUsable = true;
+                            }
+                        }
+                        default -> throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Unknown promotion type: " + promotion.getType());
+                    }
+
+                    // Set the usable status
+                    response.setUsable(isUsable);
+                    return response;
+                })
+                .toList();
+    }
+
+
+    @Override
+    public CheckPromotionResponse applyPromotion(Long promotionId, Float totalPrice, Integer numberOfPeople,
+                                LocalDate bookingDate, LocalTime bookingTime) {
+        CheckPromotionResponse checkPromotionResponse = new CheckPromotionResponse();
+
+        Promotion promotion = promotionRepository.findById(promotionId)
+                .orElseThrow(() -> new ResourceNotFoundException("Promotion", "id", promotionId));
+        if (promotion.getStatus() != OfferStatus.ACTIVE)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Promotion is not available!");
+
+        switch (promotion.getType()){
+            case "BILL" -> checkPromotionResponse = applyBillPromotion(promotion, totalPrice);
+            case "PEOPLE" -> checkPromotionResponse = applyPeoplePromotion(promotion, numberOfPeople);
+            case "TIME" -> checkPromotionResponse = applyTimePromotion(promotion, bookingDate, bookingTime);
+        }
+
+        return checkPromotionResponse;
+    }
+
+    private CheckPromotionResponse applyTimePromotion(Promotion promotion, LocalDate bookingDate, LocalTime bookingTime) {
+        if(bookingTime == null || bookingDate == null)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Booking Date and Booking Time is required for this type of promotion: "
+                    + promotion.getTitle());
+        if(isDateTimeInRange(bookingDate, bookingTime, promotion.getStartDate(), promotion.getStartHourTime(),
+                promotion.getEndDate(), promotion.getEndHourTime())){
+            return getCheckPromotionResponse(promotion);
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Date Time invalid!");
+    }
+
+    private CheckPromotionResponse applyPeoplePromotion(Promotion promotion, Integer numberOfPeople) {
+        if(numberOfPeople == null )
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Number of people is required for this type of promotion: "
+                    + promotion.getTitle());
+        if(promotion.getMinPeople() <= numberOfPeople){
+            return getCheckPromotionResponse(promotion);
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of people invalid!");
+    }
+
+    private CheckPromotionResponse applyBillPromotion(Promotion promotion, Float totalPrice) {
+        if(totalPrice == null)
+            throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Total price is required for this type of promotion: "
+                    + promotion.getTitle());
+        if(promotion.getMinBill() <= totalPrice){
+            return getCheckPromotionResponse(promotion);
+        }else throw new RestaurantBookingException(HttpStatus.BAD_REQUEST, "Cannot apply this promotion: Min number of bill invalid!");
+    }
+
+    private CheckPromotionResponse getCheckPromotionResponse(Promotion promotion){
+        CheckPromotionResponse response = new CheckPromotionResponse();
+        response.setPromotionId(promotion.getId());
+        if(promotion.getDiscountValue() != null && promotion.getDiscountValue() != 0) response.setDiscountedValue(Float.parseFloat(promotion.getDiscountValue().toString()));
+        if(promotion.getFreeItem() != null) response.setFreeItem(promotion.getFreeItem());
+        return response;
+    }
+
+    public boolean isDateTimeInRange(LocalDate dateToCheck, LocalTime timeToCheck,
+                                     LocalDateTime startDate, LocalTime startTime,
+                                     LocalDateTime endDate, LocalTime endTime) {
+        LocalDate startDateParse = LocalDate.of(startDate.getYear(), startDate.getMonth(), startDate.getDayOfMonth());
+        LocalDate endDateParse = LocalDate.of(endDate.getYear(), endDate.getMonth(), endDate.getDayOfMonth());
+
+        if ((dateToCheck.isEqual(startDateParse)) || dateToCheck.isAfter(startDateParse) &&
+                (dateToCheck.isEqual(endDateParse) || dateToCheck.isBefore(endDateParse))) {
+            if ((timeToCheck.isAfter(startTime.minusNanos(1)) &&
+                    timeToCheck.isBefore(endTime.plusNanos(1)))) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
     public Promotion validate(PromotionRequest promotionRequest, Long promotionId) {
         Promotion promotion;
 
@@ -145,14 +267,14 @@ public class PromotionServiceImpl implements PromotionService {
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionActive() {
-        List<Promotion> promotionsActive = promotionRepository.findPromotionInactive(LocalDateTime.now(), OfferStatus.INACTIVE);
+        List<Promotion> promotionsActive = promotionRepository.findByStartDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.INACTIVE);
         promotionsActive.forEach(promotion -> promotion.setStatus(OfferStatus.ACTIVE));
         promotionRepository.saveAll(promotionsActive);
     }
 
     @Scheduled(fixedRate = 10000)
     public void handlePromotionExpire() {
-        List<Promotion> promotionsExpire = promotionRepository.findPromotionActive(LocalDateTime.now(), OfferStatus.ACTIVE);
+        List<Promotion> promotionsExpire = promotionRepository.findByEndDateBeforeAndStatus(DateTimeUtil.nowInVietnam(), OfferStatus.ACTIVE);
         promotionsExpire.forEach(promotion -> promotion.setStatus(OfferStatus.EXPIRE));
         promotionRepository.saveAll(promotionsExpire);
     }

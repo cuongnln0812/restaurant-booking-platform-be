@@ -1,9 +1,11 @@
 package com.foodbookingplatform.controllers;
 
 import com.foodbookingplatform.models.constants.AppConstants;
-import com.foodbookingplatform.models.payload.dto.adsregistration.AdsRegistrationAddResponse;
+import com.foodbookingplatform.models.enums.OfferStatus;
+import com.foodbookingplatform.models.payload.dto.adsregistration.AdsRegistrationAddEditResponse;
 import com.foodbookingplatform.models.payload.dto.adsregistration.AdsRegistrationLocationResponse;
 import com.foodbookingplatform.models.payload.dto.adsregistration.AdsRegistrationAddRequest;
+import com.foodbookingplatform.models.payload.dto.adsregistration.AdsRegistrationResponse;
 import com.foodbookingplatform.services.AdsRegistrationService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -39,24 +41,42 @@ public class AdsRegistrationController {
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
-    @GetMapping("/location/{id}")
-    public ResponseEntity<AdsRegistrationLocationResponse> getAllAdsRegistrationOfLocation(@PathVariable Long id) throws AccessDeniedException {
-        return ResponseEntity.ok(adsRegistrationService.getAdsRegistrationsOfLocation(id));
-    }
-
-    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
-    @SecurityRequirement(name = "Bear Authentication")
-    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
-    @PostMapping
-    public ResponseEntity<AdsRegistrationAddResponse> addAdsRegistration(@RequestBody @Valid AdsRegistrationAddRequest request) throws AccessDeniedException {
-        return ResponseEntity.ok(adsRegistrationService.addAdsRegistration(request));
+    @GetMapping("/location/{locationId}")
+    public ResponseEntity<AdsRegistrationLocationResponse> getAllAdsRegistrationOfLocation(@PathVariable Long locationId) throws AccessDeniedException {
+        return ResponseEntity.ok(adsRegistrationService.getAdsRegistrationsOfLocation(locationId));
     }
 
     @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
     @SecurityRequirement(name = "Bear Authentication")
     @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
     @GetMapping("{id}")
-    public ResponseEntity<AdsRegistrationAddResponse> getAdsRegistration(@PathVariable Long id) throws AccessDeniedException {
+    public ResponseEntity<AdsRegistrationResponse> getAdsRegistration(@PathVariable Long id) throws AccessDeniedException {
         return ResponseEntity.ok(adsRegistrationService.getAdsRegistration(id));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
+    @PostMapping
+    public ResponseEntity<AdsRegistrationAddEditResponse> addAdsRegistration(@RequestBody @Valid AdsRegistrationAddRequest request) throws AccessDeniedException {
+        return ResponseEntity.ok(adsRegistrationService.addAdsRegistration(request));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
+    @PutMapping
+    public ResponseEntity<AdsRegistrationAddEditResponse> updateAdsRegistrationOfLocation(@RequestParam Long id, @RequestParam OfferStatus offerStatus) throws AccessDeniedException {
+        return ResponseEntity.ok(adsRegistrationService.updateAdsRegistrationOfLocation(id, offerStatus));
+    }
+
+    @ApiResponse(responseCode = "200", description = "Http Status 200 OK")
+    @SecurityRequirement(name = "Bear Authentication")
+    @PreAuthorize("hasAnyRole('SYSTEM_ADMIN', 'LOCATION_ADMIN')")
+    @DeleteMapping
+    public ResponseEntity<String> deleteAdsRegistrationOfLocation(@RequestParam Long id) throws AccessDeniedException {
+        adsRegistrationService.deleteAdsRegistrationOfLocation(id);
+        return ResponseEntity.ok("Ads Registration deleted successfully");
+
     }
 }

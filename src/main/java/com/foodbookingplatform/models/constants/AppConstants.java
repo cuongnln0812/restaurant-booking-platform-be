@@ -6,6 +6,7 @@ public class AppConstants {
     public static final String DEFAULT_PAGE_SIZE = "10";
     public static final String DEFAULT_SORT_DIRECTION = "asc";
     public static final String DEFAULT_SORT_BY= "id";
+    public static final String DEFAULT_BOOKING_STATUS= "SUCCESSFUL";
     public static final String EMAIL_REGEX = "^[^\\.][a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
     public static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$";
     public static final String PHONE_REGEX = "(84|0[35789])([0-9]{8})\\b";
@@ -19,4 +20,8 @@ public class AppConstants {
     public static final String ROLE_USER = "USER";
     public static final String ROLE_SYSTEM = "SYSTEM_ADMIN";
     public static final String NUMBER_OF_GUEST = "0";
+
+    // fee
+    public static final double CHARGE_FEE_PER_BOOKING = 10000;
+    public static final double SUBSCRIPTION_FEE_PER_MONTH = 300000;
 }

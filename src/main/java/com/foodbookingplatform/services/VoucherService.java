@@ -1,5 +1,7 @@
 package com.foodbookingplatform.services;
 
+import com.foodbookingplatform.models.payload.dto.uservoucher.ApplyUserVoucherResponse;
+import com.foodbookingplatform.models.payload.dto.uservoucher.CheckVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.uservoucher.UserVoucherResponse;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherRequest;
 import com.foodbookingplatform.models.payload.dto.voucher.VoucherResponse;
@@ -16,4 +18,6 @@ public interface VoucherService {
     VoucherResponse deleteVoucher(Long id);
     List<UserVoucherResponse> viewAllVoucherOfUser();
     UserVoucherResponse addVoucherForUser(Long id);
+    CheckVoucherResponse applyVoucher(Long voucherId, Float totalPrice);
+    List<ApplyUserVoucherResponse> getUsableVoucherListOfUser(Float totalPrice);
 }

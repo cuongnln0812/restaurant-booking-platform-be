@@ -1,14 +1,9 @@
 package com.foodbookingplatform.models.entities;
 
+import com.foodbookingplatform.models.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -24,14 +19,12 @@ public class PaymentHistory extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_date", nullable = false, length = 65535)
-    private LocalDateTime paymentDate;
-
     @Column(name = "total_amount", nullable = false)
     private float totalAmount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean status;
+    private PaymentStatus status;
 
     @ManyToOne
     @JoinColumn(name = "booking_Id", referencedColumnName = "Id", nullable = false)

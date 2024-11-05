@@ -47,10 +47,13 @@ public class Location extends BaseEntity{
     private int rating = 0;
 
     @Column(nullable = false)
-    private String latitude;
+    private double latitude;
 
     @Column(nullable = false)
-    private String longitude;
+    private double longitude;
+
+    @Column(name = "geo_hash_code", nullable = false)
+    private String geoHashCode;
 
     @Column(nullable = false, length = 65535)
     private String description;
@@ -61,6 +64,9 @@ public class Location extends BaseEntity{
 
     @Column(nullable = false, length = Length.LOB_DEFAULT)
     private String image;
+
+    @Column(name = "banner_image")
+    private String bannerImage;
 
     @ManyToOne
     @JoinColumn(name = "user_Id", nullable = false)
